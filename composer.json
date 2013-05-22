@@ -1,0 +1,28 @@
+{
+    "name": "rz/news-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 Bundle SonataNewsBundle Extension",
+    "keywords": ["symfony2", "Sonata Project", "RZProject"],
+    "homepage": "https://github.com/rzproject/NewsBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "mell zamora",
+            "email": "mell@rzproject.org",
+            "homepage": "http://www.rzproject.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "rmzamora/user-bundle": "2.2.*@dev"
+    },
+    "autoload": {
+        "psr-0": { "Rz\\NewsBundle": "" }
+    },
+    "target-dir": "Rz/NewsBundle",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.2.x-dev"
+        }
+    }
+}

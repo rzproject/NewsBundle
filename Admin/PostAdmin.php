@@ -1,0 +1,112 @@
+<?php
+
+namespace Rz\NewsBundle\Admin;
+
+use Sonata\NewsBundle\Admin\PostAdmin as BaseAdmin;
+use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\FormatterBundle\Formatter\Pool as FormatterPool;
+use Sonata\NewsBundle\Model\CommentManagerInterface;
+
+use Knp\Menu\ItemInterface as MenuItemInterface;
+
+class PostAdmin extends BaseAdmin
+{
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureShowFields(ShowMapper $showMapper)
+    {
+        $showMapper
+            ->add('author')
+            ->add('enabled')
+            ->add('title')
+            ->add('abstract','text')
+            ->add('content', 'text', array('safe' => true))
+            ->add('tags')
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureListFields(ListMapper $listMapper)
+    {
+        $listMapper
+            ->addIdentifier('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
+            ->add('category', null, array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
+            ->add('enabled', null, array('editable' => true))
+            ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureFormFields(FormMapper $formMapper)
+    {
+        $commentClass = $this->commentManager->getClass();
+
+        $formMapper
+            ->with('General')
+                ->add('enabled', null, array('required' => false))
+                ->add('author', 'sonata_type_model', array('selectpicker_enabled'=>true))
+                ->add('category', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
+                ->add('title', null, array('attr'=>array('class'=>'span12')))
+                ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
+                ->add('contentFormatter', 'sonata_formatter_type_selector', array(
+                    'source' => 'rawContent',
+                    'target' => 'content',
+                    'attr'=>array('class'=>'span12')
+                ))
+                ->add('rawContent', null, array('attr' => array('class' => 'span12', 'rows' => 20)))
+            ->end()
+            ->with('Tags')
+                ->add('tags', 'sonata_type_model', array(
+                    'required' => false,
+                    'multiple' => true,
+                    'chosen_enabled'=>true,
+                    'attr'=>array('class'=>'span12'),
+                    ))
+            ->end()
+            ->with('Options')
+                ->add('publicationDateStart')
+                ->add('commentsCloseAt')
+                ->add('commentsEnabled', null, array('required' => false))
+                ->add('commentsDefaultStatus', 'choice', array('choices' => $commentClass::getStatusList(), 'expanded' => true))
+            ->end()
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
+    {
+        $datagridMapper
+            ->add('title')
+            ->add('enabled')
+            ->add('tags', null, array('field_options' => array('expanded' => false, 'multiple' => true, 'selectpicker_enabled'=>true)))
+            ->add('author', null, array('field_options' => array('selectpicker_enabled'=>true, 'selectpicker_data_size'=>3)))
+            ->add('with_open_comments', 'doctrine_orm_callback', array(
+//                'callback'   => array($this, 'getWithOpenCommentFilter'),
+                                          'callback' => function ($queryBuilder, $alias, $field, $data) {
+                                              if (!is_array($data) || !$data['value']) {
+                                                  return;
+                                              }
+
+                                              $commentClass = $this->commentManager->getClass();
+
+                                              $queryBuilder->leftJoin(sprintf('%s.comments', $alias), 'c');
+                                              $queryBuilder->andWhere('c.status = :status');
+                                              $queryBuilder->setParameter('status', $commentClass::STATUS_MODERATE);
+                                          },
+                                          'field_type' => 'checkbox'
+                                      ))
+        ;
+    }
+}

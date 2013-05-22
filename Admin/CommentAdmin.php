@@ -1,0 +1,49 @@
+<?php
+
+
+namespace Rz\NewsBundle\Admin;
+
+use Sonata\NewsBundle\Admin\CommentAdmin as BaseCommentAdmin;
+use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
+
+use Sonata\NewsBundle\Model\CommentManagerInterface;
+
+class CommentAdmin extends BaseCommentAdmin
+{
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureFormFields(FormMapper $formMapper)
+    {
+        if (!$this->isChild()) {
+            $formMapper->add('post', 'sonata_type_model_list');
+//            $formMapper->add('post', 'sonata_type_admin', array(), array('edit' => 'inline'));
+        }
+
+        $commentClass = $this->commentManager->getClass();
+
+        $formMapper
+            ->add('name')
+            ->add('email')
+            ->add('url', null, array('required' => false))
+            ->add('message', 'rz_ckeditor', array('config_name'=>'minimal_editor'))
+            ->add('status', 'choice', array('choices' => $commentClass::getStatusList(), 'expanded' => true, 'multiple' => false))
+        ;
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
+    {
+        $datagridMapper
+            ->add('name')
+            ->add('email')
+            ->add('message', null ,array('operator_options'=>array('selectpicker_dropup' => true)))
+        ;
+    }
+}
