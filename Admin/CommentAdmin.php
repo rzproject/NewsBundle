@@ -1,14 +1,10 @@
 <?php
 
-
 namespace Rz\NewsBundle\Admin;
 
 use Sonata\NewsBundle\Admin\CommentAdmin as BaseCommentAdmin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
-use Sonata\AdminBundle\Datagrid\ListMapper;
-
-use Sonata\NewsBundle\Model\CommentManagerInterface;
 
 class CommentAdmin extends BaseCommentAdmin
 {
@@ -33,7 +29,6 @@ class CommentAdmin extends BaseCommentAdmin
             ->add('status', 'choice', array('choices' => $commentClass::getStatusList(), 'expanded' => true, 'multiple' => false))
         ;
     }
-
 
     /**
      * {@inheritdoc}

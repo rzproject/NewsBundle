@@ -3,15 +3,10 @@
 namespace Rz\NewsBundle\Admin;
 
 use Sonata\NewsBundle\Admin\PostAdmin as BaseAdmin;
-use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Sonata\FormatterBundle\Formatter\Pool as FormatterPool;
-use Sonata\NewsBundle\Model\CommentManagerInterface;
-
-use Knp\Menu\ItemInterface as MenuItemInterface;
 
 class PostAdmin extends BaseAdmin
 {
