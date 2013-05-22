@@ -17,10 +17,11 @@
         "rmzamora/news-bundle": "2.2.*@dev",
         "rz/admin-bundle": "2.2.*@dev",
         "rz/user-bundle":  "2.2.*@dev",
-        "rz/media-bundle": "2.2.*@dev"
+        "rz/media-bundle": "2.2.*@dev",
+        "rz/doctrine-orm-admin-bundle": "2.2.*@dev"
     },
     "require-dev": {
-        "rz/block-bundle": "2.2.*@dev",
+        "rz/block-bundle": "2.2.*@dev"
     },
     "autoload": {
         "psr-0": { "Rz\\NewsBundle": "" }
