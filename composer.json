@@ -14,7 +14,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "rmzamora/user-bundle": "2.2.*@dev"
+        "rmzamora/news-bundle": "2.2.*@dev"
     },
     "autoload": {
         "psr-0": { "Rz\\NewsBundle": "" }
