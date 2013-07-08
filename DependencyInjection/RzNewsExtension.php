@@ -39,6 +39,7 @@ class RzNewsExtension extends Extension
         $config = $this->addDefaults($config);
         $this->configureAdminClass($config, $container);
         $this->configureClass($config, $container);
+        $this->configureClassManager($config, $container);
 
         $this->configureTranslationDomain($config, $container);
         $this->configureController($config, $container);
@@ -84,6 +85,21 @@ class RzNewsExtension extends Extension
         $container->setParameter(sprintf('sonata.news.admin.tag.%s', $modelType), $config['class']['tag']);
         $container->setParameter(sprintf('sonata.news.admin.comment.%s', $modelType), $config['class']['comment']);
         $container->setParameter(sprintf('sonata.news.admin.category.%s', $modelType), $config['class']['category']);
+    }
+
+    /**
+     * @param array                                                   $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     *
+     * @return void
+     */
+    public function configureClassManager($config, ContainerBuilder $container)
+    {
+        // manager configuration
+        $container->setParameter('sonata.news.manager.post.class',     $config['class_manager']['post']);
+        $container->setParameter('sonata.news.manager.tag.class',      $config['class_manager']['tag']);
+        $container->setParameter('sonata.news.manager.comment.class',  $config['class_manager']['comment']);
+        $container->setParameter('sonata.news.manager.category.class', $config['class_manager']['category']);
     }
 
     /**
