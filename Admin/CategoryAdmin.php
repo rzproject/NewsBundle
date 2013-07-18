@@ -16,6 +16,7 @@ use Sonata\NewsBundle\Admin\CategoryAdmin as BaseCategoryAdmin;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Form\FormMapper;
 
 class CategoryAdmin extends BaseCategoryAdmin
 {
@@ -40,6 +41,19 @@ class CategoryAdmin extends BaseCategoryAdmin
         $datagridMapper
             ->add('name')
             ->add('enabled', null ,array('field_options'=>array('selectpicker_enabled'=>true, 'selectpicker_data_size' => 3, 'selectpicker_dropup' => true)))
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureFormFields(FormMapper $formMapper)
+    {
+        $formMapper
+        ->add('name')
+        ->add('parent', 'sonata_type_model')
+        ->add('description', null, array('required' => false))
+        ->add('enabled', null, array('required' => false))
         ;
     }
 }
