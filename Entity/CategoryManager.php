@@ -9,10 +9,17 @@ use Doctrine\ORM\EntityManager;
 
 class CategoryManager extends BaseCategoryManager
 {
+
+  public function fetchCategoriesTree() {
+      return $this->em->getRepository($this->class)->childrenHierarchy();
+  }
+
   public function fetchCategories() {
-      $categories = $this->em
-                   ->createQuery(sprintf('SELECT c FROM %s c INDEX BY c.id', $this->class))
-                   ->execute();
-      return $categories;
+        $entityManager = $this->em->getRepository($this->class);
+        $query = $entityManager->createQueryBuilder('category')
+                 ->orderBy('category.root', 'ASC')
+                 ->addOrderBy('category.left', 'ASC')
+                 ->getQuery();
+        return $query->getResult();
   }
 }

@@ -37,9 +37,9 @@ class RzNewsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
         $loader->load('admin_orm.xml');
+        $loader->load('twig.xml');
 
         $config = $this->addDefaults($config);
-        $this->registerDoctrineMapping($config, $container);
         $this->configureAdminClass($config, $container);
         $this->configureClass($config, $container);
         $this->configureClassManager($config, $container);
@@ -47,6 +47,7 @@ class RzNewsExtension extends Extension
         $this->configureTranslationDomain($config, $container);
         $this->configureController($config, $container);
         $this->configureRzTemplates($config, $container);
+        $this->registerService($config, $container);
     }
 
     /**
@@ -161,55 +162,12 @@ class RzNewsExtension extends Extension
         $container->setParameter('rz_news.configuration.category.templates', $config['admin']['category']['templates']);
     }
 
-    /**
-     * @param array $config
-     */
-    public function registerDoctrineMapping(array $config)
+    protected function registerService(array $config, ContainerBuilder $container)
     {
-        $collector = DoctrineCollector::getInstance();
-
-        //override map for category
-        foreach ($config['class'] as $type => $class) {
-            if (!class_exists($class)) {
-                return;
-            } elseif($type == 'category') {
-
-                $collector->addAssociation($config['class']['category'], 'mapOneToMany', array(
-                     'fieldName' => 'children',
-                     'targetEntity' => $config['class']['category'],
-                     'cascade' =>
-                     array(
-                         0 => 'all'
-                     ),
-                     'mappedBy' => 'parent',
-                     'orphanRemoval' => true,
-                     'orderBy' =>
-                     array(
-                         'tree_left' => 'DESC',
-                     ),
-                ));
-
-                 $collector->addAssociation($config['class']['category'], 'mapManyToOne', array(
-                        'fieldName' => 'parent',
-                        'targetEntity' => $config['class']['category'],
-                        'cascade' =>
-                        array(
-                            0 => 'remove'
-                        ),
-                        'mappedBy' => NULL,
-                        'inversedBy' => 'children',
-                        'joinColumns' =>
-                        array(
-                            array(
-                                'name' => 'parent_id',
-                                'referencedColumnName' => 'id',
-                            ),
-                        ),
-                        'orphanRemoval' => false,
-                        'nullable' => true,
-                        'gedmo:tree-parent',
-                    ));
-            }
-        }
+        $container->setParameter('twig.form.resources',
+                                 array_merge($container->getParameter('twig.form.resources'),
+                                             array('RzNewsBundle::form.html.twig')
+                                 )
+        );
     }
 }
