@@ -67,7 +67,7 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('tag')->defaultValue('Sonata\\NewsBundle\\Entity\\TagManager')->end()
-                        ->scalarNode('category')->defaultValue('Sonata\\NewsBundle\\Entity\\CategoryManager')->end()
+                        ->scalarNode('category')->defaultValue('Rz\\NewsBundle\\Entity\\CategoryManager')->end()
                         ->scalarNode('post')->defaultValue('Rz\\NewsBundle\\Entity\\PostManager')->end()
                         ->scalarNode('comment')->defaultValue('Sonata\\NewsBundle\\Entity\\CommentManager')->end()
                     ->end()
