@@ -58,7 +58,7 @@ class PostAdmin extends BaseAdmin
         $formMapper
             ->with('General')
                 ->add('enabled', null, array('required' => false))
-                ->add('author', 'sonata_type_model_list', array('selectpicker_enabled'=>true))
+                ->add('author', 'sonata_type_model_list')
                 ->add('category', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
                 ->add('title', null, array('attr'=>array('class'=>'span12')))
                 ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
