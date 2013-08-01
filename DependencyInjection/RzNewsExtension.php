@@ -17,6 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
 
+use Sonata\EasyExtendsBundle\Mapper\DoctrineCollector;
+
 /**
  * This is the class that loads and manages your bundle configuration
  *
@@ -35,6 +37,7 @@ class RzNewsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
         $loader->load('admin_orm.xml');
+        $loader->load('twig.xml');
 
         $config = $this->addDefaults($config);
         $this->configureAdminClass($config, $container);
@@ -44,6 +47,7 @@ class RzNewsExtension extends Extension
         $this->configureTranslationDomain($config, $container);
         $this->configureController($config, $container);
         $this->configureRzTemplates($config, $container);
+        $this->registerService($config, $container);
     }
 
     /**
@@ -156,5 +160,14 @@ class RzNewsExtension extends Extension
         $container->setParameter('rz_news.configuration.tag.templates', $config['admin']['tag']['templates']);
         $container->setParameter('rz_news.configuration.comment.templates', $config['admin']['comment']['templates']);
         $container->setParameter('rz_news.configuration.category.templates', $config['admin']['category']['templates']);
+    }
+
+    protected function registerService(array $config, ContainerBuilder $container)
+    {
+        $container->setParameter('twig.form.resources',
+                                 array_merge($container->getParameter('twig.form.resources'),
+                                             array('RzNewsBundle::form.html.twig')
+                                 )
+        );
     }
 }
