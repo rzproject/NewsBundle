@@ -62,6 +62,7 @@ class PostAdmin extends BaseAdmin
                 ->add('category', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
                 ->add('title', null, array('attr'=>array('class'=>'span12')))
                 ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
+                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')))
                 ->add('content', 'sonata_formatter_type', array(
                            'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
                            'format_field'   => 'contentFormatter',
