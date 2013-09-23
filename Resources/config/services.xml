@@ -4,17 +4,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
     <parameters>
-        <parameter key="rz_news.example.class">Rz\NewsBundle\Example</parameter>
+        <parameter key="rz_news.orm.type.category_choice.class">Rz\NewsBundle\Form\Type\CategoryChoiceType</parameter>
     </parameters>
 
     <services>
-        <service id="rz_news.example" class="%rz_news.example.class%">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
+        <service id="rz_news.form.type.category_choice" class="%rz_news.orm.type.category_choice.class%">
+            <tag name="form.type" alias="rz_news_category_choice" />
+            <argument type="service" id="sonata.news.manager.category" />
         </service>
     </services>
-    -->
 </container>
