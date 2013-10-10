@@ -11,24 +11,9 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-
-        //override news admin comment
-        $definition = $container->getDefinition('sonata.news.admin.comment');
-        $this->fixTemplates($container, $definition, 'rz_news.configuration.comment.templates');
-
-        //override news admin category
-        $definition = $container->getDefinition('sonata.news.admin.category');
-        $definition->addMethodCall('setCategoryManager', array(new Reference('sonata.news.manager.category')));
-        $this->fixTemplates($container, $definition, 'rz_news.configuration.category.templates');
-
         //override news admin post
         $definition = $container->getDefinition('sonata.news.admin.post');
         $this->fixTemplates($container, $definition, 'rz_news.configuration.post.templates');
-
-        //override news admin tag
-        $definition = $container->getDefinition('sonata.news.admin.tag');
-        $this->fixTemplates($container, $definition, 'rz_news.configuration.tag.templates');
-
 
     }
 
