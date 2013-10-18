@@ -15,6 +15,10 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('sonata.news.admin.post');
         $this->fixTemplates($container, $definition, 'rz_news.configuration.post.templates');
 
+        //override news admin comments
+        $definition = $container->getDefinition('sonata.news.admin.comment');
+        $this->fixTemplates($container, $definition, 'rz_news.configuration.comment.templates');
+
     }
 
     /**
