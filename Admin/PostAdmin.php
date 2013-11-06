@@ -78,7 +78,7 @@ class PostAdmin extends BaseAdmin
                 ->add('tags', 'sonata_type_model', array(
                     'required' => false,
                     'multiple' => true,
-                    'chosen_enabled'=>true,
+                    'select2'=>true,
                     'attr'=>array('class'=>'span12'),
                     ))
             ->end()

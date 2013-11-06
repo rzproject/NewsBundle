@@ -10,6 +10,8 @@ use Symfony\Component\DependencyInjection\Definition;
 class OverrideServiceCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
+
+
     {
         //override news admin post
         $definition = $container->getDefinition('sonata.news.admin.post');
@@ -19,6 +21,12 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('sonata.news.admin.comment');
         $this->fixTemplates($container, $definition, 'rz_news.configuration.comment.templates');
 
+        //override blocks
+        $definition = $container->getDefinition('sonata.news.block.recent_posts');
+        $definition->setClass($container->getParameter('rz_news.block.recent_posts'));
+
+        $definition = $container->getDefinition('sonata.news.block.recent_comments');
+        $definition->setClass($container->getParameter('rz_news.block.recent_comments'));
     }
 
     /**

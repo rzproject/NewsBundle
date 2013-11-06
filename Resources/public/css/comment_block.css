@@ -1,0 +1,13 @@
+.rz-cms-admin .rz-block-news-recent-comment ul.rz-block-news-comment-container > li {
+    list-style: none;
+    line-height: 25px;
+}
+
+.rz-cms-admin .rz-block-news-recent-comment .rz-block-news-comment-container .comment-title a {
+    color: #666;
+}
+
+.rz-cms-admin .rz-block-news-recent-comment .rz-block-news-comment-container .comment-title a:hover {
+    text-decoration: none;
+    color: #468847;
+}

@@ -1,0 +1,24 @@
+.rz-cms-admin .rz-block-news-recent-post ul.rz-block-news-post-container > li {
+    list-style: none;
+    line-height: 25px;
+}
+
+
+.rz-cms-admin .rz-block-news-recent-post .rz-block-news-post-container .post-meta {
+    display: table;
+    clear: both;
+    color: #666;
+}
+
+.rz-cms-admin .rz-block-news-recent-post .rz-block-news-post-container .post-title {
+    margin-bottom: 2px;
+}
+
+.rz-cms-admin .rz-block-news-recent-post .rz-block-news-post-container .post-title a {
+    color: #666;
+}
+
+.rz-cms-admin .rz-block-news-recent-post .rz-block-news-post-container .post-title a:hover {
+    text-decoration: none;
+    color: #468847;
+}

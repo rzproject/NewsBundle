@@ -47,6 +47,7 @@ class RzNewsExtension extends Extension
         $this->configureController($config, $container);
         $this->configureRzTemplates($config, $container);
         $this->registerService($config, $container);
+        $this->configureBlocks($config, $container);
     }
 
     /**
@@ -154,5 +155,17 @@ class RzNewsExtension extends Extension
                                              array('RzNewsBundle::form.html.twig')
                                  )
         );
+    }
+
+    /**
+     * @param array                                                   $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     *
+     * @return void
+     */
+    public function configureBlocks($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.block.recent_posts', $config['blocks']['class']['recent_posts']);
+        $container->setParameter('rz_news.block.recent_comments', $config['blocks']['class']['recent_comments']);
     }
 }
