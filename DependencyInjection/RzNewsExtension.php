@@ -37,6 +37,7 @@ class RzNewsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('admin_orm.xml');
         $loader->load('twig.xml');
+        $loader->load('block.xml');
 
         $config = $this->addDefaults($config);
         $this->configureAdminClass($config, $container);
