@@ -8,8 +8,6 @@
     <parameters>
         <parameter key="rz_news.admin.post.class">Rz\NewsBundle\Admin\PostAdmin</parameter>
         <parameter key="rz_news.admin.comment.class">Rz\NewsBundle\Admin\CommentAdmin</parameter>
-        <parameter key="rz_news.admin.category.class">Rz\NewsBundle\Admin\CategoryAdmin</parameter>
-        <parameter key="rz_news.admin.tag.class">Rz\NewsBundle\Admin\TagAdmin</parameter>
     </parameters>
 
 </container>

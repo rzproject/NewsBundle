@@ -42,7 +42,7 @@ class PostAdmin extends BaseAdmin
     {
         $listMapper
             ->addIdentifier('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('category', null, array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
+            ->add('collection', null, array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('enabled', null, array('editable' => true))
             ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
         ;
@@ -59,7 +59,7 @@ class PostAdmin extends BaseAdmin
             ->with('General')
                 ->add('enabled', null, array('required' => false))
                 ->add('author', 'sonata_type_model_list')
-                ->add('category', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
+                ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
                 ->add('title', null, array('attr'=>array('class'=>'span12')))
                 ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
                 ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')))
@@ -78,7 +78,7 @@ class PostAdmin extends BaseAdmin
                 ->add('tags', 'sonata_type_model', array(
                     'required' => false,
                     'multiple' => true,
-                    'chosen_enabled'=>true,
+                    'select2'=>true,
                     'attr'=>array('class'=>'span12'),
                     ))
             ->end()

@@ -35,9 +35,9 @@ class RzNewsExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
         $loader->load('admin_orm.xml');
         $loader->load('twig.xml');
+        $loader->load('block.xml');
 
         $config = $this->addDefaults($config);
         $this->configureAdminClass($config, $container);
@@ -48,6 +48,7 @@ class RzNewsExtension extends Extension
         $this->configureController($config, $container);
         $this->configureRzTemplates($config, $container);
         $this->registerService($config, $container);
+        $this->configureBlocks($config, $container);
     }
 
     /**
@@ -64,9 +65,7 @@ class RzNewsExtension extends Extension
         }
 
         $defaultConfig['class']['post']  = sprintf('Application\\Sonata\\NewsBundle\\%s\\Post', $modelType);
-        $defaultConfig['class']['category'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\Category', $modelType);
         $defaultConfig['class']['comment'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\Comment', $modelType);
-        $defaultConfig['class']['tag'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\Tag', $modelType);
 
         return array_replace_recursive($defaultConfig, $config);
     }
@@ -86,9 +85,7 @@ class RzNewsExtension extends Extension
         }
 
         $container->setParameter(sprintf('sonata.news.admin.post.%s', $modelType), $config['class']['post']);
-        $container->setParameter(sprintf('sonata.news.admin.tag.%s', $modelType), $config['class']['tag']);
         $container->setParameter(sprintf('sonata.news.admin.comment.%s', $modelType), $config['class']['comment']);
-        $container->setParameter(sprintf('sonata.news.admin.category.%s', $modelType), $config['class']['category']);
     }
 
     /**
@@ -101,9 +98,7 @@ class RzNewsExtension extends Extension
     {
         // manager configuration
         $container->setParameter('sonata.news.manager.post.class',     $config['class_manager']['post']);
-        $container->setParameter('sonata.news.manager.tag.class',      $config['class_manager']['tag']);
         $container->setParameter('sonata.news.manager.comment.class',  $config['class_manager']['comment']);
-        $container->setParameter('sonata.news.manager.category.class', $config['class_manager']['category']);
     }
 
     /**
@@ -115,9 +110,7 @@ class RzNewsExtension extends Extension
     public function configureAdminClass($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.class', $config['admin']['post']['class']);
-        $container->setParameter('sonata.news.admin.tag.class', $config['admin']['tag']['class']);
         $container->setParameter('sonata.news.admin.comment.class', $config['admin']['comment']['class']);
-        $container->setParameter('sonata.news.admin.category.class', $config['admin']['category']['class']);
     }
 
     /**
@@ -129,9 +122,7 @@ class RzNewsExtension extends Extension
     public function configureTranslationDomain($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.translation_domain', $config['admin']['post']['translation']);
-        $container->setParameter('sonata.news.admin.tag.translation_domain', $config['admin']['tag']['translation']);
         $container->setParameter('sonata.news.admin.comment.translation_domain', $config['admin']['comment']['translation']);
-        $container->setParameter('sonata.news.admin.category.translation_domain', $config['admin']['category']['translation']);
     }
 
     /**
@@ -143,9 +134,7 @@ class RzNewsExtension extends Extension
     public function configureController($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.controller', $config['admin']['post']['controller']);
-        $container->setParameter('sonata.news.admin.tag.controller', $config['admin']['tag']['controller']);
         $container->setParameter('sonata.news.admin.comment.controller', $config['admin']['comment']['controller']);
-        $container->setParameter('sonata.news.admin.category.controller', $config['admin']['category']['controller']);
     }
 
     /**
@@ -157,9 +146,7 @@ class RzNewsExtension extends Extension
     public function configureRzTemplates($config, ContainerBuilder $container)
     {
         $container->setParameter('rz_news.configuration.post.templates', $config['admin']['post']['templates']);
-        $container->setParameter('rz_news.configuration.tag.templates', $config['admin']['tag']['templates']);
         $container->setParameter('rz_news.configuration.comment.templates', $config['admin']['comment']['templates']);
-        $container->setParameter('rz_news.configuration.category.templates', $config['admin']['category']['templates']);
     }
 
     protected function registerService(array $config, ContainerBuilder $container)
@@ -169,5 +156,17 @@ class RzNewsExtension extends Extension
                                              array('RzNewsBundle::form.html.twig')
                                  )
         );
+    }
+
+    /**
+     * @param array                                                   $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     *
+     * @return void
+     */
+    public function configureBlocks($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.block.recent_posts', $config['blocks']['class']['recent_posts']);
+        $container->setParameter('rz_news.block.recent_comments', $config['blocks']['class']['recent_comments']);
     }
 }
