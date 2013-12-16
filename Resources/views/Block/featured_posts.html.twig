@@ -22,7 +22,7 @@
 
                             </div>
                             <div class="rz-news-featured-post-read-more">
-                                <a class="btn btn-rzcms-theme" href="#">Read</a>
+                                <a class="btn btn-rzcms-theme" href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(post) }) }}">Read</a>
                             </div>
                         </div>
                     {% else %}
