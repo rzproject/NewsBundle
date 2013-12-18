@@ -12,6 +12,22 @@
             <argument type="service" id="service_container" />
             <argument type="service" id="sonata.news.manager.post" />
         </service>
+
+        <service id="rz_news.block.tags" class="Rz\NewsBundle\Block\TagsBlockService">
+            <tag name="sonata.block"/>
+            <argument>rz_news.block.tags</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="sonata.news.manager.post" />
+        </service>
+
+        <service id="rz_news.block.collection" class="Rz\NewsBundle\Block\CollectionBlockService">
+            <tag name="sonata.block"/>
+            <argument>rz_news.block.collection</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="sonata.news.manager.post" />
+        </service>
     </services>
 
 </container>

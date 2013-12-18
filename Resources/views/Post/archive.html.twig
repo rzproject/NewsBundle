@@ -13,7 +13,7 @@
     {% endif %}
 {% endif %}
 <h1 class="blog"><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(post) }) }}">{{ post.title }}</a></h1>
-    <h4><b>{{ post.publicationDateStart | format_date }}</b> | <b>{{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
+    <h4><b>{{ post.publicationDateStart | format_date }}</b> | <b><a href="{{ url('sonata_news_collection', {'collection': post.collection}) }} ">{{ post.collection }}</a></b> | <b>{{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
 <p>{{ post.abstract }}</p>
 <div class="post-meta muted">
     <ul>
@@ -25,7 +25,7 @@
         </li>
     </ul>
 </div>
-<h4><a href="#"><b>READ &rarr;</b></a></h4>
+<h4><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(post) }) }}"><b>READ &rarr;</b></a></h4>
 <!--end post-->
 <div class="pad30"></div>
 {% else %}
