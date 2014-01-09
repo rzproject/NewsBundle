@@ -1,34 +1,28 @@
-{#
+<div class="pad15"></div>
+<!-- Comments -->
+<h3>{{ 'title_comments'|trans({}, 'SonataNewsBundle') }}</h3>
+<div class="pad5"></div>
 
-/*
- * This file is part of the Sonata package.
- *
- * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
-#}
-
-<div class="sonata-blog-comment-container">
-    <h3>{{ 'title_comments'|trans({}, 'SonataNewsBundle') }}</h3>
-
-    <ul class="sonata-blog-comment-list">
-        {% for comment in pager.results %}
-            <li class="sonata-blog-comment">
-                <div class="sonata-blog-comment-name">
-                    <a href="{{ comment.url }}" target="new" rel="nofollow">{{ comment.name }}</a>
-                </div>
-                <div class="sonata-blog-comment-date">
-                    {{ comment.createdAt | format_date }}
-                </div>
-                <div class="sonata-blog-comment-message">
-                    {{ comment.message }}
-                </div>
-            </li>
-        {% else %}
-            <li>{{ 'no_comments_available'|trans({}, 'SonataNewsBundle') }}</li>
-        {% endfor %}
-    </ul>
+{% for comment in pager.results %}
+<div class="media">
+    <div class="media-body">
+        <p class="media-heading">
+            {% if comment.url is defined and comment.url != '' %}
+            <a href="{{ comment.url }}">{{ comment.name }}</a> {{ comment.createdAt | format_date }} <a href="{{ comment.url }}"><i class="icon-mail-forward"></i></a>
+            {% else %}
+            {{ comment.name }} {{ comment.createdAt | format_date }}
+            {% endif %}
+        </p>
+        {{ comment.message }}
+    </div>
 </div>
+{% else %}
+    <div class="media">
+        <div class="media-body">
+            {{ 'no_comments_available'|trans({}, 'SonataNewsBundle') }}
+        </div>
+    </div>
+    <li></li>
+{% endfor %}
+<div class="pad45"></div>

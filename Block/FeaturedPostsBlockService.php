@@ -30,7 +30,7 @@ class FeaturedPostsBlockService extends BaseBlockService
      * @param string $name
      * @param EngineInterface $templating
      * @param ContainerInterface $container
-     * @param PostManagerInterface $manager
+     * @param \Rz\NewsBundle\Block\PostManagerInterface|\Sonata\CoreBundle\Entity\ManagerInterface $manager
      */
     public function __construct($name, EngineInterface $templating, ContainerInterface $container, ManagerInterface $manager)
     {
@@ -107,8 +107,14 @@ class FeaturedPostsBlockService extends BaseBlockService
                                                'choices' => array(
                                                    'public' => 'public',
                                                    'admin'  => 'admin'
-                                               )
-                                           ))
+                                                )
+                                            )),
+                                            array('block_type', 'choice', array(
+                                                'choices' => array(
+                                                    'sidebar'  => 'sidebar',
+                                                    'content' => 'content'
+                                                )
+                                            ))
                                        )
                                    ));
     }
@@ -130,7 +136,8 @@ class FeaturedPostsBlockService extends BaseBlockService
                                    'posts'   => false,
                                    'number'     => 5,
                                    'mode'       => 'public',
-                                   'title'      => 'Recent Posts',
+                                   'title'      => 'Featured Posts',
+                                   'block_type' => 'content',
                                    'template'   => 'SonataNewsBundle:Block:featured_posts.html.twig',
                                    'postId' => array()
                                ));

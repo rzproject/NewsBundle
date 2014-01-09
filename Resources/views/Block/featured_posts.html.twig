@@ -1,6 +1,24 @@
 {% extends sonata_block.templates.block_base %}
 
 {% block block %}
+    {% if settings.block_type is defined and settings.block_type == 'sidebar' %}
+        {% if posts %}
+            {% if settings.title %}
+                 <h3 class="sonata-news-block-recent-post">{{ settings.title }}</h3>
+            {% endif %}
+            <ul class="media-list blog recent-post-sidebar">
+                {% for post in posts %}
+                    <li>
+                        <a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(post) }) }}">{{ post.title }}</a> <br/>
+                        <small>{{ post.publicationDateStart | format_date }} | {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</small>
+                    </li>
+                {% else %}
+                    <li>{{ 'no_post_found'|trans({}, 'SonataNewsBundle') }}</li>
+                {% endfor %}
+            </ul>
+            <div class="pad20"></div>
+        {% endif %}
+    {% else %}
     <div class="container-fluid">
         <div class="row-fluid rz-news-featured-post">
             {% if posts %}
@@ -40,4 +58,5 @@
             jQuery(".rz-news-featured-post-row").eqHeight(".rz-news-featured-post-item");
         });
     </script>
+    {% endif %}
 {% endblock %}
