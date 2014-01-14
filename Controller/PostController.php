@@ -55,9 +55,9 @@ class PostController extends Controller
     /**
      * @return Response
      */
-    public function archiveAction()
+    public function archiveAction($page = 1)
     {
-        return $this->renderArchive();
+        return $this->renderArchive(array(), array('page'=>$page));
     }
 
     /**
