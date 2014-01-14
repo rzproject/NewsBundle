@@ -3,7 +3,7 @@
 namespace Rz\NewsBundle\Block;
 
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\CoreBundle\Entity\ManagerInterface;
+use Sonata\CoreBundle\Model\ManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,7 +30,7 @@ class FeaturedPostsBlockService extends BaseBlockService
      * @param string $name
      * @param EngineInterface $templating
      * @param ContainerInterface $container
-     * @param \Rz\NewsBundle\Block\PostManagerInterface|\Sonata\CoreBundle\Entity\ManagerInterface $manager
+     * @param \Sonata\CoreBundle\Model\ManagerInterface $manager
      */
     public function __construct($name, EngineInterface $templating, ContainerInterface $container, ManagerInterface $manager)
     {
