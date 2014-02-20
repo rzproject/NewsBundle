@@ -5,7 +5,7 @@ namespace Rz\NewsBundle\Entity;
 use Sonata\NewsBundle\Entity\BasePost as BasePost;
 use Sonata\NewsBundle\Model\PostInterface;
 
-abstract class post extends BasePost
+abstract class Post extends BasePost
 {
     /**
      * @param mixed $image
