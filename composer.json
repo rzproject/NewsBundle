@@ -25,9 +25,8 @@
         "rz/block-bundle": "~1.0"
     },
     "autoload": {
-        "psr-0": { "Rz\\NewsBundle": "" }
+        "psr-4": { "Rz\\NewsBundle\\": "" }
     },
-    "target-dir": "Rz/NewsBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
