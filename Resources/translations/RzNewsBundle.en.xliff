@@ -368,6 +368,10 @@ Quick moderation links :
                 <source>view_all_comments</source>
                 <target>View comments</target>
             </trans-unit>
+            <trans-unit id="form.label_image">
+                <source>form.label_image</source>
+                <target>Image</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

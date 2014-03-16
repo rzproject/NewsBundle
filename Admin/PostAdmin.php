@@ -99,8 +99,8 @@ class PostAdmin extends BaseAdmin
         $datagridMapper
             ->add('title')
             ->add('enabled')
+            ->add('author', null, array('field_options' => array('selectpicker_enabled'=>true)))
             ->add('tags', null, array('field_options' => array('expanded' => false, 'multiple' => true, 'selectpicker_enabled'=>true)))
-            ->add('author', null, array('field_options' => array('selectpicker_enabled'=>true, 'selectpicker_data_size'=>3)))
             ->add('with_open_comments', 'doctrine_orm_callback', array(
 //                'callback'   => array($this, 'getWithOpenCommentFilter'),
                                           'callback' => function ($queryBuilder, $alias, $field, $data) {
