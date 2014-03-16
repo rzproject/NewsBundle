@@ -1,0 +1,25 @@
+{#
+
+This file is part of the Rz package.
+
+(c) mell m. zamora <me@rmzamora.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+
+#}
+
+{% extends 'SonataAdminBundle:CRUD:base_edit.html.twig' %}
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# fileupoad #}
+    <link href="{{ asset('bundles/rmzamorabootstrap/plugins/fileupload/css/fileupload.css') }}" type="text/css" media="all" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# fileupload #}
+    <script src="{{ asset('bundles/rmzamorabootstrap/plugins/fileupload/js/fileupload.js') }}" type="text/javascript"></script>
+{% endblock javascripts %}

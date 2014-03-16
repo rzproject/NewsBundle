@@ -85,6 +85,7 @@ class Configuration implements ConfigurationInterface
                                     ->addDefaultsIfNotSet()
                                     ->children()
                                         ->scalarNode('list')->defaultValue('SonataAdminBundle:CRUD:list.html.twig')->cannotBeEmpty()->end()
+                                        ->scalarNode('edit')->defaultValue('RzNewsBundle:CRUD:edit.html.twig')->cannotBeEmpty()->end()
                                     ->end()
                                 ->end()
                             ->end()
