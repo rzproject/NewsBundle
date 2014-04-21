@@ -34,6 +34,11 @@ class RecentPostsBlockService extends BaseRecentPostsBlockService
                         'admin'  => 'admin'
                     )
                 )),
+                array('show_view_all_button', 'choice', array(
+                    'choices' => array(
+                        'true' => 'True',
+                        'false'  => 'False'
+                    ))),
                 array('block_type', 'choice', array(
                     'choices' => array(
                         'sidebar'  => 'sidebar',
@@ -65,6 +70,7 @@ class RecentPostsBlockService extends BaseRecentPostsBlockService
             'mode'       => 'public',
             'title'      => 'Recent Posts',
             'block_type' => 'sidebar',
+            'show_view_all_button' => true,
 //            'tags'      => 'Recent Posts',
             'template'   => 'RzNewsBundle:Block:recent_posts.html.twig'
         ));
