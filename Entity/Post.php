@@ -9,6 +9,7 @@ abstract class Post extends BasePost
 {
     /**
      * @param mixed $image
+     * @return mixed|void
      */
     public function setImage ($image)
     {

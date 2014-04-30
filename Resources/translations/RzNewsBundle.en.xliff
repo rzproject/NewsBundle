@@ -22,6 +22,10 @@
                 <source>no_post_found</source>
                 <target>No post found.</target>
             </trans-unit>
+            <trans-unit id="sidemenu.link_edit_post">
+                <source>sidemenu.link_edit_post</source>
+                <target>Post</target>
+            </trans-unit>
             <trans-unit id="sidemenu.link_view_post">
                 <source>sidemenu.link_view_post</source>
                 <target>View</target>

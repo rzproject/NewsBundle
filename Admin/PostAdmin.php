@@ -53,8 +53,6 @@ class PostAdmin extends BaseAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $commentClass = $this->commentManager->getClass();
-
         $formMapper
             ->with('General')
                 ->add('enabled', null, array('required' => false))
@@ -86,7 +84,7 @@ class PostAdmin extends BaseAdmin
                 ->add('publicationDateStart')
                 ->add('commentsCloseAt')
                 ->add('commentsEnabled', null, array('required' => false))
-                ->add('commentsDefaultStatus', 'choice', array('choices' => $commentClass::getStatusList(), 'expanded' => true))
+                ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
             ->end()
         ;
     }
