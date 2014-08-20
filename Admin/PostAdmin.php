@@ -16,6 +16,8 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Knp\Menu\ItemInterface as MenuItemInterface;
+use Sonata\AdminBundle\Admin\AdminInterface;
 
 class PostAdmin extends BaseAdmin
 {
@@ -115,5 +117,36 @@ class PostAdmin extends BaseAdmin
                                           'field_type' => 'checkbox'
                                       ))
         ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+    {
+//        if (!$childAdmin && !in_array($action, array('edit'))) {
+//            return;
+//        }
+//
+//        $admin = $this->isChild() ? $this->getParent() : $this;
+//
+//        $id = $admin->getRequest()->get('id');
+//
+//        $menu->addChild(
+//            $this->trans('sidemenu.link_edit_post'),
+//            array('uri' => $admin->generateUrl('edit', array('id' => $id)))
+//        );
+//
+//        $menu->addChild(
+//            $this->trans('sidemenu.link_view_comments'),
+//            array('uri' => $admin->generateUrl('sonata.news.admin.comment.list', array('id' => $id)))
+//        );
+//
+//        if ($this->hasSubject() && $this->getSubject()->getId() !== null) {
+//            $menu->addChild(
+//                $this->trans('sidemenu.link_view_post'),
+//                array('uri' => $admin->getRouteGenerator()->generate('sonata_news_view', array('permalink' => $this->permalinkGenerator->generate($this->getSubject()))))
+//            );
+//        }
     }
 }

@@ -33,6 +33,7 @@ class RzNewsExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+        $bundles = $container->getParameter('kernel.bundles');
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('admin_orm.xml');
@@ -49,6 +50,10 @@ class RzNewsExtension extends Extension
         $this->configureRzTemplates($config, $container);
         $this->registerService($config, $container);
         $this->configureBlocks($config, $container);
+
+        if (isset($bundles['IvoryLuceneSearchBundle'])) {
+            $loader->load('lucene.xml');
+        }
     }
 
     /**
@@ -165,6 +170,12 @@ class RzNewsExtension extends Extension
      * @return void
      */
     public function configureBlocks($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.block.recent_posts', $config['blocks']['class']['recent_posts']);
+        $container->setParameter('rz_news.block.recent_comments', $config['blocks']['class']['recent_comments']);
+    }
+
+    public function configureIndex($config, ContainerBuilder $container)
     {
         $container->setParameter('rz_news.block.recent_posts', $config['blocks']['class']['recent_posts']);
         $container->setParameter('rz_news.block.recent_comments', $config['blocks']['class']['recent_comments']);

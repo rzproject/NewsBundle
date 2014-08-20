@@ -11,25 +11,13 @@ file that was distributed with this source code.
 
 {% extends 'SonataAdminBundle:CRUD:base_edit.html.twig' %}
 
-
-{% block stylesheets %}
-    {{ parent() }}
-    {# fileupoad #}
-    <link href="{{ asset('bundles/rmzamorabootstrap/plugins/fileupload/css/fileupload.css') }}" type="text/css" media="all" rel="stylesheet">
-{% endblock stylesheets %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {# fileupload #}
-    <script src="{{ asset('bundles/rmzamorabootstrap/plugins/fileupload/js/fileupload.js') }}" type="text/javascript"></script>
-{% endblock javascripts %}
-
-
 {% block actions %}
     <div class="row-fluid admin-action-buttons">
         <div class="span12">
             <div class="sonata-actions btn-group hidden-phone hidden-tablet visible-desktop pull-right">
-                {% include 'RzNewsBundle:CRUD:buttons.html.twig' %}
+                {% if admin.isChild %}
+                {% include 'RzNewsBundle:CommentAdmin:buttons.html.twig' %}
+                {% endif %}
                 {% include 'SonataAdminBundle:Button:show_button.html.twig' %}
                 {% include 'SonataAdminBundle:Button:history_button.html.twig' %}
                 {% include 'SonataAdminBundle:Button:create_button.html.twig' %}
@@ -39,7 +27,9 @@ file that was distributed with this source code.
                 <button class="btn btn-primary admin-actions admin-actions-group">Select an action to perform</button>
                 <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle admin-actions"><i class=" icon-chevron-down"></i></button>
                 <ul class="dropdown-menu">
-                    {% include 'RzNewsBundle:CRUD:buttons_mobile.html.twig' %}
+                    {% if admin.isChild %}
+                    {% include 'RzNewsBundle:CommentAdmin:buttons_mobile.html.twig' %}
+                    {% endif %}
                     {% include 'SonataAdminBundle:Button:show_button_mobile.html.twig' %}
                     {% include 'SonataAdminBundle:Button:history_button_mobile.html.twig' %}
                     {% include 'SonataAdminBundle:Button:create_button_mobile.html.twig' %}
