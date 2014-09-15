@@ -56,13 +56,13 @@ class PostAdmin extends BaseAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->with('General')
+            ->with('Post')
                 ->add('enabled', null, array('required' => false))
                 ->add('author', 'sonata_type_model_list')
                 ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
                 ->add('title', null, array('attr'=>array('class'=>'span12')))
                 ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
-                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')))
+                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news')))
                 ->add('content', 'sonata_formatter_type', array(
                            'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
                            'format_field'   => 'contentFormatter',
@@ -82,9 +82,10 @@ class PostAdmin extends BaseAdmin
                     'attr'=>array('class'=>'span12'),
                     ))
             ->end()
-            ->with('Options')
-                ->add('publicationDateStart')
+            ->with('Status')
+                ->add('enabled', null, array('required' => false))
                 ->add('commentsCloseAt')
+                ->add('commentsEnabled', null, array('required' => false))
                 ->add('commentsEnabled', null, array('required' => false))
                 ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
             ->end()
