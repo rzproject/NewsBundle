@@ -67,6 +67,7 @@ class PostAdmin extends BaseAdmin
                            'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
                            'format_field'   => 'contentFormatter',
                            'source_field'   => 'rawContent',
+                           'ckeditor_context' => 'news',
                            'source_field_options'      => array(
                                'attr' => array('class' => 'span12', 'rows' => 20)
                            ),
