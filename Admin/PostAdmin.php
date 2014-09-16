@@ -16,7 +16,6 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 
 class PostAdmin extends BaseAdmin
@@ -43,10 +42,17 @@ class PostAdmin extends BaseAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
+            ->add('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
             ->add('collection', null, array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('enabled', null, array('editable' => true))
             ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
+            ->add('_action', 'actions', array(
+                'actions' => array(
+                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
+                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
+                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
+                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
+            ))
         ;
     }
 
@@ -64,16 +70,16 @@ class PostAdmin extends BaseAdmin
                 ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
                 ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news')))
                 ->add('content', 'sonata_formatter_type', array(
-                           'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
-                           'format_field'   => 'contentFormatter',
-                           'source_field'   => 'rawContent',
-                           'ckeditor_context' => 'news',
-                           'source_field_options'      => array(
-                               'attr' => array('class' => 'span12', 'rows' => 20)
-                           ),
-                           'target_field'   => 'content',
-                           'listener'       => true,
-                       ))
+                        'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                        'format_field'   => 'contentFormatter',
+                        'source_field'   => 'rawContent',
+                        'ckeditor_context' => 'news',
+                        'source_field_options'      => array(
+                            'attr' => array('class' => 'span12', 'rows' => 20)
+                        ),
+                        'target_field'   => 'content',
+                        'listener'       => true,
+                ))
             ->end()
             ->with('Tags')
                 ->add('tags', 'sonata_type_model', array(
@@ -104,7 +110,6 @@ class PostAdmin extends BaseAdmin
             ->add('author', null, array('field_options' => array('selectpicker_enabled'=>true)))
             ->add('tags', null, array('field_options' => array('expanded' => false, 'multiple' => true, 'selectpicker_enabled'=>true)))
             ->add('with_open_comments', 'doctrine_orm_callback', array(
-//                'callback'   => array($this, 'getWithOpenCommentFilter'),
                                           'callback' => function ($queryBuilder, $alias, $field, $data) {
                                               if (!is_array($data) || !$data['value']) {
                                                   return;
@@ -119,36 +124,5 @@ class PostAdmin extends BaseAdmin
                                           'field_type' => 'checkbox'
                                       ))
         ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-    {
-//        if (!$childAdmin && !in_array($action, array('edit'))) {
-//            return;
-//        }
-//
-//        $admin = $this->isChild() ? $this->getParent() : $this;
-//
-//        $id = $admin->getRequest()->get('id');
-//
-//        $menu->addChild(
-//            $this->trans('sidemenu.link_edit_post'),
-//            array('uri' => $admin->generateUrl('edit', array('id' => $id)))
-//        );
-//
-//        $menu->addChild(
-//            $this->trans('sidemenu.link_view_comments'),
-//            array('uri' => $admin->generateUrl('sonata.news.admin.comment.list', array('id' => $id)))
-//        );
-//
-//        if ($this->hasSubject() && $this->getSubject()->getId() !== null) {
-//            $menu->addChild(
-//                $this->trans('sidemenu.link_view_post'),
-//                array('uri' => $admin->getRouteGenerator()->generate('sonata_news_view', array('permalink' => $this->permalinkGenerator->generate($this->getSubject()))))
-//            );
-//        }
     }
 }
