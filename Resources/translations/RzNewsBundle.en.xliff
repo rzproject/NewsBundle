@@ -412,8 +412,6 @@ Quick moderation links :
                 <source>breadcrumb.link_post_history</source>
                 <target>History</target>
             </trans-unit>
-
-
         </body>
     </file>
 </xliff>
