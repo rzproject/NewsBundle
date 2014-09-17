@@ -51,6 +51,8 @@ class RzNewsExtension extends Extension
         $this->registerService($config, $container);
         $this->configureBlocks($config, $container);
 
+        $this->configureSettings($config, $container);
+
         if (isset($bundles['IvoryLuceneSearchBundle'])) {
             $loader->load('lucene.xml');
         }
@@ -179,5 +181,10 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz_news.block.recent_posts', $config['blocks']['class']['recent_posts']);
         $container->setParameter('rz_news.block.recent_comments', $config['blocks']['class']['recent_comments']);
+    }
+
+    public function configureSettings($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.settings.news_pager_max_per_page', $config['settings']['news_pager_max_per_page']);
     }
 }

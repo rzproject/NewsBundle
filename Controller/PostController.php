@@ -429,7 +429,7 @@ class PostController extends Controller
 
 
         $pager = $this->getPostManager()->getNewsPager($criteria);
-        $pager->setMaxPerPage(1);
+        $pager->setMaxPerPage($this->container->hasParameter('rz_news.settings.news_pager_max_per_page')?$this->container->getParameter('rz_news.settings.news_pager_max_per_page'): 5);
         $pager->setCurrentPage($page, false, true);
         return $pager;
     }
