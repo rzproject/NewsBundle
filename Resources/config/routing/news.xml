@@ -16,15 +16,38 @@
         <requirement key="month">\d+</requirement>
     </route>
 
+    <route id="sonata_news_archive_monthly_pager" pattern="/posts/{year}/{month}/page/{page}.{_format}">
+        <default key="_controller">SonataNewsBundle:Post:archiveMonthlyPager</default>
+        <default key="_format">html</default>
+        <requirement key="_format">html|rss</requirement>
+        <requirement key="page">\d+</requirement>
+        <requirement key="year">\d+</requirement>
+        <requirement key="month">\d+</requirement>
+    </route>
+
     <route id="sonata_news_tag" pattern="/tag/{tag}.{_format}">
         <default key="_controller">SonataNewsBundle:Post:tag</default>
         <default key="_format">html</default>
         <requirement key="_format">html|rss</requirement>
     </route>
 
+    <route id="sonata_news_tag_pager" pattern="/tag/{tag}/page/{page}.{_format}">
+        <default key="_controller">SonataNewsBundle:Post:tagPager</default>
+        <default key="_format">html</default>
+        <requirement key="page">\d+</requirement>
+        <requirement key="_format">html|rss</requirement>
+    </route>
+
     <route id="sonata_news_collection" pattern="/collection/{collection}.{_format}">
         <default key="_controller">SonataNewsBundle:Post:collection</default>
         <default key="_format">html</default>
+        <requirement key="_format">html|rss</requirement>
+    </route>
+
+    <route id="sonata_news_collection_pager" pattern="/collection/{collection}/page/{page}.{_format}">
+        <default key="_controller">SonataNewsBundle:Post:collectionPager</default>
+        <default key="_format">html</default>
+        <requirement key="page">\d+</requirement>
         <requirement key="_format">html|rss</requirement>
     </route>
 
@@ -35,9 +58,24 @@
         <requirement key="year">\d+</requirement>
     </route>
 
+    <route id="sonata_news_archive_yearly_pager" pattern="/archive/{year}/page/{page}.{_format}">
+        <default key="_controller">SonataNewsBundle:Post:archiveYearlyPager</default>
+        <default key="_format">html</default>
+        <requirement key="page">\d+</requirement>
+        <requirement key="_format">html|rss</requirement>
+        <requirement key="year">\d+</requirement>
+    </route>
+
     <route id="sonata_news_archive" pattern="/posts.{_format}">
         <default key="_controller">SonataNewsBundle:Post:archive</default>
         <default key="_format">html</default>
+        <requirement key="_format">html|rss</requirement>
+    </route>
+
+    <route id="sonata_news_archive_pager" pattern="/posts/page/{page}.{_format}">
+        <default key="_controller">SonataNewsBundle:Post:archivePager</default>
+        <default key="_format">html</default>
+        <requirement key="page">\d+</requirement>
         <requirement key="_format">html|rss</requirement>
     </route>
 

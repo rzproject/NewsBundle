@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sonata\NewsBundle\Model\CommentInterface;
 use Sonata\NewsBundle\Model\PostInterface;
 
+/**
+ * Class PostController
+ * @package Rz\NewsBundle\Controller
+ */
 class PostController extends Controller
 {
     /**
@@ -23,31 +27,14 @@ class PostController extends Controller
     }
 
     /**
-     * @param array $criteria
      * @param array $parameters
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function renderArchive(array $criteria = array(), array $parameters = array())
+    public function renderNewsArchive(array $parameters = array())
     {
-
         $request = $this->get('request_stack')->getCurrentRequest();
-
-        $pager = $this->getPostManager()->getPager(
-            $criteria,
-            $this->getRequest()->get('page', 1)
-        );
-
-        $parameters = array_merge(array(
-            'pager' => $pager,
-            'blog'  => $this->get('sonata.news.blog'),
-            'tag'   => false,
-            'route' => $request->get('_route'),
-            'route_parameters' => $request->get('_route_params')
-        ), $parameters);
-
-        $response = $this->render(sprintf('SonataNewsBundle:Post:archive.%s.twig', $this->getRequest()->getRequestFormat()), $parameters);
-
+        $response = $this->render(sprintf('RzNewsBundle:Post:archive.%s.twig', $request->getRequestFormat()), $parameters);
         if ('rss' === $request->getRequestFormat()) {
             $response->headers->set('Content-Type', 'application/rss+xml');
         }
@@ -59,9 +46,21 @@ class PostController extends Controller
      * @param int $page
      * @return Response
      */
-    public function archiveAction($page = 1)
+    public function archiveAction()
     {
-        return $this->renderArchive(array(), array('page'=>$page));
+        $pager = $this->fetchNews(array());
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'archive')));
+
+    }
+
+    /**
+     * @param int $page
+     * @return Response
+     */
+    public function archivePagerAction($page = 1)
+    {
+        $pager = $this->fetchNews(array('page' => $page));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'archive')));
     }
 
     /**
@@ -86,7 +85,35 @@ class PostController extends Controller
             throw new NotFoundHttpException('Unable to find the tag');
         }
 
-        return $this->renderArchive(array('tag' => $tag), array('tag' => $tag));
+        $pager = $this->fetchNews(array('tag' => $tag));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type'=>'tags')));
+    }
+
+    /**
+     * @param $page
+     * @param string $tag
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     */
+    public function tagPagerAction($page, $tag)
+    {
+        $tag = $this->get('sonata.classification.manager.tag')->findOneBy(array(
+            'slug' => $tag,
+            'enabled' => true
+        ));
+
+        if (!$tag) {
+            throw new NotFoundHttpException('Unable to find the tag');
+        }
+
+        if (!$tag->getEnabled()) {
+            throw new NotFoundHttpException('Unable to find the tag');
+        }
+
+        $pager = $this->fetchNews(array('tag' => $tag, 'page' => $page));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type'=>'tags')));
     }
 
     /**
@@ -111,7 +138,35 @@ class PostController extends Controller
             throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        return $this->renderArchive(array('collection' => $collection), array('collection' => $collection));
+        $pager = $this->fetchNews(array('collection' => $collection));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('$collection' => $collection, 'type'=>'collection')));
+    }
+
+    /**
+     * @param $page
+     * @param $collection
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     */
+    public function collectionPagerAction($page, $collection)
+    {
+        $collection = $this->get('sonata.classification.manager.collection')->findOneBy(array(
+            'slug' => $collection,
+            'enabled' => true
+        ));
+
+        if (!$collection) {
+            throw new NotFoundHttpException('Unable to find the collection');
+        }
+
+        if (!$collection->getEnabled()) {
+            throw new NotFoundHttpException('Unable to find the collection');
+        }
+
+        $pager = $this->fetchNews(array('collection' => $collection, 'page'=>$page));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('$collection' => $collection, 'type'=>'collection')));
     }
 
     /**
@@ -122,9 +177,16 @@ class PostController extends Controller
      */
     public function archiveMonthlyAction($year, $month)
     {
-        return $this->renderArchive(array(
-            'date' => $this->getPostManager()->getPublicationDateQueryParts(sprintf('%d-%d-%d', $year, $month, 1), 'month')
-        ));
+        $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, $month, 1), 'month')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'monthly')));
+    }
+
+    /**
+     *
+     */
+    public function archiveMonthlyPagerAction($page, $year, $month) {
+        $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, $month, 1), 'month'), 'page' => $page));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'monthly')));
     }
 
     /**
@@ -134,9 +196,24 @@ class PostController extends Controller
      */
     public function archiveYearlyAction($year)
     {
-        return $this->renderArchive(array(
-            'date' => $this->getPostManager()->getPublicationDateQueryParts(sprintf('%d-%d-%d', $year, 1, 1), 'year')
-        ));
+
+        $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, 1, 1), 'year')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'yearly')));
+
+    }
+
+    /**
+     * @param $page
+     * @param string $year
+     *
+     * @return Response
+     */
+    public function archiveYearlyPagerAction($page, $year)
+    {
+
+        $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, 1, 1), 'year'), 'page' => $page));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'yearly')));
+
     }
 
     /**
@@ -339,5 +416,33 @@ class PostController extends Controller
         return new RedirectResponse($this->generateUrl('sonata_news_view', array(
             'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($comment->getPost())
         )));
+    }
+
+    protected function fetchNews(array $criteria = array()) {
+
+        if(array_key_exists('page', $criteria)) {
+            $page = $criteria['page'];
+            unset($criteria['page']);
+        } else {
+            $page = 1;
+        }
+
+
+        $pager = $this->getPostManager()->getNewsPager($criteria);
+        $pager->setMaxPerPage(1);
+        $pager->setCurrentPage($page, false, true);
+        return $pager;
+    }
+
+    protected function buildParameters($pager, $request, $parameters = array()) {
+
+        return array_merge(array(
+            'pager' => $pager,
+            'blog'  => $this->get('sonata.news.blog'),
+            'tag'   => false,
+            'route' => $request->get('_route'),
+            'route_parameters' => $request->get('_route_params'),
+            'type'  => 'none')
+            ,$parameters);
     }
 }
