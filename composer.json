@@ -14,7 +14,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "rmzamora/news-bundle": "~2.3",
+        "rmzamora/news-bundle": "2.3.5",
         "rz/admin-bundle": "~1.0",
         "rz/user-bundle":  "~1.0",
         "rz/media-bundle": "~1.0",
