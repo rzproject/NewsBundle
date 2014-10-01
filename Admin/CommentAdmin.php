@@ -34,8 +34,7 @@ class CommentAdmin extends BaseCommentAdmin
             ->add('name')
             ->add('email')
             ->add('url', null, array('required' => false))
-            //->add('message', 'rz_ckeditor', array('config_name'=>'minimal_editor'))
-            ->add('message', 'ckeditor', array('config_name'=>'minimal_editor'))
+            ->add('message', 'rz_ckeditor', array('config_name'=>'minimal_editor'))
             ->add('status', 'choice', array('choices' => $commentClass::getStatusList(), 'expanded' => true, 'multiple' => false))
         ;
     }
