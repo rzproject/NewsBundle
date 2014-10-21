@@ -64,11 +64,11 @@ class PostAdmin extends BaseAdmin
         $formMapper
             ->with('Post')
                 ->add('enabled', null, array('required' => false))
-                ->add('author', 'sonata_type_model_list')
+                ->add('author', 'sonata_type_model_list', array('validation_groups' => 'Default'))
                 ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
                 ->add('title', null, array('attr'=>array('class'=>'span12')))
                 ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
-                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news')))
+                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
                 ->add('content', 'sonata_formatter_type', array(
                         'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
                         'format_field'   => 'contentFormatter',
