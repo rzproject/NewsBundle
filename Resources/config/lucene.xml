@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:doctrine="http://symfony.com/schema/dic/doctrine">
+    <services>
+        <service id="rz_news.lucene.post.listener" class="Rz\NewsBundle\EventListener\PostIndexListener">
+            <argument type="service" id="ivory_lucene_search" />
+            <tag name="doctrine.event_listener" event="postPersist"  />
+            <tag name="doctrine.event_listener" event="preUpdate"  />
+        </service>
+    </services>
+</container>

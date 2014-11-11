@@ -11,58 +11,71 @@ file that was distributed with this source code.
 {% extends sonata_block.templates.block_base %}
 
 {% block block %}
-    {% if settings.block_type is defined and settings.block_type == 'sidebar' %}
-        {% if settings.title %}
-            <h3 class="sonata-news-block-recent-comment">{{ settings.title }}</h3>
-        {% endif %}
-        <ul class="media-list blog recent-comment-sidebar">
-            {% for comment in pager.getResults() %}
-                <li>
-                    <p><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(comment.post) }) }}">{{ comment.message|truncate(120) }}</a></p>
-                    <small><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(comment.post) }) }}">- {{ comment.name }} | {{ comment.createdAt | format_date }}</a></small>
-                </li>
-            {% else %}
-                <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>
-            {% endfor %}
-        </ul>
-        <div class="pad20"></div>
+    {% if context.getSetting('mode') == 'admin' %}
+        <div class="box box-color box-bordered green">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    {% if settings.title %}<h3 class="sonata-news-block-recent-comment">{{ settings.title }}</h3>{% endif %}
+                </h3>
+            </div>
+            <div class="box-content">
+                <ul class="sonata-blog-post-container rz-block-news-comment-container">
+                {% for comment in pager.getResults() %}
+                        <li>
+                            <h5 class="comment-title">
+                                <a href="{{ url('admin_sonata_news_comment_edit', { 'id': comment.id }) }}">{{ comment.name }} - {{ comment.message|truncate(30) }}</a>
+
+                                {% if comment.status == constant('Sonata\\NewsBundle\\Model\\CommentInterface::STATUS_INVALID') %}
+                                    <span class="label label-important">{{ 'label_comment_invalid'|trans({}, 'SonataNewsBundle') }}</span>
+                                {% elseif comment.status == constant('Sonata\\NewsBundle\\Model\\CommentInterface::STATUS_VALID') %}
+                                    <span class="label label-success">{{ 'label_comment_valid'|trans({}, 'SonataNewsBundle') }}</span>
+                                {% elseif comment.status == constant('Sonata\\NewsBundle\\Model\\CommentInterface::STATUS_MODERATE') %}
+                                    <span class="label label-warning">{{ 'label_comment_moderate'|trans({}, 'SonataNewsBundle') }}</span>
+                                {% else %}
+                                    <span class="label">{{ 'label_unknown_status'|trans({}, 'SonataNewsBundle') }}</span>
+                                {% endif %}
+                            </h5>
+                        </li>
+                {% else %}
+                    <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>
+                {% endfor %}
+                </ul>
+                <a href="{{ url('admin_sonata_news_comment_list') }}" class="btn pull-right"><i class="icon-list icon-white"></i> {{ 'view_all_comments'|trans({}, 'SonataNewsBundle') }}</a>
+            </div>
+        </div>
     {% else %}
-    <div class="sonata-news-block-recent-comment rz-block-news-recent-comment">
-        {% if settings.title %}
-            <h3 class="sonata-news-block-recent-comment">{{ settings.title }}</h3>
-        {% endif %}
-
-        <ul class="sonata-blog-post-container rz-block-news-comment-container">
-            {% for comment in pager.getResults() %}
-                {% if context.getSetting('mode') == 'admin' %}
+        {% if settings.block_type is defined and settings.block_type == 'sidebar' %}
+            {% if settings.title %}
+                <h3 class="sonata-news-block-recent-comment">{{ settings.title }}</h3>
+            {% endif %}
+            <ul class="media-list blog recent-comment-sidebar">
+                {% for comment in pager.getResults() %}
                     <li>
-                        <h5 class="comment-title">
-                            <a href="{{ url('admin_sonata_news_comment_edit', { 'id': comment.id }) }}">{{ comment.name }} - {{ comment.message|truncate(30) }}</a>
-
-                        {% if comment.status == constant('Sonata\\NewsBundle\\Model\\CommentInterface::STATUS_INVALID') %}
-                            <span class="label label-important">{{ 'label_comment_invalid'|trans({}, 'SonataNewsBundle') }}</span>
-                        {% elseif comment.status == constant('Sonata\\NewsBundle\\Model\\CommentInterface::STATUS_VALID') %}
-                            <span class="label label-success">{{ 'label_comment_valid'|trans({}, 'SonataNewsBundle') }}</span>
-                        {% elseif comment.status == constant('Sonata\\NewsBundle\\Model\\CommentInterface::STATUS_MODERATE') %}
-                            <span class="label label-warning">{{ 'label_comment_moderate'|trans({}, 'SonataNewsBundle') }}</span>
-                        {% else %}
-                            <span class="label">{{ 'label_unknown_status'|trans({}, 'SonataNewsBundle') }}</span>
-                        {% endif %}
-                        </h5>
+                        <p><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(comment.post) }) }}">{{ comment.message|truncate(120) }}</a></p>
+                        <small><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(comment.post) }) }}">- {{ comment.name }} | {{ comment.createdAt | format_date }}</a></small>
                     </li>
                 {% else %}
-                    <li>
-                        <a href="{{ url('admin_sonata_news_comment_edit', { 'id': comment.id }) }}">{{ comment.name }} - {{ comment.message|truncate(30) }}</a>
-                    </li>
-                {% endif %}
-            {% else %}
-                <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>
-            {% endfor %}
-        </ul>
+                    <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>
+                {% endfor %}
+            </ul>
+            <div class="pad20"></div>
+        {% else %}
+        <div class="sonata-news-block-recent-comment rz-block-news-recent-comment">
+            {% if settings.title %}
+                <h3 class="sonata-news-block-recent-comment">{{ settings.title }}</h3>
+            {% endif %}
 
-        {% if context.getSetting('mode') == 'admin' %}
-            <a href="{{ url('admin_sonata_news_comment_list') }}" class="btn pull-right"><i class="icon-list icon-white"></i> {{ 'view_all_comments'|trans({}, 'SonataNewsBundle') }}</a>
+            <ul class="sonata-blog-post-container rz-block-news-comment-container">
+                {% for comment in pager.getResults() %}
+                        <li>
+                            <a href="{{ url('admin_sonata_news_comment_edit', { 'id': comment.id }) }}">{{ comment.name }} - {{ comment.message|truncate(30) }}</a>
+                        </li>
+                {% else %}
+                    <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
-    </div>
     {% endif %}
 {% endblock %}

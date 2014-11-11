@@ -22,6 +22,10 @@
                 <source>no_post_found</source>
                 <target>No post found.</target>
             </trans-unit>
+            <trans-unit id="sidemenu.link_edit_post">
+                <source>sidemenu.link_edit_post</source>
+                <target>Post</target>
+            </trans-unit>
             <trans-unit id="sidemenu.link_view_post">
                 <source>sidemenu.link_view_post</source>
                 <target>View</target>
@@ -371,6 +375,42 @@ Quick moderation links :
             <trans-unit id="form.label_image">
                 <source>form.label_image</source>
                 <target>Image</target>
+            </trans-unit>
+            <trans-unit id="filter.label_post">
+                <source>filter.label_post</source>
+                <target>Post</target>
+            </trans-unit>
+            <trans-unit id="list.label__action">
+                <source>list.label__action</source>
+                <target>Actions</target>
+            </trans-unit>
+            <trans-unit id="show.label_author">
+                <source>show.label_author</source>
+                <target>Author</target>
+            </trans-unit>
+            <trans-unit id="show.label_enabled">
+                <source>show.label_enabled</source>
+                <target>Enabled</target>
+            </trans-unit>
+            <trans-unit id="show.label_title">
+                <source>show.label_title</source>
+                <target>Title</target>
+            </trans-unit>
+            <trans-unit id="show.label_abstract">
+                <source>show.label_abstract</source>
+                <target>Abstract</target>
+            </trans-unit>
+            <trans-unit id="show.label_content">
+                <source>show.label_content</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="show.label_tags">
+                <source>show.label_tags</source>
+                <target>Tags</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_post_history">
+                <source>breadcrumb.link_post_history</source>
+                <target>History</target>
             </trans-unit>
         </body>
     </file>

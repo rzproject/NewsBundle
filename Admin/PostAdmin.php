@@ -16,6 +16,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\AdminBundle\Admin\AdminInterface;
 
 class PostAdmin extends BaseAdmin
 {
@@ -41,10 +42,17 @@ class PostAdmin extends BaseAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
+            ->add('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
             ->add('collection', null, array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('enabled', null, array('editable' => true))
             ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
+            ->add('_action', 'actions', array(
+                'actions' => array(
+                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
+                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
+                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
+                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
+            ))
         ;
     }
 
@@ -53,26 +61,25 @@ class PostAdmin extends BaseAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $commentClass = $this->commentManager->getClass();
-
         $formMapper
-            ->with('General')
+            ->with('Post')
                 ->add('enabled', null, array('required' => false))
-                ->add('author', 'sonata_type_model_list')
+                ->add('author', 'sonata_type_model_list', array('validation_groups' => 'Default'))
                 ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
                 ->add('title', null, array('attr'=>array('class'=>'span12')))
                 ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
-                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')))
+                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
                 ->add('content', 'sonata_formatter_type', array(
-                           'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
-                           'format_field'   => 'contentFormatter',
-                           'source_field'   => 'rawContent',
-                           'source_field_options'      => array(
-                               'attr' => array('class' => 'span12', 'rows' => 20)
-                           ),
-                           'target_field'   => 'content',
-                           'listener'       => true,
-                       ))
+                        'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                        'format_field'   => 'contentFormatter',
+                        'source_field'   => 'rawContent',
+                        'ckeditor_context' => 'news',
+                        'source_field_options'      => array(
+                            'attr' => array('class' => 'span12', 'rows' => 20)
+                        ),
+                        'target_field'   => 'content',
+                        'listener'       => true,
+                ))
             ->end()
             ->with('Tags')
                 ->add('tags', 'sonata_type_model', array(
@@ -82,11 +89,12 @@ class PostAdmin extends BaseAdmin
                     'attr'=>array('class'=>'span12'),
                     ))
             ->end()
-            ->with('Options')
-                ->add('publicationDateStart')
+            ->with('Status')
+                ->add('enabled', null, array('required' => false))
                 ->add('commentsCloseAt')
                 ->add('commentsEnabled', null, array('required' => false))
-                ->add('commentsDefaultStatus', 'choice', array('choices' => $commentClass::getStatusList(), 'expanded' => true))
+                ->add('commentsEnabled', null, array('required' => false))
+                ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
             ->end()
         ;
     }
@@ -102,7 +110,6 @@ class PostAdmin extends BaseAdmin
             ->add('author', null, array('field_options' => array('selectpicker_enabled'=>true)))
             ->add('tags', null, array('field_options' => array('expanded' => false, 'multiple' => true, 'selectpicker_enabled'=>true)))
             ->add('with_open_comments', 'doctrine_orm_callback', array(
-//                'callback'   => array($this, 'getWithOpenCommentFilter'),
                                           'callback' => function ($queryBuilder, $alias, $field, $data) {
                                               if (!is_array($data) || !$data['value']) {
                                                   return;
