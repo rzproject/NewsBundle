@@ -66,8 +66,8 @@ class PostAdmin extends BaseAdmin
                 ->add('enabled', null, array('required' => false))
                 ->add('author', 'sonata_type_model_list', array('validation_groups' => 'Default'))
                 ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
-                ->add('title', null, array('attr'=>array('class'=>'span12')))
-                ->add('abstract', null, array('attr' => array('class' => 'span12', 'rows' => 5)))
+                ->add('title', null)
+                ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
                 ->add('content', 'sonata_formatter_type', array(
                         'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
@@ -75,7 +75,7 @@ class PostAdmin extends BaseAdmin
                         'source_field'   => 'rawContent',
                         'ckeditor_context' => 'news',
                         'source_field_options'      => array(
-                            'attr' => array('class' => 'span12', 'rows' => 20)
+                            'attr' => array('rows' => 20)
                         ),
                         'target_field'   => 'content',
                         'listener'       => true,
@@ -85,8 +85,7 @@ class PostAdmin extends BaseAdmin
                 ->add('tags', 'sonata_type_model', array(
                     'required' => false,
                     'multiple' => true,
-                    'select2'=>true,
-                    'attr'=>array('class'=>'span12'),
+                    'select2'=>true
                     ))
             ->end()
             ->with('Status')
