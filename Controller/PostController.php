@@ -34,16 +34,17 @@ class PostController extends Controller
     public function renderNewsArchive(array $parameters = array())
     {
         $request = $this->get('request_stack')->getCurrentRequest();
-        $response = $this->render(sprintf('RzNewsBundle:Post:archive.%s.twig', $request->getRequestFormat()), $parameters);
+
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        $response = $this->render($template[sprintf('rz_news.template.archive_%s', $request->getRequestFormat())], $parameters);
         if ('rss' === $request->getRequestFormat()) {
             $response->headers->set('Content-Type', 'application/rss+xml');
         }
-
         return $response;
     }
 
     /**
-     * @param int $page
+     * @internal param int $page
      * @return Response
      */
     public function archiveAction()
@@ -244,7 +245,8 @@ class PostController extends Controller
             ;
         }
 
-        return $this->render('SonataNewsBundle:Post:view.html.twig', array(
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $this->render($template['rz_news.template.view'], array(
             'post' => $post,
             'form' => false,
             'blog' => $this->get('sonata.news.blog')
@@ -276,7 +278,8 @@ class PostController extends Controller
                 'status'  => CommentInterface::STATUS_VALID
             ), 1, 500); //no limit
 
-        return $this->render('SonataNewsBundle:Post:comments.html.twig', array(
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $this->render($template['rz_news.template.comments'], array(
             'pager'  => $pager,
         ));
     }
@@ -297,7 +300,8 @@ class PostController extends Controller
             $form = $this->getCommentForm($post);
         }
 
-        return $this->render('SonataNewsBundle:Post:comment_form.html.twig', array(
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $this->render($template['rz_news.template.comment_form'], array(
             'form'      => $form->createView(),
             'post_id'   => $postId
         ));
@@ -356,7 +360,8 @@ class PostController extends Controller
             )));
         }
 
-        return $this->render('SonataNewsBundle:Post:view.html.twig', array(
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $this->render($template['rz_news.template.view'], array(
             'post' => $post,
             'form' => $form
         ));

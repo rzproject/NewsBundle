@@ -52,10 +52,6 @@ class RzNewsExtension extends Extension
         $this->configureBlocks($config, $container);
 
         $this->configureSettings($config, $container);
-
-        if (isset($bundles['IvoryLuceneSearchBundle'])) {
-            $loader->load('lucene.xml');
-        }
     }
 
     /**
@@ -154,6 +150,7 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz_news.configuration.post.templates', $config['admin']['post']['templates']);
         $container->setParameter('rz_news.configuration.comment.templates', $config['admin']['comment']['templates']);
+        $container->setParameter('rz_news.templates', $config['templates']);
     }
 
     protected function registerService(array $config, ContainerBuilder $container)
