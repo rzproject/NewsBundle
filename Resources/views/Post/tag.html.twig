@@ -1,12 +1,11 @@
 {% extends rz_admin_get_template('rz_news.template.news_layout_html') %}
 
-
 {% block post_title %}
-<h1 class="blog"><a href="{{ url('rz_news_category_view', { 'category':  permalink, 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
+<h1 class="blog"><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
 {% endblock post_title %}
 
 {% block post_read_more %}
-<h4><a href="{{ url('rz_news_category_view', { 'category':  permalink, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
+<h4><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
 {% endblock post_read_more %}
 
 {% block post_paginator %}
@@ -17,14 +16,15 @@
                 {% if pager.hasPreviousPage %}
                 <li class="pull-left">
                     <a class="btn btn-rzcms-theme"
-                       href="{{ url('rz_news_category_pager',{'page': pager.previousPage, 'permalink': permalink }) }}"
+                       href="{{ url('rz_news_tag_pager',{'page': pager.previousPage, 'tag': tag.slug }) }}"
                        title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
                     </a>
+                </li>
                 {% endif %}
                 {% if pager.hasNextPage %}
                 <li class="pull-right">
                     <a class="btn btn-rzcms-theme"
-                       href="{{ url('rz_news_category_pager', {'page': pager.nextPage, 'permalink': permalink }) }}"
+                       href="{{ url('rz_news_tag_pager', {'page': pager.nextPage, 'tag': tag.slug }) }}"
                        title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
                     </a>
                 </li>

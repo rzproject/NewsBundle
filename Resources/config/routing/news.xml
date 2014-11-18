@@ -8,102 +8,92 @@
         <default key="_controller">RzNewsBundle:News:categoryHome</default>
     </route>
 
-    <route id="rz_news_category_pager" pattern="/category/{permalink}/page/{page}.{_format}">
-        <default key="_controller">SonataNewsBundle:News:categoryPager</default>
+    <route id="rz_news_category_view" pattern="/category/{category}/{permalink}.{_format}">
+        <default key="_controller">SonataNewsBundle:News:categoryView</default>
         <requirement key="_format">html</requirement>
+        <requirement key="category">.+</requirement>
+        <requirement key="permalink">[^/]+</requirement>
+    </route>
+
+    <route id="rz_news_category_pager" pattern="/category/{permalink}/page/{page}">
+        <default key="_controller">SonataNewsBundle:News:categoryPager</default>
         <requirement key="page">\d+</requirement>
         <requirement key="permalink">.+</requirement>
     </route>
 
-    <!--<route id="rz_news_category_view" pattern="/category/{category}/{permalink}.{_format}">-->
-        <!--<default key="_controller">SonataNewsBundle:News:categoryView</default>-->
-        <!--<requirement key="page">\d+</requirement>-->
-        <!--<requirement key="_format">html</requirement>-->
-        <!--<requirement key="category">.+</requirement>-->
-        <!--<requirement key="permalink">[^/]+</requirement>-->
-    <!--</route>-->
-
-    <route id="rz_news_category" pattern="/category/{permalink}.{_format}">
+    <route id="rz_news_category" pattern="/category/{permalink}">
         <default key="_controller">RzNewsBundle:News:category</default>
-        <requirement key="_format">html</requirement>
         <requirement key="permalink">.+</requirement>
     </route>
-
-
 
     <route id="rz_news_add_comment" pattern="/add-comment/{id}">
         <default key="_controller">SonataNewsBundle:News:addComment</default>
     </route>
 
-    <route id="rz_news_archive_monthly" pattern="/posts/{year}/{month}.{_format}">
+    <route id="rz_news_archive_monthly" pattern="/posts/{year}/{month}">
         <default key="_controller">SonataNewsBundle:News:archiveMonthly</default>
-        <default key="_format">html</default>
-        <requirement key="_format">html|rss</requirement>
         <requirement key="year">\d+</requirement>
         <requirement key="month">\d+</requirement>
     </route>
 
-    <route id="rz_news_archive_monthly_pager" pattern="/posts/{year}/{month}/page/{page}.{_format}">
+    <route id="rz_news_archive_monthly_pager" pattern="/posts/{year}/{month}/page/{page}">
         <default key="_controller">SonataNewsBundle:News:archiveMonthlyPager</default>
-        <default key="_format">html</default>
-        <requirement key="_format">html|rss</requirement>
         <requirement key="page">\d+</requirement>
         <requirement key="year">\d+</requirement>
         <requirement key="month">\d+</requirement>
     </route>
 
-    <route id="rz_news_tag" pattern="/tag/{tag}.{_format}">
+    <route id="rz_news_tag_view" pattern="/tag/{tag}/{permalink}.{_format}">
+        <default key="_controller">SonataNewsBundle:News:tagView</default>
+        <requirement key="_format">html</requirement>
+        <requirement key="tag">[^/]+</requirement>
+        <requirement key="permalink">[^/]+</requirement>
+    </route>
+
+    <route id="rz_news_tag" pattern="/tag/{tag}">
         <default key="_controller">SonataNewsBundle:News:tag</default>
-        <default key="_format">html</default>
-        <requirement key="_format">html|rss</requirement>
     </route>
 
-    <route id="rz_news_tag_pager" pattern="/tag/{tag}/page/{page}.{_format}">
+    <route id="rz_news_tag_pager" pattern="/tag/{tag}/page/{page}">
         <default key="_controller">SonataNewsBundle:News:tagPager</default>
-        <default key="_format">html</default>
         <requirement key="page">\d+</requirement>
         <requirement key="_format">html|rss</requirement>
     </route>
 
-    <route id="rz_news_collection" pattern="/collection/{collection}.{_format}">
+    <route id="rz_news_collection_view" pattern="/collection/{collection}/{permalink}.{_format}">
+        <default key="_controller">SonataNewsBundle:News:collectionView</default>
+        <requirement key="_format">html</requirement>
+        <requirement key="collection">[^/]+</requirement>
+        <requirement key="permalink">[^/]+</requirement>
+    </route>
+
+    <route id="rz_news_collection" pattern="/collection/{collection}">
         <default key="_controller">SonataNewsBundle:News:collection</default>
-        <default key="_format">html</default>
-        <requirement key="_format">html|rss</requirement>
     </route>
 
-    <route id="rz_news_collection_pager" pattern="/collection/{collection}/page/{page}.{_format}">
+    <route id="rz_news_collection_pager" pattern="/collection/{collection}/page/{page}">
         <default key="_controller">SonataNewsBundle:News:collectionPager</default>
-        <default key="_format">html</default>
         <requirement key="page">\d+</requirement>
-        <requirement key="_format">html|rss</requirement>
     </route>
 
-    <route id="rz_news_archive_yearly" pattern="/archive/{year}.{_format}">
+    <route id="rz_news_archive_yearly" pattern="/archive/{year}">
         <default key="_controller">SonataNewsBundle:News:archiveYearly</default>
-        <default key="_format">html</default>
-        <requirement key="_format">html|rss</requirement>
         <requirement key="year">\d+</requirement>
     </route>
 
-    <route id="rz_news_archive_yearly_pager" pattern="/archive/{year}/page/{page}.{_format}">
+    <route id="rz_news_archive_yearly_pager" pattern="/archive/{year}/page/{page}">
         <default key="_controller">SonataNewsBundle:News:archiveYearlyPager</default>
-        <default key="_format">html</default>
         <requirement key="page">\d+</requirement>
-        <requirement key="_format">html|rss</requirement>
         <requirement key="year">\d+</requirement>
     </route>
 
-    <route id="rz_news_archive" pattern="/posts.{_format}">
+    <route id="rz_news_archive" pattern="/posts">
         <default key="_controller">SonataNewsBundle:News:archive</default>
-        <default key="_format">html</default>
-        <requirement key="_format">html|rss</requirement>
     </route>
 
-    <route id="rz_news_archive_pager" pattern="/posts/page/{page}.{_format}">
+    <route id="rz_news_archive_pager" pattern="/posts/page/{page}">
         <default key="_controller">SonataNewsBundle:News:archivePager</default>
-        <default key="_format">html</default>
         <requirement key="page">\d+</requirement>
-        <requirement key="_format">html|rss</requirement>
     </route>
 
     <route id="rz_news_comment_moderation" pattern="/comment/moderation/{commentId}/{hash}/{status}">

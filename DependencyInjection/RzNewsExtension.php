@@ -192,6 +192,7 @@ class RzNewsExtension extends Extension
     public function configureSettings($config, ContainerBuilder $container)
     {
         $container->setParameter('rz_news.settings.news_pager_max_per_page', $config['settings']['news_pager_max_per_page']);
+        $container->setParameter('rz_news.settings.force_html_extension_on_url', $config['settings']['force_html_extension_on_url']);
     }
 
     /**

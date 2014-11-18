@@ -55,7 +55,7 @@
                 {% endfor %}
             </ul>
             {% if settings.show_view_all_button == 'true' %}
-            <a class="btn btn-rzcms-theme" href="{{ url('rz_news_archive') }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
+            <a class="btn btn-rzcms-theme" href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
             {% endif %}
             <div class="pad20"></div>
         {% else %}
@@ -71,7 +71,7 @@
                         <li>{{ 'no_post_found'|trans({}, 'SonataNewsBundle') }}</li>
                     {% endfor %}
                 </ul>
-                <a href="{{ url('rz_news_archive') }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
+                <a href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
             </div>
         {% endif %}
     {% endif %}

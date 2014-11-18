@@ -7,17 +7,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sonata\NewsBundle\Model\CommentInterface;
 use Sonata\NewsBundle\Model\PostInterface;
 
 /**
- * Class PostController
+ * Class NewsController
  * @package Rz\NewsBundle\Controller
  */
 class NewsController extends Controller
 {
+
+    const NEWS_LIST_TYPE_DEFAULT = 'archive';
+    const NEWS_LIST_TYPE_COLLECTION = 'collection';
+    const NEWS_LIST_TYPE_CATEGORY = 'category';
+    const NEWS_LIST_TYPE_TAG = 'tag';
+
+
     /**
      * @return RedirectResponse
      */
@@ -50,7 +56,7 @@ class NewsController extends Controller
     public function archiveAction()
     {
         $pager = $this->fetchNews(array());
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'archive')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest()));
 
     }
 
@@ -61,7 +67,7 @@ class NewsController extends Controller
     public function archivePagerAction($page = 1)
     {
         $pager = $this->fetchNews(array('page' => $page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'archive')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest()));
     }
 
     /**
@@ -73,21 +79,11 @@ class NewsController extends Controller
      */
     public function tagAction($tag)
     {
-        $tag = $this->get('sonata.classification.manager.tag')->findOneBy(array(
-            'slug' => $tag,
-            'enabled' => true
-        ));
-
-        if (!$tag) {
+        if(!$tag = $this->verifyTag($tag)) {
             throw new NotFoundHttpException('Unable to find the tag');
         }
 
-        if (!$tag->getEnabled()) {
-            throw new NotFoundHttpException('Unable to find the tag');
-        }
-
-        $pager = $this->fetchNews(array('tag' => $tag));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type' => 'tags')));
+        return $this->renderTagList($tag);
     }
 
     /**
@@ -98,23 +94,40 @@ class NewsController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      *
      */
-    public function tagPagerAction($page, $tag)
+    public function tagPagerAction($tag, $page)
     {
-        $tag = $this->get('sonata.classification.manager.tag')->findOneBy(array(
-            'slug' => $tag,
-            'enabled' => true
-        ));
-
-        if (!$tag) {
+        if(!$tag = $this->verifyTag($tag)) {
             throw new NotFoundHttpException('Unable to find the tag');
         }
 
-        if (!$tag->getEnabled()) {
-            throw new NotFoundHttpException('Unable to find the tag');
+        return $this->renderTagList($tag, $page);
+    }
+
+    /**
+     *
+     * @param $tag
+     * @param $permalink
+     *
+     *
+     * @throws \Exception
+     * @return Response
+     */
+    public function tagViewAction($tag, $permalink)
+    {
+
+        if(!$tag = $this->verifyTag($tag)) {
+            throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        $pager = $this->fetchNews(array('tag' => $tag, 'page' => $page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type' => 'tags')));
+        if ($post = $this->getPostManager()->findOneByPermalink($permalink, $this->container->get('sonata.news.blog'))) {
+            try {
+                return $this->renderTagView($post, $tag);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        } else {
+            throw new NotFoundHttpException('Invalid URL');
+        }
     }
 
     /**
@@ -126,22 +139,13 @@ class NewsController extends Controller
      */
     public function collectionAction($collection)
     {
-        $collection = $this->get('sonata.classification.manager.collection')->findOneBy(array(
-            'slug' => $collection,
-            'enabled' => true
-        ));
-
-        if (!$collection) {
+        if(!$collection = $this->verifyCollection($collection)) {
             throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        if (!$collection->getEnabled()) {
-            throw new NotFoundHttpException('Unable to find the collection');
-        }
-
-        $pager = $this->fetchNews(array('collection' => $collection));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection, 'type' => 'collection')));
+        return $this->renderCollectionList($collection);
     }
+
 
     /**
      * @param $page
@@ -151,23 +155,40 @@ class NewsController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      *
      */
-    public function collectionPagerAction($page, $collection)
+    public function collectionPagerAction($collection, $page)
     {
-        $collection = $this->get('sonata.classification.manager.collection')->findOneBy(array(
-            'slug' => $collection,
-            'enabled' => true
-        ));
-
-        if (!$collection) {
+        if(!$collection = $this->verifyCollection($collection)) {
             throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        if (!$collection->getEnabled()) {
+        return $this->renderCollectionList($collection, $page);
+    }
+
+    /**
+     *
+     * @param $collection
+     * @param $permalink
+     *
+     *
+     * @throws \Exception
+     * @return Response
+     */
+    public function collectionViewAction($collection, $permalink)
+    {
+
+        if(!$collection = $this->verifyCollection($collection)) {
             throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        $pager = $this->fetchNews(array('collection' => $collection, 'page' => $page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection, 'type' => 'collection')));
+        if ($post = $this->getPostManager()->findOneByPermalink($permalink, $this->container->get('sonata.news.blog'))) {
+            try {
+                return $this->renderCollectionView($post, $collection);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        } else {
+            throw new NotFoundHttpException('Invalid URL');
+        }
     }
 
     /**
@@ -384,15 +405,10 @@ class NewsController extends Controller
      * @throws \Exception
      * @return RedirectResponse
      */
-    public function categoryAction($permalink, $_format = 'html')
+    public function categoryAction($permalink)
     {
-        //TODO: custom validation for multiple category dynamic URL
-        $post = $this->getPostManager()->findOneByCategoryPermalink($permalink, $this->container->get('sonata.news.blog'));
-
-        if ($post) {
-            return $this->renderCategoryView($post, $_format);
-        }elseif ($this->verifyCategoryPermalink($permalink)) {
-            return $this->renderCategoryList($permalink);
+        if ($category = $this->verifyCategoryPermalink($permalink)) {
+            return $this->renderCategoryList($category, $permalink);
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
@@ -403,37 +419,65 @@ class NewsController extends Controller
      * @throws \Exception
      * @return RedirectResponse
      */
-    public function categoryPagerAction($page, $permalink)
+    public function categoryPagerAction($permalink, $page)
     {
-        try {
-            $this->verifyCategoryPermalink($permalink);
-        } catch(\Exception $e) {
-            throw $e;
+        if ($category = $this->verifyCategoryPermalink($permalink)) {
+            return $this->renderCategoryList($category, $permalink, $page);
+        } else {
+            throw new NotFoundHttpException('Invalid URL');
         }
-
-        $pager = $this->fetchNews(array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink), 'page'=>$page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'type'=>'category')));
     }
 
-    protected function renderCategoryView($post, $_format) {
+
+    /**
+     *
+     * @param $category
+     * @param $permalink
+     *
+     * @throws \Exception
+     * @return Response
+     */
+    public function categoryViewAction($category, $permalink)
+    {
+        if (!$category = $this->verifyCategoryPermalink($category)) {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+
+        if ($post = $this->getPostManager()->findOneByPermalink($permalink, $this->container->get('sonata.news.blog'))) {
+            try {
+                return $this->renderCategoryView($post, $category);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        } else {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+    }
+
+
+    protected function renderCategoryView($post, $category) {
 
         if (!$post || !$post->isPublic()) {
             throw new NotFoundHttpException('Unable to find the post');
         }
 
-        //TODO add canonical page
         if ($seoPage = $this->getSeoPage()) {
-
+            $request = $this->get('request_stack')->getCurrentRequest();
             $seoPage
                 ->setTitle($post->getTitle())
                 ->addMeta('name', 'description', $post->getAbstract())
                 ->addMeta('property', 'og:title', $post->getTitle())
                 ->addMeta('property', 'og:type', 'blog')
-                ->addMeta('property', 'og:url',  $this->generateUrl('rz_news_view', array(
+                ->addMeta('property', 'og:url',  $this->generateUrl('rz_news_category_view', array(
+                    'category' => $this->getCategoryManager()->getPermalinkGenerator()->createSubCategorySlug($category),
                     'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
-                    '_format' => $_format
+                    '_format' => $request->getRequestFormat()
                 ), true))
                 ->addMeta('property', 'og:description', $post->getAbstract())
+                ->setLinkCanonical($this->generateUrl('rz_news_view', array(
+                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                    '_format' => $request->getRequestFormat()
+                ), true))
             ;
         }
 
@@ -445,52 +489,174 @@ class NewsController extends Controller
         ));
     }
 
-    protected function renderCategoryList($permalink) {
+    protected function renderCategoryList($category, $permalink, $page = null) {
 
-        $pager = $this->fetchNews(array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink)));
-        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'type'=>'category'));
+        $parameters = array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink));
+
+        if($page) {
+            $parameters['page'] = $page;
+        }
+        $pager = $this->fetchNews($parameters);
+        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'category'=>$category));
+        return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_CATEGORY);
+    }
+
+    protected function renderNewsList($parameters, $type) {
 
         $request = $this->get('request_stack')->getCurrentRequest();
 
         $template = $this->container->get('rz_admin.template.loader')->getTemplates();
-        $response = $this->render($template[sprintf('rz_news.template.category_%s', $request->getRequestFormat())], $parameters);
+        $response = $this->render($template[sprintf('rz_news.template.%s_%s', $type,  $request->getRequestFormat())], $parameters);
         if ('rss' === $request->getRequestFormat()) {
             $response->headers->set('Content-Type', 'application/rss+xml');
         }
         return $response;
+    }
 
+    protected function renderCollectionView($post, $collection) {
+
+        if (!$post || !$post->isPublic()) {
+            throw new NotFoundHttpException('Unable to find the post');
+        }
+
+        if ($seoPage = $this->getSeoPage()) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+            $seoPage
+                ->setTitle($post->getTitle())
+                ->addMeta('name', 'description', $post->getAbstract())
+                ->addMeta('property', 'og:title', $post->getTitle())
+                ->addMeta('property', 'og:type', 'blog')
+                ->addMeta('property', 'og:url',  $this->generateUrl('rz_news_collection_view', array(
+                    'collection'  => $collection->getSlug(),
+                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                    '_format' => $request->getRequestFormat()
+                ), true))
+                ->addMeta('property', 'og:description', $post->getAbstract())
+                ->setLinkCanonical($this->generateUrl('rz_news_view', array(
+                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                    '_format' => $request->getRequestFormat()
+                ), true))
+            ;
+        }
+
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $this->render($template['rz_news.template.view'], array(
+            'post' => $post,
+            'form' => false,
+            'blog' => $this->get('sonata.news.blog')
+        ));
+    }
+
+    protected function renderCollectionList($collection, $page = null) {
+
+        $parameters = array('collection' => $collection);
+
+        if($page) {
+            $parameters['page'] = $page;
+        }
+
+        $pager = $this->fetchNews($parameters);
+        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection));
+
+        return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_COLLECTION);
+    }
+
+    protected function verifyCollection($collection) {
+        $collection = $this->get('sonata.classification.manager.collection')->findOneBy(array(
+            'slug' => $collection,
+            'enabled' => true
+        ));
+
+        if (!$collection) {
+            return false;
+        }
+
+        if (!$collection->getEnabled()) {
+            return false;
+        }
+
+        return $collection;
     }
 
 
-    /**
-     * @throws NotFoundHttpException
-     *
-     * @param $permalink
-     *
-     * @return Response
-     */
-    public function categoryViewAction($category, $permalink)
-    {
-        throw new NotFoundHttpException('Route not yet implemented');
+    protected function renderTagView($post, $tag) {
+
+        if (!$post || !$post->isPublic()) {
+            throw new NotFoundHttpException('Unable to find the post');
+        }
+
+        if ($seoPage = $this->getSeoPage()) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+            $seoPage
+                ->setTitle($post->getTitle())
+                ->addMeta('name', 'description', $post->getAbstract())
+                ->addMeta('property', 'og:title', $post->getTitle())
+                ->addMeta('property', 'og:type', 'blog')
+                ->addMeta('property', 'og:url',  $this->generateUrl('rz_news_tag_view', array(
+                    'tag'  => $tag->getSlug(),
+                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                    '_format' => $request->getRequestFormat()
+                ), true))
+                ->addMeta('property', 'og:description', $post->getAbstract())
+                ->setLinkCanonical($this->generateUrl('rz_news_view', array(
+                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                    '_format' => $request->getRequestFormat()
+                ), true))
+            ;
+        }
+
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $this->render($template['rz_news.template.view'], array(
+            'post' => $post,
+            'form' => false,
+            'blog' => $this->get('sonata.news.blog')
+        ));
+    }
+
+    protected function renderTagList($tag, $page = null) {
+
+        $parameters = array('tag' => $tag);
+
+        if($page) {
+            $parameters['page'] = $page;
+        }
+
+        $pager = $this->fetchNews($parameters);
+        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag));
+
+        return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_TAG);
+    }
+
+    protected function verifyTag($tag) {
+        $tag = $this->get('sonata.classification.manager.tag')->findOneBy(array(
+            'slug' => $tag,
+            'enabled' => true
+        ));
+
+        if (!$tag) {
+            return false;
+        }
+
+        if (!$tag->getEnabled()) {
+            return false;
+        }
+
+        return $tag;
     }
 
     protected function verifyCategoryPermalink($permalink) {
 
         $category = $this->getCategoryManager()->getCategoryByPermalink($permalink);
 
-
         if (!$category || !$category->getEnabled()) {
-//            throw new NotFoundHttpException('Unable to find the category');
             return null;
         }
 
-        // validate permalink
         if ($category && (!$this->getCategoryManager()->getPermalinkGenerator()->validatePermalink($category, $permalink))) {
-//            throw new NotFoundHttpException('Invalid URL');
             return null;
         }
 
-        return true;
+        return $category;
     }
 
     /**
