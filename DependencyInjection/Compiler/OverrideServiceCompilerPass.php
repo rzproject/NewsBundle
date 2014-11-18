@@ -27,6 +27,11 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
 
         $definition = $container->getDefinition('sonata.news.block.recent_comments');
         $definition->setClass($container->getParameter('rz_news.block.recent_comments'));
+
+
+        //replace permalink class
+        $container->getDefinition('sonata.news.blog')
+            ->replaceArgument(3, new Reference('rz_news.permalink.post'));
     }
 
     /**

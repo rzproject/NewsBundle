@@ -16,14 +16,14 @@ use Sonata\NewsBundle\Model\PostInterface;
  * Class PostController
  * @package Rz\NewsBundle\Controller
  */
-class PostController extends Controller
+class NewsController extends Controller
 {
     /**
      * @return RedirectResponse
      */
     public function homeAction()
     {
-        return $this->redirect($this->generateUrl('sonata_news_archive'));
+        return $this->redirect($this->generateUrl('rz_news_archive'));
     }
 
     /**
@@ -50,7 +50,7 @@ class PostController extends Controller
     public function archiveAction()
     {
         $pager = $this->fetchNews(array());
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'archive')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'archive')));
 
     }
 
@@ -61,7 +61,7 @@ class PostController extends Controller
     public function archivePagerAction($page = 1)
     {
         $pager = $this->fetchNews(array('page' => $page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'archive')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'archive')));
     }
 
     /**
@@ -87,7 +87,7 @@ class PostController extends Controller
         }
 
         $pager = $this->fetchNews(array('tag' => $tag));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type'=>'tags')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type' => 'tags')));
     }
 
     /**
@@ -114,7 +114,7 @@ class PostController extends Controller
         }
 
         $pager = $this->fetchNews(array('tag' => $tag, 'page' => $page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type'=>'tags')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'type' => 'tags')));
     }
 
     /**
@@ -140,7 +140,7 @@ class PostController extends Controller
         }
 
         $pager = $this->fetchNews(array('collection' => $collection));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('$collection' => $collection, 'type'=>'collection')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection, 'type' => 'collection')));
     }
 
     /**
@@ -166,8 +166,8 @@ class PostController extends Controller
             throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        $pager = $this->fetchNews(array('collection' => $collection, 'page'=>$page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('$collection' => $collection, 'type'=>'collection')));
+        $pager = $this->fetchNews(array('collection' => $collection, 'page' => $page));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection, 'type' => 'collection')));
     }
 
     /**
@@ -179,15 +179,16 @@ class PostController extends Controller
     public function archiveMonthlyAction($year, $month)
     {
         $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, $month, 1), 'month')));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'monthly')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'monthly')));
     }
 
     /**
      *
      */
-    public function archiveMonthlyPagerAction($page, $year, $month) {
+    public function archiveMonthlyPagerAction($page, $year, $month)
+    {
         $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, $month, 1), 'month'), 'page' => $page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'monthly')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'monthly')));
     }
 
     /**
@@ -199,7 +200,7 @@ class PostController extends Controller
     {
 
         $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, 1, 1), 'year')));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'yearly')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'yearly')));
 
     }
 
@@ -213,18 +214,18 @@ class PostController extends Controller
     {
 
         $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, 1, 1), 'year'), 'page' => $page));
-        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type'=>'yearly')));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'yearly')));
 
     }
 
     /**
-     * @throws NotFoundHttpException
      *
      * @param $permalink
+     * @param string $_format
      *
      * @return Response
      */
-    public function viewAction($permalink)
+    public function viewAction($permalink, $_format = 'html')
     {
         $post = $this->getPostManager()->findOneByPermalink($permalink, $this->container->get('sonata.news.blog'));
 
@@ -233,16 +234,17 @@ class PostController extends Controller
         }
 
         if ($seoPage = $this->getSeoPage()) {
+
             $seoPage
                 ->setTitle($post->getTitle())
                 ->addMeta('name', 'description', $post->getAbstract())
                 ->addMeta('property', 'og:title', $post->getTitle())
                 ->addMeta('property', 'og:type', 'blog')
-                ->addMeta('property', 'og:url',  $this->generateUrl('sonata_news_view', array(
-                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true)
+                ->addMeta('property', 'og:url', $this->generateUrl('rz_news_view', array(
+                    'permalink' => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                    '_format' => $_format
                 ), true))
-                ->addMeta('property', 'og:description', $post->getAbstract())
-            ;
+                ->addMeta('property', 'og:description', $post->getAbstract());
         }
 
         $template = $this->container->get('rz_admin.template.loader')->getTemplates();
@@ -275,12 +277,12 @@ class PostController extends Controller
         $pager = $this->getCommentManager()
             ->getPager(array(
                 'postId' => $postId,
-                'status'  => CommentInterface::STATUS_VALID
+                'status' => CommentInterface::STATUS_VALID
             ), 1, 500); //no limit
 
         $template = $this->container->get('rz_admin.template.loader')->getTemplates();
         return $this->render($template['rz_news.template.comments'], array(
-            'pager'  => $pager,
+            'pager' => $pager,
         ));
     }
 
@@ -302,8 +304,8 @@ class PostController extends Controller
 
         $template = $this->container->get('rz_admin.template.loader')->getTemplates();
         return $this->render($template['rz_news.template.comment_form'], array(
-            'form'      => $form->createView(),
-            'post_id'   => $postId
+            'form' => $form->createView(),
+            'post_id' => $postId
         ));
     }
 
@@ -318,7 +320,7 @@ class PostController extends Controller
         $comment->setPost($post);
         $comment->setStatus($post->getCommentsDefaultStatus());
 
-        return $this->get('form.factory')->createNamed('comment', 'sonata_post_comment', $comment);
+        return $this->get('form.factory')->createNamed('comment', 'rz_post_comment', $comment);
     }
 
     /**
@@ -340,8 +342,9 @@ class PostController extends Controller
 
         if (!$post->isCommentable()) {
             // todo add notice
-            return new RedirectResponse($this->generateUrl('sonata_news_view', array(
-                'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post)
+            return new RedirectResponse($this->generateUrl('rz_news_view', array(
+                'permalink' => $this->getBlog()->getPermalinkGenerator()->generate($post),
+                '_format' => 'html'
             )));
         }
 
@@ -355,8 +358,9 @@ class PostController extends Controller
             $this->get('sonata.news.mailer')->sendCommentNotification($comment);
 
             // todo : add notice
-            return new RedirectResponse($this->generateUrl('sonata_news_view', array(
-                'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post)
+            return new RedirectResponse($this->generateUrl('rz_news_view', array(
+                'permalink' => $this->getBlog()->getPermalinkGenerator()->generate($post),
+                '_format' => 'html'
             )));
         }
 
@@ -372,20 +376,79 @@ class PostController extends Controller
      */
     public function categoryHomeAction()
     {
-        return $this->redirect($this->generateUrl('sonata_news_archive'));
+        return $this->redirect($this->generateUrl('rz_news_archive'));
     }
 
     /**
-     * @param  $category
+     * @param $category
+     * @throws \Exception
      * @return RedirectResponse
      */
-    public function categoryAction($category)
+    public function categoryAction($permalink, $_format = 'html')
     {
-        $this->verifyCategoryPermalink($category);
+        //TODO: custom validation for multiple category dynamic URL
+        $post = $this->getPostManager()->findOneByCategoryPermalink($permalink, $this->container->get('sonata.news.blog'));
 
-        die('rommel');
+        if ($post) {
+            return $this->renderCategoryView($post, $_format);
+        }elseif ($this->verifyCategoryPermalink($permalink)) {
+            return $this->renderCategoryList($permalink);
+        } else {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+    }
 
+    /**
+     * @param $category
+     * @throws \Exception
+     * @return RedirectResponse
+     */
+    public function categoryPagerAction($page, $permalink)
+    {
+        try {
+            $this->verifyCategoryPermalink($permalink);
+        } catch(\Exception $e) {
+            throw $e;
+        }
 
+        $pager = $this->fetchNews(array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink), 'page'=>$page));
+        return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'type'=>'category')));
+    }
+
+    protected function renderCategoryView($post, $_format) {
+
+        if (!$post || !$post->isPublic()) {
+            throw new NotFoundHttpException('Unable to find the post');
+        }
+
+        //TODO add canonical page
+        if ($seoPage = $this->getSeoPage()) {
+
+            $seoPage
+                ->setTitle($post->getTitle())
+                ->addMeta('name', 'description', $post->getAbstract())
+                ->addMeta('property', 'og:title', $post->getTitle())
+                ->addMeta('property', 'og:type', 'blog')
+                ->addMeta('property', 'og:url',  $this->generateUrl('rz_news_view', array(
+                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                    '_format' => $_format
+                ), true))
+                ->addMeta('property', 'og:description', $post->getAbstract())
+            ;
+        }
+
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $this->render($template['rz_news.template.view'], array(
+            'post' => $post,
+            'form' => false,
+            'blog' => $this->get('sonata.news.blog')
+        ));
+    }
+
+    protected function renderCategoryList($permalink) {
+
+        $pager = $this->fetchNews(array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink)));
+        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'type'=>'category'));
 
         $request = $this->get('request_stack')->getCurrentRequest();
 
@@ -395,20 +458,39 @@ class PostController extends Controller
             $response->headers->set('Content-Type', 'application/rss+xml');
         }
         return $response;
+
+    }
+
+
+    /**
+     * @throws NotFoundHttpException
+     *
+     * @param $permalink
+     *
+     * @return Response
+     */
+    public function categoryViewAction($category, $permalink)
+    {
+        throw new NotFoundHttpException('Route not yet implemented');
     }
 
     protected function verifyCategoryPermalink($permalink) {
-        $parsed_url = parse_url($permalink);
 
-        var_dump($parsed_url);
-        $category = array_filter(explode('/', $parsed_url['path']));
+        $category = $this->getCategoryManager()->getCategoryByPermalink($permalink);
 
-        if(count($category) > 0) {
-            die('yes');
+
+        if (!$category || !$category->getEnabled()) {
+//            throw new NotFoundHttpException('Unable to find the category');
+            return null;
         }
 
-        var_dump($category);
-        die('no');
+        // validate permalink
+        if ($category && (!$this->getCategoryManager()->getPermalinkGenerator()->validatePermalink($category, $permalink))) {
+//            throw new NotFoundHttpException('Invalid URL');
+            return null;
+        }
+
+        return true;
     }
 
     /**
@@ -470,8 +552,9 @@ class PostController extends Controller
 
         $this->getCommentManager()->save($comment);
 
-        return new RedirectResponse($this->generateUrl('sonata_news_view', array(
-            'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($comment->getPost())
+        return new RedirectResponse($this->generateUrl('rz_news_view', array(
+            'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($comment->getPost()),
+            '_format' => 'html'
         )));
     }
 
@@ -494,12 +577,12 @@ class PostController extends Controller
     protected function buildParameters($pager, $request, $parameters = array()) {
 
         return array_merge(array(
-            'pager' => $pager,
-            'blog'  => $this->get('sonata.news.blog'),
-            'tag'   => false,
-            'route' => $request->get('_route'),
-            'route_parameters' => $request->get('_route_params'),
-            'type'  => 'none')
+                'pager' => $pager,
+                'blog'  => $this->get('sonata.news.blog'),
+                'tag'   => false,
+                'route' => $request->get('_route'),
+                'route_parameters' => $request->get('_route_params'),
+                'type'  => 'none')
             ,$parameters);
     }
 }

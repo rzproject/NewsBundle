@@ -16,7 +16,6 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
-
 use Sonata\EasyExtendsBundle\Mapper\DoctrineCollector;
 
 /**
@@ -39,8 +38,12 @@ class RzNewsExtension extends Extension
         $loader->load('admin_orm.xml');
         $loader->load('twig.xml');
         $loader->load('block.xml');
+        $loader->load('post.xml');
+        $loader->load('validators.xml');
+        $loader->load('permalink.xml');
 
         $config = $this->addDefaults($config);
+        $this->registerDoctrineMapping($config, $container);
         $this->configureAdminClass($config, $container);
         $this->configureClass($config, $container);
         $this->configureClassManager($config, $container);
@@ -69,6 +72,7 @@ class RzNewsExtension extends Extension
 
         $defaultConfig['class']['post']  = sprintf('Application\\Sonata\\NewsBundle\\%s\\Post', $modelType);
         $defaultConfig['class']['comment'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\Comment', $modelType);
+        $defaultConfig['class']['post_has_category'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\PostHasCategory', $modelType);
 
         return array_replace_recursive($defaultConfig, $config);
     }
@@ -89,6 +93,7 @@ class RzNewsExtension extends Extension
 
         $container->setParameter(sprintf('sonata.news.admin.post.%s', $modelType), $config['class']['post']);
         $container->setParameter(sprintf('sonata.news.admin.comment.%s', $modelType), $config['class']['comment']);
+        $container->setParameter(sprintf('rz_news.admin.post_has_category.%s', $modelType), $config['class']['post_has_category']);
     }
 
     /**
@@ -101,6 +106,7 @@ class RzNewsExtension extends Extension
     {
         // manager configuration
         $container->setParameter('sonata.news.manager.post.class',     $config['class_manager']['post']);
+        $container->setParameter('rz_news.manager.post_has_category.class',     $config['class_manager']['post_has_category']);
         $container->setParameter('sonata.news.manager.comment.class',  $config['class_manager']['comment']);
     }
 
@@ -113,6 +119,7 @@ class RzNewsExtension extends Extension
     public function configureAdminClass($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.class', $config['admin']['post']['class']);
+        $container->setParameter('rz_news.admin.post_has_category.class', $config['admin']['post_has_category']['class']);
         $container->setParameter('sonata.news.admin.comment.class', $config['admin']['comment']['class']);
     }
 
@@ -125,6 +132,7 @@ class RzNewsExtension extends Extension
     public function configureTranslationDomain($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.translation_domain', $config['admin']['post']['translation']);
+        $container->setParameter('rz_news.admin.post_has_category.translation_domain', $config['admin']['post_has_category']['translation']);
         $container->setParameter('sonata.news.admin.comment.translation_domain', $config['admin']['comment']['translation']);
     }
 
@@ -137,6 +145,7 @@ class RzNewsExtension extends Extension
     public function configureController($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.controller', $config['admin']['post']['controller']);
+        $container->setParameter('rz_news.admin.post_has_category.controller', $config['admin']['post_has_category']['controller']);
         $container->setParameter('sonata.news.admin.comment.controller', $config['admin']['comment']['controller']);
     }
 
@@ -183,5 +192,74 @@ class RzNewsExtension extends Extension
     public function configureSettings($config, ContainerBuilder $container)
     {
         $container->setParameter('rz_news.settings.news_pager_max_per_page', $config['settings']['news_pager_max_per_page']);
+    }
+
+    /**
+     * @param array $config
+     */
+    public function registerDoctrineMapping(array $config)
+    {
+
+        foreach ($config['class'] as $type => $class) {
+            if (!class_exists($class)) {
+                return;
+            }
+        }
+
+        $collector = DoctrineCollector::getInstance();
+
+
+        if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
+
+            $collector->addAssociation($config['class']['post_has_category'], 'mapManyToOne', array(
+                'fieldName' => 'post',
+                'targetEntity' => $config['class']['post'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => 'postHasCategory',
+                'joinColumns' => array(
+                    array(
+                        'name' => 'post_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post_has_category'], 'mapManyToOne', array(
+                'fieldName' => 'category',
+                'targetEntity' => $config['class']['category'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'joinColumns' => array(
+                    array(
+                        'name' => 'category_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
+                'fieldName' => 'postHasCategory',
+                'targetEntity' => $config['class']['post_has_category'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => 'post',
+                'orphanRemoval' => true,
+                'orderBy' => array(
+                    'position' => 'ASC',
+                ),
+            ));
+
+
+
+        }
     }
 }

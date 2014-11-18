@@ -412,6 +412,66 @@ Quick moderation links :
                 <source>breadcrumb.link_post_history</source>
                 <target>History</target>
             </trans-unit>
+
+            <trans-unit id="form.label_post_has_category">
+                <source>form.label_post_has_category</source>
+                <target>Post Category</target>
+            </trans-unit>
+
+            <trans-unit id="form.label_category">
+                <source>form.label_category</source>
+                <target>Category</target>
+            </trans-unit>
+
+            <trans-unit id="form.label_position">
+                <source>form.label_position</source>
+                <target>Position</target>
+            </trans-unit>
+
+            <trans-unit id="list.label_post_has_category">
+                <source>list.label_post_has_category</source>
+                <target>Post Category</target>
+            </trans-unit>
+
+            <trans-unit id="list.label_category">
+                <source>list.label_category</source>
+                <target>Category</target>
+            </trans-unit>
+
+            <trans-unit id="list.label_position">
+                <source>list.label_position</source>
+                <target>Position</target>
+            </trans-unit>
+
+            <trans-unit id="filter.label_post_has_category">
+                <source>filter.label_post_has_category</source>
+                <target>Post Category</target>
+            </trans-unit>
+
+            <trans-unit id="filter.label_category">
+                <source>filter.label_category</source>
+                <target>Category</target>
+            </trans-unit>
+
+            <trans-unit id="filter.label_position">
+                <source>filter.label_position</source>
+                <target>Position</target>
+            </trans-unit>
+
+            <trans-unit id="show.label_post_has_category">
+                <source>show.label_post_has_category</source>
+                <target>Post Category</target>
+            </trans-unit>
+
+            <trans-unit id="show.label_category">
+                <source>show.label_category</source>
+                <target>Category</target>
+            </trans-unit>
+
+            <trans-unit id="show.label_position">
+                <source>show.label_position</source>
+                <target>Position</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

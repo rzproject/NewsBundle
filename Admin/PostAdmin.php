@@ -33,6 +33,7 @@ class PostAdmin extends BaseAdmin
             ->add('abstract','text')
             ->add('content', 'text', array('safe' => true))
             ->add('tags')
+            ->add('category')
         ;
     }
 
@@ -81,6 +82,20 @@ class PostAdmin extends BaseAdmin
                         'listener'       => true,
                 ))
             ->end()
+            ->with('Category', array('class' => 'col-md-4'))
+                ->add('postHasCategory', 'sonata_type_collection', array(
+                        'cascade_validation' => true,
+                        'error_bubbling' => false,
+                    ), array(
+                        'edit' => 'inline',
+                        'inline' => 'table',
+                        'sortable'  => 'position',
+                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'tree'),
+                        'admin_code' => 'rz_news.admin.post_has_category',
+                        'error_bubbling' => false,
+                    )
+                )
+            ->end()
             ->with('Tags')
                 ->add('tags', 'sonata_type_model', array(
                     'required' => false,
@@ -123,5 +138,21 @@ class PostAdmin extends BaseAdmin
                                           'field_type' => 'checkbox'
                                       ))
         ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prePersist($object)
+    {
+        $object->setPostHasCategory($object->getPostHasCategory());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preUpdate($object)
+    {
+        $object->setPostHasCategory($object->getPostHasCategory());
     }
 }

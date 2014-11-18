@@ -9,7 +9,7 @@
             <ul class="media-list blog recent-post-sidebar">
                 {% for post in posts %}
                     <li>
-                        <a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(post) }) }}">{{ post.title }}</a> <br/>
+                        <a href="{{ url('rz_news_view', { 'permalink': post.slug, '_format' : 'html' }) }}">{{ post.title }}</a> <br/>
                         <small>{{ post.publicationDateStart | format_date }} | {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</small>
                     </li>
                 {% else %}
@@ -40,7 +40,7 @@
 
                             </div>
                             <div class="rz-news-featured-post-read-more">
-                                <a class="btn btn-rzcms-theme" href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(post) }) }}">Read</a>
+                                <a class="btn btn-rzcms-theme" href="{{ url('rz_news_view', { 'permalink': post.slug, '_format' : 'html' }) }}">Read</a>
                             </div>
                         </div>
                     {% else %}

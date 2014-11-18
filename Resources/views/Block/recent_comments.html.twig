@@ -52,8 +52,8 @@ file that was distributed with this source code.
             <ul class="media-list blog recent-comment-sidebar">
                 {% for comment in pager.getResults() %}
                     <li>
-                        <p><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(comment.post) }) }}">{{ comment.message|truncate(120) }}</a></p>
-                        <small><a href="{{ url('sonata_news_view', { 'permalink': sonata_news_permalink(comment.post) }) }}">- {{ comment.name }} | {{ comment.createdAt | format_date }}</a></small>
+                        <p><a href="{{ url('rz_news_view', { 'permalink': comment.post.slug, '_format' : 'html' }) }}">{{ comment.message|truncate(120) }}</a></p>
+                        <small><a href="{{ url('rz_news_view', { 'permalink': comment.post.slug, '_format' : 'html' }) }}">- {{ comment.name }} | {{ comment.createdAt | format_date }}</a></small>
                     </li>
                 {% else %}
                     <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>

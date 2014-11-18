@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+<parameters>
+    <parameter key="rz_news.router.class">Rz\NewsBundle\Route\PostRouter</parameter>
+    <!--<parameter key="rz_news.route.page.generator.class">Sonata\PageBundle\Route\RoutePostGenerator</parameter>-->
+    <parameter key="rz_news.service.post_category_page.class">Rz\NewsBundle\Page\Service\PostCategoryPageService</parameter>
+</parameters>
+
+<services>
+    <service id="rz_news.router" class="%rz_news.router.class%">
+        <argument type='service' id="router.default"/>
+    </service>
+
+    <service id="rz_news.service.post_category_page" class="%rz_news.service.post_category_page.class%">
+        <tag name="sonata.page"/>
+        <argument>Post Category Page</argument>
+        <argument type="service" id="sonata.page.template_manager" />
+        <argument type="service" id="sonata.seo.page" />
+    </service>
+    <!--<service id="rz_news.route.page.generator" class="%rz_news.route.page.generator.class%">-->
+        <!--<argument type='service' id="router.default" />-->
+        <!--<argument type="service" id="sonata.page.manager.page" />-->
+        <!--<argument type="service" id="sonata.page.decorator_strategy" />-->
+        <!--<argument type="service" id="sonata.page.kernel.exception_listener" />-->
+    <!--</service>-->
+</services>
+</container>

@@ -4,6 +4,7 @@ namespace Rz\NewsBundle\Entity;
 
 use Sonata\NewsBundle\Entity\PostManager as ModelPostManager;
 use Sonata\ClassificationBundle\Model\CollectionInterface;
+use Sonata\NewsBundle\Model\BlogInterface;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\NoResultException;
@@ -84,11 +85,15 @@ class PostManager extends ModelPostManager
             $query
                 ->leftJoin('p.tags', 't')
                 ->leftJoin('p.author', 'a')
+                ->leftJoin('p.postHasCategory', 'phc')
+                ->leftJoin('phc.category', 'cat')
             ;
         } else {
             $query
                 ->leftJoin('p.tags', 't', Join::WITH, 't.enabled = true')
                 ->leftJoin('p.author', 'a', Join::WITH, 'a.enabled = true')
+                ->leftJoin('p.postHasCategory', 'phc',  Join::WITH, 'phc.enabled = true')
+                ->leftJoin('phc.category', 'cat',  Join::WITH, 'cat.enabled = true')
             ;
         }
 
@@ -118,6 +123,19 @@ class PostManager extends ModelPostManager
             }
         }
 
+        if (isset($criteria['category'])) {
+            if (!is_array($criteria['category'])) {
+                $query->andWhere('cat.slug LIKE :category');
+                $parameters['category'] = $criteria['category'];
+            } else {
+                $cat = null;
+                foreach($criteria['category'] as $slug) {
+                    $cat[] = sprintf("'%s'", $slug);
+                }
+                $query->andWhere(sprintf('cat.slug IN (%s)', implode((array) $cat, ',')));
+            }
+        }
+
         if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
             $query->andWhere('p.collection = :collectionid');
             $parameters['collectionid'] = $criteria['collection']->getId();
@@ -131,5 +149,62 @@ class PostManager extends ModelPostManager
         } catch (NoResultException $e) {
             return null;
         }
+    }
+
+    /**
+     * @param string        $permalink
+     * @param BlogInterface $blog
+     *
+     * @return PostInterface
+     */
+    public function findOneByCategoryPermalink($permalink, BlogInterface $blog)
+    {
+
+
+        $repository = $this->getRepository();
+
+        $query = $repository->createQueryBuilder('p');
+
+        $urlParameters = $blog->getPermalinkGenerator()->getParametersWithCategory($permalink);
+
+        $parameters = array();
+
+        if (isset($urlParameters['year']) && isset($urlParameters['month']) && isset($urlParameters['day'])) {
+            $pdqp = $this->getPublicationDateQueryParts(sprintf('%d-%d-%d', $urlParameters['year'], $urlParameters['month'], $urlParameters['day']), 'day');
+
+            $parameters = array_merge($parameters, $pdqp['params']);
+
+            $query->andWhere($pdqp['query']);
+        }
+
+        if (isset($urlParameters['slug'])) {
+            $query->andWhere('p.slug = :slug');
+            $parameters['slug'] = $urlParameters['slug'];
+        }
+
+        if (isset($urlParameters['collection'])) {
+            $pcqp = $this->getPublicationCollectionQueryParts($urlParameters['collection']);
+
+            $parameters = array_merge($parameters, $pcqp['params']);
+
+            $query
+                ->leftJoin('p.collection', 'c')
+                ->andWhere($pcqp['query'])
+            ;
+        }
+
+        if (count($parameters) == 0) {
+            return null;
+        }
+
+        $query->setParameters($parameters);
+
+        $results = $query->getQuery()->getResult();
+
+        if (count($results) > 0) {
+            return $results[0];
+        }
+
+        return null;
     }
 }
