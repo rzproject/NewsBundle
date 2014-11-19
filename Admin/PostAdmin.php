@@ -17,9 +17,11 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 
 class PostAdmin extends BaseAdmin
 {
+    protected $contextManager;
 
     /**
      * {@inheritdoc}
@@ -62,11 +64,24 @@ class PostAdmin extends BaseAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+
+        $em = $this->modelManager->getEntityManager('Application\Sonata\ClassificationBundle\Entity\Tag');
+
+        $context = $this->contextManager->find('news');
+
+        $query = $em->createQueryBuilder('t')
+            ->select('t')
+            ->from('ApplicationSonataClassificationBundle:Tag', 't')
+            ->where('t.context = :context')
+            ->andWhere('t.enabled = :enabled')
+            ->orderBy('t.name', 'ASC')
+            ->setParameters(array('context'=>$context, 'enabled'=>true));
+
         $formMapper
             ->with('Post')
                 ->add('enabled', null, array('required' => false))
                 ->add('author', 'sonata_type_model_list', array('validation_groups' => 'Default'))
-                ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')))
+                ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
                 ->add('title', null)
                 ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
@@ -90,7 +105,7 @@ class PostAdmin extends BaseAdmin
                         'edit' => 'inline',
                         'inline' => 'table',
                         'sortable'  => 'position',
-                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'tree'),
+                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
                         'admin_code' => 'rz_news.admin.post_has_category',
                         'error_bubbling' => false,
                     )
@@ -100,8 +115,10 @@ class PostAdmin extends BaseAdmin
                 ->add('tags', 'sonata_type_model', array(
                     'required' => false,
                     'multiple' => true,
-                    'select2'=>true
-                    ))
+                    'select2'=>true,
+                    'query' => $query
+                    ),
+                    array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
             ->end()
             ->with('Status')
                 ->add('enabled', null, array('required' => false))
@@ -155,4 +172,9 @@ class PostAdmin extends BaseAdmin
     {
         $object->setPostHasCategory($object->getPostHasCategory());
     }
+
+    public function setContextManager(ContextManagerInterface $contextManager) {
+        $this->contextManager = $contextManager;
+    }
+
 }
