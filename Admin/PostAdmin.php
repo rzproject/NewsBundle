@@ -18,10 +18,15 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
+use Sonata\ClassificationBundle\Model\CollectionManagerInterface;
 
 class PostAdmin extends BaseAdmin
 {
+    const POST_DEFAULT_CONTEXT = 'news';
+
     protected $contextManager;
+
+    protected $collectionManager;
 
     /**
      * {@inheritdoc}
@@ -30,6 +35,7 @@ class PostAdmin extends BaseAdmin
     {
         $showMapper
             ->add('author')
+            ->add('collection')
             ->add('enabled')
             ->add('title')
             ->add('abstract','text')
@@ -46,7 +52,6 @@ class PostAdmin extends BaseAdmin
     {
         $listMapper
             ->add('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('collection', null, array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('enabled', null, array('editable' => true))
             ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
             ->add('_action', 'actions', array(
@@ -138,6 +143,7 @@ class PostAdmin extends BaseAdmin
         $datagridMapper
             ->add('title')
             ->add('enabled')
+            ->add('collection')
             ->add('author', null, array('field_options' => array('selectpicker_enabled'=>true)))
             ->add('tags', null, array('field_options' => array('expanded' => false, 'multiple' => true, 'selectpicker_enabled'=>true)))
             ->add('with_open_comments', 'doctrine_orm_callback', array(
@@ -162,6 +168,11 @@ class PostAdmin extends BaseAdmin
      */
     public function prePersist($object)
     {
+        $parameters = $this->getPersistentParameters();
+        if(isset($parameters['collectionId'])) {
+            $collection = $this->setCollectionManager->find($parameters['collectionId']);
+            $object->setCollection($collection);
+        }
         $object->setPostHasCategory($object->getPostHasCategory());
     }
 
@@ -177,4 +188,32 @@ class PostAdmin extends BaseAdmin
         $this->contextManager = $contextManager;
     }
 
+    public function setCollectionManager(CollectionManagerInterface $collectionManager) {
+        $this->collectionManager = $collectionManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPersistentParameters()
+    {
+        $parameters = array(
+            'collectionId'      => '',
+            'hide_collection' => (int)$this->getRequest()->get('hide_context', 0)
+        );
+
+        if ($this->getSubject()) {
+            $parameters['collectionId'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getId() : '';
+
+            return $parameters;
+        }
+
+        if ($this->hasRequest()) {
+            $parameters['collectionId'] = $this->getRequest()->get('collectionId');
+
+            return $parameters;
+        }
+
+        return $parameters;
+    }
 }

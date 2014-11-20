@@ -472,6 +472,12 @@ Quick moderation links :
                 <source>show.label_position</source>
                 <target>Position</target>
             </trans-unit>
+
+            <trans-unit id="collection_title">
+                <source>collection_title</source>
+                <target>Collection</target>
+            </trans-unit>
+
         </body>
     </file>
 </xliff>

@@ -16,6 +16,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         //override news admin post
         $definition = $container->getDefinition('sonata.news.admin.post');
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
+        $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
         $this->fixTemplates($container, $definition, 'rz_news.configuration.post.templates');
 
 
