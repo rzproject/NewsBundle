@@ -23,6 +23,7 @@ use Sonata\ClassificationBundle\Model\CollectionManagerInterface;
 class PostAdmin extends BaseAdmin
 {
     const POST_DEFAULT_CONTEXT = 'news';
+    const POST_DEFAULT_COLLECTION = 'blog';
 
     protected $contextManager;
 
@@ -86,16 +87,18 @@ class PostAdmin extends BaseAdmin
             ->with('Post')
                 ->add('enabled', null, array('required' => false))
                 ->add('author', 'sonata_type_model_list', array('validation_groups' => 'Default'))
-                ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
+//                ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
                 ->add('title', null)
                 ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
                 ->add('content', 'sonata_formatter_type', array(
                         'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                        'error_bubbling' => false,
                         'format_field'   => 'contentFormatter',
                         'source_field'   => 'rawContent',
                         'ckeditor_context' => 'news',
                         'source_field_options'      => array(
+                            'error_bubbling'=>false,
                             'attr' => array('rows' => 20)
                         ),
                         'target_field'   => 'content',
@@ -170,7 +173,7 @@ class PostAdmin extends BaseAdmin
     {
         $parameters = $this->getPersistentParameters();
         if(isset($parameters['collectionId'])) {
-            $collection = $this->setCollectionManager->find($parameters['collectionId']);
+            $collection = $this->collectionManager->find($parameters['collectionId']);
             $object->setCollection($collection);
         }
         $object->setPostHasCategory($object->getPostHasCategory());
@@ -215,5 +218,41 @@ class PostAdmin extends BaseAdmin
         }
 
         return $parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNewInstance()
+    {
+        $instance = parent::getNewInstance();
+
+        if ($collectionId = $this->getPersistentParameter('collectionId')) {
+            $collection =  $this->collectionManager->find($collectionId);
+
+            if (!$collection) {
+
+                $context = $this->contextManager->find(self::POST_DEFAULT_CONTEXT);
+
+                if (!$context) {
+                    $context = $this->contextManager->create();
+                    $context->setEnabled(true);
+                    $context->setId(self::POST_DEFAULT_CONTEXT);
+                    $context->setName(ucwords(self::POST_DEFAULT_CONTEXT));
+
+                    $this->contextManager->save($context);
+                }
+
+                $collection = $this->collectionManager->create();
+                $collection->setEnabled(true);
+                $collection->setName(self::POST_DEFAULT_COLLECTION);
+                $collection->setContext($context);
+                $this->collectionManager->save($collection);
+            }
+
+            $instance->setCollection($collection);
+        }
+
+        return $instance;
     }
 }

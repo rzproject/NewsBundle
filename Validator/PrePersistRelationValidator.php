@@ -18,6 +18,7 @@ class PrePersistRelationValidator extends ConstraintValidator
      */
     public function validate($entity, Constraint $constraint)
     {
+
         if (null === $entity || '' === $entity) {
             return;
         }
@@ -27,6 +28,7 @@ class PrePersistRelationValidator extends ConstraintValidator
         }
 
         if($entity instanceof PostInterface) {
+
             // Category
             if($entity->getPostHasCategory()->count() > 0) {
                 $categories = $entity->getPostHasCategory();
@@ -60,44 +62,6 @@ class PrePersistRelationValidator extends ConstraintValidator
 
                 }
             }
-
-//            // Screenshots
-//            if($entity->getPortfolioHasMedia()->count() > 0) {
-//                $screenshots = $entity->getPortfolioHasMedia();
-//                $screens = array();
-//                $maps = array();
-//                foreach ($screenshots as $screenshot) {
-//                    if($screenshot instanceof PortfolioHasMediaInterface && $screenshot->getMedia() != null && $id = $screenshot->getMedia()->getId()) {
-//                        $screens[] = $id;
-//                        $maps[$id] = $screenshot->getMedia()->getName();
-//                    }
-//                }
-//
-//                $screens = array_count_values($screens);
-//                $errors = array();
-//                foreach($screens as $key=>$value) {
-//                    if($value > 1) {
-//                        $errors[] = $maps[$key];
-//                    }
-//                }
-//
-//
-//
-//                if(count($errors) > 0) {
-//                    if ($this->context instanceof ExecutionContextInterface) {
-//                        $this->context->buildViolation($constraint->unique)
-//                            ->setParameter('{{ entity_name }}', 'screenshot')
-//                            ->setParameter('{{ value }}', implode(", ", $errors))
-//                            ->atPath('portfolioHasMedia')
-//                            ->addViolation();
-//                    } else {
-//                        $this->context->addViolationAt('portfolioHasMedia', $constraint->unique, array('{{ entity_name }}' => 'screenshot', '{{ value }}' => implode(", ", $errors)));
-//                    }
-//
-//                }
-//            }
-
-
         }
 
         return;
