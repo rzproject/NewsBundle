@@ -478,6 +478,19 @@ Quick moderation links :
                 <target>Collection</target>
             </trans-unit>
 
+            <trans-unit id="form.label_post_has_media">
+                <source>form.label_post_has_media</source>
+                <target>Medias</target>
+            </trans-unit>
+
+           <trans-unit id="form.label_media">
+                <source>form.label_media</source>
+                <target>Media</target>
+            </trans-unit>
+
+
+
+
         </body>
     </file>
 </xliff>

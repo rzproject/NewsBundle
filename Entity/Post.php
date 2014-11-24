@@ -5,12 +5,14 @@ namespace Rz\NewsBundle\Entity;
 use Sonata\NewsBundle\Entity\BasePost as BasePost;
 use Sonata\NewsBundle\Model\PostInterface;
 use Rz\NewsBundle\Model\PostHasCategoryInterface;
+use Rz\NewsBundle\Model\PostHasMediaInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
 abstract class Post extends BasePost
 {
 
     protected $postHasCategory;
+    protected $postHasMedia;
 
     /**
      * {@inheritdoc}
@@ -20,6 +22,7 @@ abstract class Post extends BasePost
         parent::__construct();
 
         $this->postHasCategory = new ArrayCollection();
+        $this->postHasMedia = new ArrayCollection();
     }
 
 
@@ -65,6 +68,54 @@ abstract class Post extends BasePost
 
             if (!$childToDelete->getId() && $child === $childToDelete) {
                 unset($this->postHasCategory[$pos]);
+
+                return;
+            }
+        }
+    }
+
+    /**
+     * @param mixed $postHasMedia
+     */
+    public function setPostHasMedia($postHasMedia)
+    {
+        $this->postHasMedia = new ArrayCollection();
+        foreach ($postHasMedia as $child) {
+            $this->addPostHasMedia($child);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addPostHasMedia(PostHasMediaInterface $postHasMedia)
+    {
+        $postHasMedia->setPost($this);
+        $this->postHasMedia[] = $postHasMedia;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostHasMedia()
+    {
+        return $this->postHasMedia;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removePostHasMedia(PostHasMediaInterface $childToDelete)
+    {
+        foreach ($this->getPostHasMedia() as $pos => $child) {
+            if ($childToDelete->getId() && $child->getId() === $childToDelete->getId()) {
+                unset($this->postHasMedia[$pos]);
+
+                return;
+            }
+
+            if (!$childToDelete->getId() && $child === $childToDelete) {
+                unset($this->postHasMedia[$pos]);
 
                 return;
             }

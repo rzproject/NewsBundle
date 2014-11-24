@@ -7,7 +7,7 @@ use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 
-class PostHasCategoryAdmin extends Admin
+class PostHasMediaAdmin extends Admin
 {
 //    protected $formOptions = array(
 //        'cascade_validation' => true,
@@ -36,13 +36,26 @@ class PostHasCategoryAdmin extends Admin
             }
         }
 
-        if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
-            $formMapper->add('category', 'sonata_type_model_list', array('btn_delete' => false), array(
+        if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
+            $formMapper->add('media', 'sonata_type_model_list', array('btn_delete' => false), array(
                 'link_parameters' => $link_parameters
             ));
         }
 
         $formMapper
+            ->add('content', 'sonata_formatter_type', array(
+                'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                'error_bubbling' => false,
+                'format_field'   => 'contentFormatter',
+                'source_field'   => 'rawContent',
+                'ckeditor_context' => 'news',
+                'source_field_options'      => array(
+                    'error_bubbling'=>false,
+                    'attr' => array('rows' => 20)
+                ),
+                'target_field'   => 'content',
+                'listener'       => true,
+            ))
             ->add('enabled', null, array('required' => false))
             ->add('position', 'hidden')
         ;
@@ -55,7 +68,7 @@ class PostHasCategoryAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('category')
+            ->add('media')
             ->add('post')
             ->add('position')
             ->add('enabled')

@@ -29,7 +29,7 @@ class PostAdmin extends BaseAdmin
 
     protected $collectionManager;
 
-    protected $formOptions = array('validation_groups'=>array('Admin'), 'cascade_validation'=>true);
+    protected $formOptions = array('validation_groups'=>array('admin'), 'cascade_validation'=>true);
 
     /**
      * {@inheritdoc}
@@ -89,7 +89,6 @@ class PostAdmin extends BaseAdmin
             ->with('Post')
                 ->add('enabled', null, array('required' => false))
                 ->add('author', 'sonata_type_model_list', array('validation_groups' => 'Default'))
-//                ->add('collection', 'sonata_type_model_list', array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
                 ->add('title', null)
                 ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
@@ -117,6 +116,21 @@ class PostAdmin extends BaseAdmin
                         'sortable'  => 'position',
                         'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
                         'admin_code' => 'rz_news.admin.post_has_category',
+                        'error_bubbling' => false,
+                    )
+                )
+            ->end()
+
+            ->with('Media', array('class' => 'col-md-4'))
+                ->add('postHasMedia', 'sonata_type_collection', array(
+                        'cascade_validation' => true,
+                        'error_bubbling' => false,
+                    ), array(
+                        'edit' => 'inline',
+//                        'inline' => 'table',
+                        'sortable'  => 'position',
+                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
+                        'admin_code' => 'rz_news.admin.post_has_media',
                         'error_bubbling' => false,
                     )
                 )
@@ -179,6 +193,7 @@ class PostAdmin extends BaseAdmin
             $object->setCollection($collection);
         }
         $object->setPostHasCategory($object->getPostHasCategory());
+        $object->setPostHasMedia($object->getPostHasMedia());
     }
 
     /**
@@ -187,6 +202,7 @@ class PostAdmin extends BaseAdmin
     public function preUpdate($object)
     {
         $object->setPostHasCategory($object->getPostHasCategory());
+        $object->setPostHasMedia($object->getPostHasMedia());
     }
 
     public function setContextManager(ContextManagerInterface $contextManager) {

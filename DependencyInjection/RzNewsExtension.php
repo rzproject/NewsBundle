@@ -73,6 +73,7 @@ class RzNewsExtension extends Extension
         $defaultConfig['class']['post']  = sprintf('Application\\Sonata\\NewsBundle\\%s\\Post', $modelType);
         $defaultConfig['class']['comment'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\Comment', $modelType);
         $defaultConfig['class']['post_has_category'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\PostHasCategory', $modelType);
+        $defaultConfig['class']['post_has_media'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\PostHasMedia', $modelType);
 
         return array_replace_recursive($defaultConfig, $config);
     }
@@ -94,6 +95,7 @@ class RzNewsExtension extends Extension
         $container->setParameter(sprintf('sonata.news.admin.post.%s', $modelType), $config['class']['post']);
         $container->setParameter(sprintf('sonata.news.admin.comment.%s', $modelType), $config['class']['comment']);
         $container->setParameter(sprintf('rz_news.admin.post_has_category.%s', $modelType), $config['class']['post_has_category']);
+        $container->setParameter(sprintf('rz_news.admin.post_has_media.%s', $modelType), $config['class']['post_has_media']);
     }
 
     /**
@@ -107,6 +109,7 @@ class RzNewsExtension extends Extension
         // manager configuration
         $container->setParameter('sonata.news.manager.post.class',     $config['class_manager']['post']);
         $container->setParameter('rz_news.manager.post_has_category.class',     $config['class_manager']['post_has_category']);
+        $container->setParameter('rz_news.manager.post_has_media.class',     $config['class_manager']['post_has_media']);
         $container->setParameter('sonata.news.manager.comment.class',  $config['class_manager']['comment']);
     }
 
@@ -120,6 +123,7 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('sonata.news.admin.post.class', $config['admin']['post']['class']);
         $container->setParameter('rz_news.admin.post_has_category.class', $config['admin']['post_has_category']['class']);
+        $container->setParameter('rz_news.admin.post_has_media.class', $config['admin']['post_has_media']['class']);
         $container->setParameter('sonata.news.admin.comment.class', $config['admin']['comment']['class']);
     }
 
@@ -133,6 +137,7 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('sonata.news.admin.post.translation_domain', $config['admin']['post']['translation']);
         $container->setParameter('rz_news.admin.post_has_category.translation_domain', $config['admin']['post_has_category']['translation']);
+        $container->setParameter('rz_news.admin.post_has_media.translation_domain', $config['admin']['post_has_media']['translation']);
         $container->setParameter('sonata.news.admin.comment.translation_domain', $config['admin']['comment']['translation']);
     }
 
@@ -146,6 +151,7 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('sonata.news.admin.post.controller', $config['admin']['post']['controller']);
         $container->setParameter('rz_news.admin.post_has_category.controller', $config['admin']['post_has_category']['controller']);
+        $container->setParameter('rz_news.admin.post_has_media.controller', $config['admin']['post_has_media']['controller']);
         $container->setParameter('sonata.news.admin.comment.controller', $config['admin']['comment']['controller']);
     }
 
@@ -249,6 +255,59 @@ class RzNewsExtension extends Extension
             $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
                 'fieldName' => 'postHasCategory',
                 'targetEntity' => $config['class']['post_has_category'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => 'post',
+                'orphanRemoval' => true,
+                'orderBy' => array(
+                    'position' => 'ASC',
+                ),
+            ));
+
+
+
+        }
+
+        if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
+
+            $collector->addAssociation($config['class']['post_has_media'], 'mapManyToOne', array(
+                'fieldName' => 'post',
+                'targetEntity' => $config['class']['post'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => 'postHasMedia',
+                'joinColumns' => array(
+                    array(
+                        'name' => 'post_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post_has_media'], 'mapManyToOne', array(
+                'fieldName' => 'media',
+                'targetEntity' => $config['class']['media'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'joinColumns' => array(
+                    array(
+                        'name' => 'media_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
+                'fieldName' => 'postHasMedia',
+                'targetEntity' => $config['class']['post_has_media'],
                 'cascade' => array(
                     'persist',
                 ),

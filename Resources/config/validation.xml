@@ -10,7 +10,7 @@
         <property name="title">
             <constraint name="NotBlank">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
@@ -18,7 +18,7 @@
         <property name="abstract">
             <constraint name="NotBlank">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
@@ -30,7 +30,7 @@
         <property name="rawContent">
             <constraint name="NotBlank">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
@@ -39,35 +39,39 @@
             <constraint name="Valid"/>
         </property>
 
-        <property name="contentFormatter">
-            <constraint name="Sonata\FormatterBundle\Validator\Constraints\Formatter" />
-        </property>
-
         <property name="postHasCategory">
             <constraint name="Valid" />
         </property>
 
+        <property name="postHasMedia">
+            <constraint name="Valid" />
+        </property>
+
+
+        <property name="contentFormatter">
+            <constraint name="Sonata\FormatterBundle\Validator\Constraints\Formatter">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+
         <constraint name="Rz\NewsBundle\Validator\Constraints\PrePersistRelation">
             <option name="groups">
-                <value>Admin</value>
+                <value>admin</value>
             </option>
         </constraint>
     </class>
 
     <class name="Rz\NewsBundle\Entity\BasePostHasCategory">
-
         <property name="category">
             <constraint name="NotBlank">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
-
-        <!--<property name="portfolio">-->
-            <!--<constraint name="NotBlank" />-->
-        <!--</property>-->
-
         <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
             <option name="fields">
                 <value>post</value>
@@ -75,40 +79,48 @@
             </option>
             <option name="message">Category already exist.</option>
             <option name="groups">
-                <value>Admin</value>
+                <value>admin</value>
             </option>
         </constraint>
     </class>
 
-    <!--<class name="Movent\PortfolioBundle\Entity\BasePortfolioHasMedia">-->
-
-        <!--<property name="media">-->
-            <!--<constraint name="NotBlank" />-->
-        <!--</property>-->
-
-        <!--&lt;!&ndash;<property name="portfolio">&ndash;&gt;-->
-            <!--&lt;!&ndash;<constraint name="NotBlank" />&ndash;&gt;-->
-        <!--&lt;!&ndash;</property>&ndash;&gt;-->
-
-        <!--<constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">-->
-            <!--<option name="fields">-->
-                <!--<value>media</value>-->
-                <!--<value>portfolio</value>-->
-            <!--</option>-->
-            <!--<option name="message">Screenshot already exist.</option>-->
-        <!--</constraint>-->
-    <!--</class>-->
+    <class name="Rz\NewsBundle\Entity\BasePostHasMedia">
+        <property name="media">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+        <property name="contentFormatter">
+            <constraint name="Sonata\FormatterBundle\Validator\Constraints\Formatter">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
+            <option name="fields">
+                <value>media</value>
+                <value>post</value>
+            </option>
+            <option name="message">Media already exist.</option>
+            <option name="groups">
+                <value>admin</value>
+            </option>
+        </constraint>
+    </class>
 
     <class name="Sonata\NewsBundle\Model\Comment">
         <property name="name">
             <constraint name="NotBlank">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
             <constraint name="NotNull">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
@@ -116,7 +128,7 @@
         <property name="email">
             <constraint name="Email">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
@@ -124,7 +136,7 @@
         <property name="url">
             <constraint name="Url">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
@@ -132,12 +144,12 @@
         <property name="message">
             <constraint name="NotNull">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
             <constraint name="NotBlank">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
@@ -145,7 +157,7 @@
         <property name="post">
             <constraint name="NotNull">
                 <option name="groups">
-                    <value>Admin</value>
+                    <value>admin</value>
                 </option>
             </constraint>
         </property>
