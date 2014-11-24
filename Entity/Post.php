@@ -14,7 +14,7 @@ abstract class Post extends BasePost
     protected $postHasCategory;
     protected $postHasMedia;
     protected $commentsDefaultStatus = 0;
-
+    protected $commentsEnabled = false;
     /**
      * {@inheritdoc}
      */
