@@ -62,6 +62,7 @@ class PrePersistRelationValidator extends ConstraintValidator
 
                 }
             }
+
         }
 
         return;

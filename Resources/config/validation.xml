@@ -6,16 +6,62 @@
 
 
     <class name="Rz\NewsBundle\Entity\Post">
+
+        <property name="title">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="abstract">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="author">
+            <constraint name="Valid"/>
+        </property>
+
+        <property name="rawContent">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="tags">
+            <constraint name="Valid"/>
+        </property>
+
+        <property name="contentFormatter">
+            <constraint name="Sonata\FormatterBundle\Validator\Constraints\Formatter" />
+        </property>
+
         <property name="postHasCategory">
             <constraint name="Valid" />
         </property>
-        <constraint name="Rz\NewsBundle\Validator\Constraints\PrePersistRelation" />
+
+        <constraint name="Rz\NewsBundle\Validator\Constraints\PrePersistRelation">
+            <option name="groups">
+                <value>Admin</value>
+            </option>
+        </constraint>
     </class>
 
     <class name="Rz\NewsBundle\Entity\BasePostHasCategory">
 
         <property name="category">
-            <constraint name="NotBlank" />
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
         </property>
 
         <!--<property name="portfolio">-->
@@ -28,6 +74,9 @@
                 <value>category</value>
             </option>
             <option name="message">Category already exist.</option>
+            <option name="groups">
+                <value>Admin</value>
+            </option>
         </constraint>
     </class>
 
@@ -50,5 +99,55 @@
         <!--</constraint>-->
     <!--</class>-->
 
+    <class name="Sonata\NewsBundle\Model\Comment">
+        <property name="name">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
 
+        <property name="email">
+            <constraint name="Email">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="url">
+            <constraint name="Url">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="message">
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="post">
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>Admin</value>
+                </option>
+            </constraint>
+        </property>
+    </class>
 </constraint-mapping>

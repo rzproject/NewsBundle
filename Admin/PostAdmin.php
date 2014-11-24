@@ -29,6 +29,8 @@ class PostAdmin extends BaseAdmin
 
     protected $collectionManager;
 
+    protected $formOptions = array('validation_groups'=>array('Admin'), 'cascade_validation'=>true);
+
     /**
      * {@inheritdoc}
      */
