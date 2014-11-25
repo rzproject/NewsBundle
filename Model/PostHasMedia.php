@@ -19,7 +19,7 @@ abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInt
     public function __construct()
     {
         $this->position = 0;
-        $this->enabled  = false;
+        $this->enabled  = true;
     }
 
     /**

@@ -16,7 +16,7 @@ abstract class PostHasCategory extends NewsRelationModel implements PostHasCateg
     public function __construct()
     {
         $this->position = 0;
-        $this->enabled  = false;
+        $this->enabled  = true;
     }
 
     /**
