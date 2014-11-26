@@ -48,7 +48,6 @@ class PostAdmin extends BaseAdmin
             ->add('title')
             ->add('abstract','text')
             ->add('content', 'text', array('safe' => true))
-            ->add('settings')
             ->add('tags')
             ->add('postHasCategory')
             ->add('postHasMedia')
