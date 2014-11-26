@@ -27,7 +27,7 @@ abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInt
      */
     public function __toString()
     {
-        return $this->getCategory().' | '.$this->getPost();
+        return $this->getMedia().' | '.$this->getPost();
     }
 
     /**
