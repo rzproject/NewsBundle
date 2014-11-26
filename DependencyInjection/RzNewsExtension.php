@@ -41,6 +41,7 @@ class RzNewsExtension extends Extension
         $loader->load('post.xml');
         $loader->load('validators.xml');
         $loader->load('permalink.xml');
+        $loader->load('provider.xml');
 
         $config = $this->addDefaults($config);
         $this->registerDoctrineMapping($config, $container);
@@ -55,6 +56,33 @@ class RzNewsExtension extends Extension
         $this->configureBlocks($config, $container);
 
         $this->configureSettings($config, $container);
+
+        $this->configureProviders($container, $config);
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureProviders(ContainerBuilder $container, $config)
+    {
+
+        $pool = $container->getDefinition('rz_news.pool');
+        $pool->replaceArgument(0, $config['default_collection']);
+
+        foreach ($config['collections'] as $name => $settings) {
+            $templates = array();
+
+            foreach ($settings['templates'] as $template => $value) {
+                $templates[$template] = $value;
+            }
+            $pool->addMethodCall('addCollection', array($name, $settings['provider'], $settings['default_template'], $templates));
+
+            if($container->hasDefinition($settings['provider'])) {
+                $provider =$container->getDefinition($settings['provider']);
+                $provider->addMethodCall('setTemplates', array($templates));
+            }
+        }
     }
 
     /**

@@ -30,8 +30,39 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $node = $treeBuilder->root('rz_news');
         $this->addBundleSettings($node);
-//        $this->addAdminSettings($node);
+        $this->addContextsSection($node);
         return $treeBuilder;
+    }
+
+     /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addContextsSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->scalarNode('default_collection')->isRequired()->end()
+                ->arrayNode('collections')
+                    ->useAttributeAsKey('id')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('provider')->isRequired()->end()
+                            ->scalarNode('default_template')->isRequired()->end()
+                            ->arrayNode('templates')
+                                ->isRequired()
+                                ->useAttributeAsKey('id')
+                                ->prototype('array')
+                                    ->children()
+                                        ->scalarNode('name')->defaultValue('default')->end()
+                                        ->scalarNode('path')->defaultValue('RzNewsBundle:Post:view.html.twig')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 
         /**

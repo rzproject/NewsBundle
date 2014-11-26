@@ -2,19 +2,26 @@
 
 namespace Rz\NewsBundle\Entity;
 
-use Sonata\NewsBundle\Entity\BasePost as BasePost;
+use Sonata\NewsBundle\Entity\BasePost as Post;
 use Sonata\NewsBundle\Model\PostInterface;
 use Rz\NewsBundle\Model\PostHasCategoryInterface;
 use Rz\NewsBundle\Model\PostHasMediaInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
-abstract class Post extends BasePost
+abstract class BasePost extends Post
 {
 
     protected $postHasCategory;
+
     protected $postHasMedia;
+
     protected $commentsDefaultStatus = 0;
+
     protected $commentsEnabled = false;
+
+    protected $settings;
+
+
     /**
      * {@inheritdoc}
      */
@@ -121,5 +128,26 @@ abstract class Post extends BasePost
                 return;
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSetting($name, $value)
+    {
+        $this->settings[$name] = $value;
+    }
+
+    public function setSettings($settings)
+    {
+        $this->settings = $settings;
     }
 }

@@ -5,10 +5,15 @@
         http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
 
 
-    <class name="Rz\NewsBundle\Entity\Post">
+    <class name="Rz\NewsBundle\Entity\BasePost">
 
         <property name="title">
             <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+            <constraint name="NotNull">
                 <option name="groups">
                     <value>admin</value>
                 </option>
@@ -17,6 +22,11 @@
 
         <property name="abstract">
             <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+            <constraint name="NotNull">
                 <option name="groups">
                     <value>admin</value>
                 </option>

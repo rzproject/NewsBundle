@@ -488,6 +488,18 @@ Quick moderation links :
                 <target>Media</target>
             </trans-unit>
 
+           <trans-unit id="form.label_settings">
+                <source>form.label_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+
+           <trans-unit id="filter.label_collection">
+                <source>filter.label_collection</source>
+                <target>Collection</target>
+            </trans-unit>
+
+
+
         </body>
     </file>
 </xliff>

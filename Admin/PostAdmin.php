@@ -16,13 +16,15 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Sonata\ClassificationBundle\Model\CollectionManagerInterface;
+use Rz\NewsBundle\Provider\Pool;
+
 
 class PostAdmin extends BaseAdmin
 {
     const POST_DEFAULT_CONTEXT = 'news';
+
     const POST_DEFAULT_COLLECTION = 'blog';
 
     protected $contextManager;
@@ -30,6 +32,9 @@ class PostAdmin extends BaseAdmin
     protected $collectionManager;
 
     protected $formOptions = array('validation_groups'=>array('admin'), 'cascade_validation'=>true);
+
+    protected $pool;
+
 
     /**
      * {@inheritdoc}
@@ -73,6 +78,7 @@ class PostAdmin extends BaseAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
 
+        $post = $this->getSubject();
         $em = $this->modelManager->getEntityManager('Application\Sonata\ClassificationBundle\Entity\Tag');
 
         $context = $this->contextManager->find('news');
@@ -105,7 +111,18 @@ class PostAdmin extends BaseAdmin
                         'target_field'   => 'content',
                         'listener'       => true,
                 ))
-            ->end()
+            ->end();
+
+
+       $provider = $this->getPoolProvider();
+
+        if ($post->getId()) {
+            $provider->buildEditForm($formMapper);
+        } else {
+            $provider->buildCreateForm($formMapper);
+        }
+
+        $formMapper
             ->with('Category', array('class' => 'col-md-4'))
                 ->add('postHasCategory', 'sonata_type_collection', array(
                         'cascade_validation' => true,
@@ -127,7 +144,6 @@ class PostAdmin extends BaseAdmin
                         'error_bubbling' => false,
                     ), array(
                         'edit' => 'inline',
-//                        'inline' => 'table',
                         'sortable'  => 'position',
                         'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
                         'admin_code' => 'rz_news.admin.post_has_media',
@@ -213,6 +229,10 @@ class PostAdmin extends BaseAdmin
         $this->collectionManager = $collectionManager;
     }
 
+    public function setPostManager(CollectionManagerInterface $collectionManager) {
+        $this->collectionManager = $collectionManager;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -272,5 +292,37 @@ class PostAdmin extends BaseAdmin
         }
 
         return $instance;
+    }
+
+    public function setPool(Pool $pool) {
+        $this->pool = $pool;
+    }
+
+    protected function fetchCurrentCollection() {
+
+        $collectionId = $this->getPersistentParameter('collectionId');
+        $collection = null;
+        if($collectionId) {
+            $collection = $this->collectionManager->find($collectionId);
+        } else {
+            $collection = $this->collectionManager->findOneBy(array('slug'=>self::POST_DEFAULT_COLLECTION));
+        }
+
+        if($collection) {
+            return $collection;
+        } else {
+            return;
+        }
+    }
+
+    protected function getPoolProvider() {
+        $currentCollection = $this->fetchCurrentCollection();
+        if ($this->pool->hasCollection($currentCollection->getSlug())) {
+            $providerName = $this->pool->getProviderNameByCollection($currentCollection->getSlug());
+            return $this->pool->getProvider($providerName);
+        } else {
+            $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
+            return $this->pool->getProvider($providerName);
+        }
     }
 }
