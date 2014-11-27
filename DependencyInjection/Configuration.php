@@ -30,14 +30,14 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $node = $treeBuilder->root('rz_news');
         $this->addBundleSettings($node);
-        $this->addContextsSection($node);
+        $this->addSettingsSection($node);
         return $treeBuilder;
     }
 
      /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
-    private function addContextsSection(ArrayNodeDefinition $node)
+    private function addSettingsSection(ArrayNodeDefinition $node)
     {
         $node
             ->children()

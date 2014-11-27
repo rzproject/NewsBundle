@@ -56,7 +56,6 @@ class RzNewsExtension extends Extension
         $this->configureBlocks($config, $container);
 
         $this->configureSettings($config, $container);
-
         $this->configureProviders($container, $config);
     }
 
