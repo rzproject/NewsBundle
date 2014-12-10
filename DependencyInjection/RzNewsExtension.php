@@ -65,23 +65,12 @@ class RzNewsExtension extends Extension
      */
     public function configureProviders(ContainerBuilder $container, $config)
     {
-
         $pool = $container->getDefinition('rz_news.pool');
         $pool->replaceArgument(0, $config['default_collection']);
 
-        foreach ($config['collections'] as $name => $settings) {
-            $templates = array();
-
-            foreach ($settings['templates'] as $template => $value) {
-                $templates[$template] = $value;
-            }
-            $pool->addMethodCall('addCollection', array($name, $settings['provider'], $settings['default_template'], $templates));
-
-            if($container->hasDefinition($settings['provider'])) {
-                $provider =$container->getDefinition($settings['provider']);
-                $provider->addMethodCall('setTemplates', array($templates));
-            }
-        }
+        //set default collection
+        $container->setParameter('rz_news.provider.default_collection', $config['default_collection']);
+        $container->setParameter('rz_news.provider.collections', $config['collections']);
     }
 
     /**

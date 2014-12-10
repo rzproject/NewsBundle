@@ -141,6 +141,14 @@ abstract class BasePost extends Post
     /**
      * {@inheritDoc}
      */
+    public function getSetting($name, $default = null)
+    {
+        return isset($this->settings[$name]) ? $this->settings[$name] : $default;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setSetting($name, $value)
     {
         $this->settings[$name] = $value;
