@@ -8,6 +8,7 @@ use Sonata\NewsBundle\Model\PostInterface;
 abstract class BaseProvider implements PostProviderInterface
 {
     protected $templates = array();
+    protected $postManager;
 
     /**
      * @param string                                           $name
@@ -119,5 +120,21 @@ abstract class BaseProvider implements PostProviderInterface
     public function validate(ErrorElement $errorElement, PostInterface $post)
     {
 
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostManager()
+    {
+        return $this->postManager;
+    }
+
+    /**
+     * @param mixed $postManager
+     */
+    public function setPostManager($postManager)
+    {
+        $this->postManager = $postManager;
     }
 }

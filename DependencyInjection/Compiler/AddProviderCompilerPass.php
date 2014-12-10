@@ -43,6 +43,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
             if($container->hasDefinition($settings['provider'])) {
                 $provider =$container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setTemplates', array($templates));
+                $provider->addMethodCall('setPostManager', array($id, new Reference('sonata.news.manager.post')));
             }
         }
     }
