@@ -199,29 +199,6 @@ class PostAdmin extends BaseAdmin
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function prePersist($object)
-    {
-        $parameters = $this->getPersistentParameters();
-        if(isset($parameters['collectionId'])) {
-            $collection = $this->collectionManager->find($parameters['collectionId']);
-            $object->setCollection($collection);
-        }
-        $object->setPostHasCategory($object->getPostHasCategory());
-        $object->setPostHasMedia($object->getPostHasMedia());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function preUpdate($object)
-    {
-        $object->setPostHasCategory($object->getPostHasCategory());
-        $object->setPostHasMedia($object->getPostHasMedia());
-    }
-
     public function setContextManager(ContextManagerInterface $contextManager) {
         $this->contextManager = $contextManager;
     }
@@ -325,5 +302,51 @@ class PostAdmin extends BaseAdmin
             $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
             return $this->pool->getProvider($providerName);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prePersist($object)
+    {
+        parent::prePersist($object);
+        $parameters = $this->getPersistentParameters();
+        if(isset($parameters['collectionId'])) {
+            $collection = $this->collectionManager->find($parameters['collectionId']);
+            $object->setCollection($collection);
+        }
+        $object->setPostHasCategory($object->getPostHasCategory());
+        $object->setPostHasMedia($object->getPostHasMedia());
+        $this->getPoolProvider()->prePersist($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preUpdate($object)
+    {
+        parent::preUpdate($object);
+        $object->setPostHasCategory($object->getPostHasCategory());
+        $object->setPostHasMedia($object->getPostHasMedia());
+        $this->getPoolProvider()->preUpdate($object);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($object)
+    {
+        parent::postUpdate($object);
+        $this->getPoolProvider()->postUpdate($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postPersist($object)
+    {
+        parent::postPersist($object);
+        $this->getPoolProvider()->postPersist($object);
     }
 }
