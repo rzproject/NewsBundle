@@ -69,7 +69,7 @@ class RzNewsExtension extends Extension
         $pool->replaceArgument(0, $config['default_collection']);
 
         //set default collection
-        $container->setParameter('rz_news.provider.default_collection', $config['default_collection']);
+        $container->setParameter('rz_news.default_collection', $config['default_collection']);
         $container->setParameter('rz_news.provider.collections', $config['collections']);
     }
 

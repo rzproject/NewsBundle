@@ -217,7 +217,7 @@ class PostAdmin extends BaseAdmin
     public function getPersistentParameters()
     {
         $parameters = array(
-            'collectionId'      => '',
+            'collectionId'      => $this->getDefaultCollection(),
             'hide_collection' => (int)$this->getRequest()->get('hide_context', 0)
         );
 
@@ -243,7 +243,7 @@ class PostAdmin extends BaseAdmin
     {
         $instance = parent::getNewInstance();
 
-        if ($collectionId = $this->getPersistentParameter('collectionId')) {
+        if ($collectionId = $this->getPersistentParameter('collectionId') ?: $this->getDefaultCollection()) {
             $collection =  $this->collectionManager->find($collectionId);
 
             if (!$collection) {
@@ -348,5 +348,10 @@ class PostAdmin extends BaseAdmin
     {
         parent::postPersist($object);
         $this->getPoolProvider()->postPersist($object);
+    }
+
+    public function getDefaultCollection() {
+
+        return $this->collectionManager->findOneBy(array('slug'=>$this->pool->getDefaultCollection())) ?: null;
     }
 }
