@@ -16,10 +16,10 @@ class PostAdminController extends Controller
      */
     public function listAction()
     {
-
-        $currentCollection = false;
         if ($collection = $this->get('request')->get('collectionId')) {
             $currentCollection = $this->getCollectiontManager()->find($collection);
+        } else {
+            $currentCollection = $this->getCollectiontManager()->findOneBy(array('slug'=>$this->get('rz_news.pool')->getDefaultCollection()));
         }
 
         $context = $this->getContextManager()->find(PostAdmin::POST_DEFAULT_CONTEXT);
@@ -28,7 +28,7 @@ class PostAdminController extends Controller
             $collections = $this->getCollectiontManager()->findBy(array('context'=>$context->getId()));
             $currentCollection = current($collections);
         } else {
-            $collections = $this->getCollectiontManager()->findAllExcept(array('id'=>$collection,'context'=>$context->getId()));
+            $collections = $this->getCollectiontManager()->findAllExcept(array('id'=>$currentCollection,'context'=>$context->getId()));
         }
 
         $datagrid = $this->admin->getDatagrid();
