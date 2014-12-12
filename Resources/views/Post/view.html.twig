@@ -4,6 +4,13 @@
             <h1>{{ post.title }}</h1>
             <h2 class="center">
                 {{ post.publicationDateStart | format_date }} {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}
+                {% if post.postHasCategory | length > 0 %} |
+                {% for postHasCategory in post.postHasCategory %}
+                    {% if postHasCategory.enabled %}
+                    <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                   {% endif %}
+                {% endfor %}
+                {% endif %}
             </h2>
             <h4 class="center">
                 <i class="icon-tags grey"></i>
@@ -16,7 +23,7 @@
         </div>
     </div>
 </div>
-
+{% if post.iscommentable %}
 <article class="sonata-blog-post-container">
     {% render(controller('SonataNewsBundle:Post:comments', {'postId': post.id})) %}
 
@@ -31,3 +38,4 @@
         </div>
     {% endif %}
 </article>
+{% endif %}

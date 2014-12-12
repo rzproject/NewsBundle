@@ -1,8 +1,7 @@
 {% extends sonata_block.templates.block_base %}
-
 {% block block %}
     {% if settings.title %}
-        <h3 class="sonata-news-block-recent-post">{{ settings.title }}</h3>
+        <h3 class="sonata-news-block-tags">{{ settings.title }}</h3>
     {% endif %}
     <ul class="media-list blog recent-post-sidebar">
         {% for tag in tags %}

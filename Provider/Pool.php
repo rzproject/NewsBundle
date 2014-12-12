@@ -17,6 +17,8 @@ class Pool
 
     protected $defaultCollection;
 
+    const NEWS_POOL_DEFAULT_COLLECTION = 'default';
+
     /**
      * @param string $collection
      */
@@ -205,13 +207,20 @@ class Pool
         return $config;
     }
 
-
     /**
      * @return string
      */
     public function getDefaultCollection()
     {
         return $this->defaultCollection;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultDefaultCollection()
+    {
+        return self::NEWS_POOL_DEFAULT_COLLECTION;
     }
 
     /**

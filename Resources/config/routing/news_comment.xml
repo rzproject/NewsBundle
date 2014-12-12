@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="rz_news_add_comment" pattern="/add-comment/{id}">
+        <default key="_controller">RzNewsBundle:NewsComment:addComment</default>
+    </route>
+
+    <route id="rz_news_comment_moderation" pattern="/comment/moderation/{commentId}/{hash}/{status}">
+        <default key="_controller">RzNewsBundle:NewsComment:commentModeration</default>
+    </route>
+
+</routes>

@@ -4,7 +4,7 @@
     {% if settings.block_type is defined and settings.block_type == 'sidebar' %}
         {% if posts %}
             {% if settings.title %}
-                 <h3 class="sonata-news-block-recent-post">{{ settings.title }}</h3>
+                 <h3 class="sonata-news-block-featured-post">{{ settings.title }}</h3>
             {% endif %}
             <ul class="media-list blog recent-post-sidebar">
                 {% for post in posts %}
