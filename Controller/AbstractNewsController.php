@@ -122,4 +122,10 @@ abstract class AbstractNewsController extends Controller
         return $this->container->get('templating');
     }
 
+
+    protected function getFallbackTemplate() {
+        $viewTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $viewTemplate['rz_news.template.view'];
+    }
+
 }

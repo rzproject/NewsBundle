@@ -8,13 +8,6 @@
     <h4><a href="{{ url('rz_news_collection_view', { 'collection':  collection.slug, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
 {% endblock post_read_more %}
 
-{% block post_title_details %}
-    <h4><b>{{ post.publicationDateStart | format_date }}</b> | <b><a href="{{ url('rz_news_collection', {'collection': post.collection.slug }) }} ">{{ post.collection }}</a></b> | <b>{{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
-    {% if post.settings.start_date and post.settings.end_date %}
-    <h4><b>EVENT DATES:</b> {{ post.settings.start_date.month ~ '/' ~  post.settings.start_date.day ~ '/' ~  post.settings.start_date.year  }} - {{ post.settings.end_date.month ~ '/' ~  post.settings.end_date.day ~ '/' ~  post.settings.end_date.year  }} </h4>
-    {% endif %}
-{% endblock post_title_details %}
-
 {% block post_paginator %}
     {% if pager.haveToPaginate %}
         {% spaceless %}

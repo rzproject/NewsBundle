@@ -127,10 +127,6 @@ class NewsCollectionController extends AbstractNewsController
         ));
     }
 
-    protected function getFallbackTemplate() {
-        $viewTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
-        return $viewTemplate['rz_news.template.view'];
-    }
     protected function renderCollectionList($collection, $page = null) {
 
         $parameters = array('collection' => $collection);
@@ -142,6 +138,7 @@ class NewsCollectionController extends AbstractNewsController
         $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection));
 
         $template = $collection->getSetting('template');
+
         if($template && $this->getTemplating()->exists($template) ) {
             return $this->render($template, $parameters);
         } else {

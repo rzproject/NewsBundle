@@ -1,19 +1,12 @@
 {% extends rz_admin_get_template('rz_news.template.news_layout_html') %}
 
 {% block post_title %}
-    <h1 class="blog"><a href="{{ url('rz_news_collection_view', { 'collection':  collection.slug, 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
+    <h1 class="blog"><a href="{{ url('rz_news_category_view', { 'category':  category.slug, 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
 {% endblock post_title %}
 
 {% block post_read_more %}
-    <h4><a href="{{ url('rz_news_collection_view', { 'collection':  collection.slug, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
+    <h4><a href="{{ url('rz_news_category_view', { 'category':  category.slug, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
 {% endblock post_read_more %}
-
-{% block post_title_details %}
-    <h4><b>{{ post.publicationDateStart | format_date }}</b> | <b><a href="{{ url('rz_news_collection', {'collection': post.collection.slug }) }} ">{{ post.collection }}</a></b> | <b>{{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
-    {% if post.settings.start_date and post.settings.end_date %}
-    <h4><b>EVENT DATES:</b> {{ post.settings.start_date.month ~ '/' ~  post.settings.start_date.day ~ '/' ~  post.settings.start_date.year  }} - {{ post.settings.end_date.month ~ '/' ~  post.settings.end_date.day ~ '/' ~  post.settings.end_date.year  }} </h4>
-    {% endif %}
-{% endblock post_title_details %}
 
 {% block post_paginator %}
     {% if pager.haveToPaginate %}
@@ -23,7 +16,7 @@
                     {% if pager.hasPreviousPage %}
                         <li class="pull-left">
                             <a class="btn btn-rzcms-theme"
-                               href="{{ url('rz_news_collection_pager',{'page': pager.previousPage, 'collection': collection.slug }) }}"
+                               href="{{ url('rz_news_category_pager',{'page': pager.previousPage, 'category': category.slug }) }}"
                                title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
                             </a>
                         </li>
@@ -31,7 +24,7 @@
                     {% if pager.hasNextPage %}
                         <li class="pull-right">
                             <a class="btn btn-rzcms-theme"
-                               href="{{ url('rz_news_collection_pager', {'page': pager.nextPage, 'collection': collection.slug }) }}"
+                               href="{{ url('rz_news_category_pager', {'page': pager.nextPage, 'category': category.slug }) }}"
                                title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
                             </a>
                         </li>
