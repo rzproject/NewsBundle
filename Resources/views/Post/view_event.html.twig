@@ -47,9 +47,28 @@
             <div class="pad25"></div>
             {{ post.content|raw }}
             <div class="pad25"></div>
-            {% if post.settings.location %}
-            <div id="map-canvas" class="span12"></div>
+            {% if post.settings.start_date %}
+                <div class="cont-table">
+                    <ul>
+                        <li class="cont-header-row-1">
+                            <h4>{{ post.title }}</h4>
+                        </li>
+                        <li class="cont-content-row-odd" style="text-align: left; padding-left: 20px;">
+                            EVENT DATES: {{ post.settings.start_date.month ~ '/' ~  post.settings.start_date.day ~ '/' ~  post.settings.start_date.year  }} - {{ post.settings.end_date.month ~ '/' ~  post.settings.end_date.day ~ '/' ~  post.settings.end_date.year  }}
+                        </li>
+                        <li class="cont-content-row-even" style="text-align: left; padding-left: 20px;">
+                            ADDRESS: {{ post.settings.address }}
+                        </li>
+                        {% if post.settings.location %}
+                        <li class="cont-content-row-even">
+                            <strong>LOCATION MAP</strong>
+                            <div id="map-canvas" class="span12"></div>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
             {% endif %}
+
         </div>
     </div>
 </div>
