@@ -1,0 +1,71 @@
+{% if post.settings.location %}
+<style>
+    html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+        min-height: 400px;
+
+    }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+<script>
+    var map;
+    function initialize() {
+        var mapOptions = {
+            zoom: 8,
+            center: new google.maps.LatLng({{ post.settings.location.lat }}, {{ post.settings.location.lng }})
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+                mapOptions);
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>
+{% endif %}
+<div class="container">
+    <div class="row-fluid">
+        <div class="span12">
+            <h1>{{ post.title }}</h1>
+            <h2 class="center">
+                {{ post.publicationDateStart | format_date }} {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}
+                {% if post.postHasCategory | length > 0 %} |
+                    {% for postHasCategory in post.postHasCategory %}
+                        {% if postHasCategory.enabled %}
+                            <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </h2>
+            <h4 class="center">
+                <i class="icon-tags grey"></i>
+                {% for tag in post.tags %}
+                    <a href="{{ url('rz_news_tag', { 'tag': tag.slug, '_format': 'html' } ) }}">{{ tag.name }}</a>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </h4>
+            <div class="pad25"></div>
+            {{ post.content|raw }}
+            <div class="pad25"></div>
+            {% if post.settings.location %}
+            <div id="map-canvas" class="span12"></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if post.iscommentable %}
+    <article class="sonata-blog-post-container">
+        {% render(controller('SonataNewsBundle:Post:comments', {'postId': post.id})) %}
+
+        {% if post.iscommentable %}
+            {% render(controller('SonataNewsBundle:Post:addCommentForm', {
+            'postId': post.id,
+            'form': form
+            })) %}
+        {% else %}
+            <div>
+                {{ 'message_comments_are_closed'|trans({}, 'SonataNewsBundle') }}
+            </div>
+        {% endif %}
+    </article>
+{% endif %}

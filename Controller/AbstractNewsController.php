@@ -118,4 +118,8 @@ abstract class AbstractNewsController extends Controller
         return $response;
     }
 
+    public function getTemplating() {
+        return $this->container->get('templating');
+    }
+
 }

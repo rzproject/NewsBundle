@@ -100,18 +100,40 @@ class NewsCollectionController extends AbstractNewsController
             ;
         }
 
-        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
-        return $this->render($template['rz_news.template.view'], array(
+        //set default template
+        $template = $this->getFallbackTemplate();
+
+
+        $viewTemplate = $post->getSetting('template');
+        if($viewTemplate) {
+            if ($this->getTemplating()->exists($template)) {
+                $template = $viewTemplate;
+            } else {
+                //get generic template
+                $pool = $this->getNewsPool();
+                $defaultTemplateName = $pool->getDefaultTemplateNameByCollection($pool->getDefaultDefaultCollection());
+                $defaultViewTemplate = $pool->getTemplateByCollection($defaultTemplateName);
+
+                if($defaultViewTemplate) {
+                    $template = $viewTemplate['path'];
+                }
+            }
+        }
+
+        return $this->render($template, array(
             'post' => $post,
             'form' => false,
             'blog' => $this->get('sonata.news.blog')
         ));
     }
 
+    protected function getFallbackTemplate() {
+        $viewTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
+        return $viewTemplate['rz_news.template.view'];
+    }
     protected function renderCollectionList($collection, $page = null) {
 
         $parameters = array('collection' => $collection);
-
         if($page) {
             $parameters['page'] = $page;
         }
@@ -119,7 +141,12 @@ class NewsCollectionController extends AbstractNewsController
         $pager = $this->fetchNews($parameters);
         $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection));
 
-        return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_COLLECTION);
+        $template = $collection->getSetting('template');
+        if($template && $this->getTemplating()->exists($template) ) {
+            return $this->render($template, $parameters);
+        } else {
+            return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_COLLECTION);
+        }
     }
 
     protected function verifyCollection($collection) {
