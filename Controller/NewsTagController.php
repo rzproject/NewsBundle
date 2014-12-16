@@ -100,8 +100,26 @@ class NewsTagController extends AbstractNewsController
             ;
         }
 
-        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
-        return $this->render($template['rz_news.template.view'], array(
+        //set default template
+        $template = $this->getFallbackTemplate();
+
+        $viewTemplate = $post->getSetting('template');
+        if($viewTemplate) {
+            if ($this->getTemplating()->exists($template)) {
+                $template = $viewTemplate;
+            } else {
+                //get generic template
+                $pool = $this->getNewsPool();
+                $defaultTemplateName = $pool->getDefaultTemplateNameByCollection($pool->getDefaultDefaultCollection());
+                $defaultViewTemplate = $pool->getTemplateByCollection($defaultTemplateName);
+
+                if($defaultViewTemplate) {
+                    $template = $viewTemplate['path'];
+                }
+            }
+        }
+
+        return $this->render($template, array(
             'post' => $post,
             'form' => false,
             'blog' => $this->get('sonata.news.blog')
@@ -119,7 +137,13 @@ class NewsTagController extends AbstractNewsController
         $pager = $this->fetchNews($parameters);
         $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag));
 
-        return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_TAG);
+        $template = $tag->getSetting('template');
+
+        if($template && $this->getTemplating()->exists($template) ) {
+            return $this->render($template, $parameters);
+        } else {
+            return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_TAG);
+        }
     }
 
     protected function verifyTag($tag) {
