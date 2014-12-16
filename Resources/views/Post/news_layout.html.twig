@@ -22,7 +22,7 @@
         {% endblock post_title %}
 
         {% block post_title_details %}
-        <h4><b>{{ post.publicationDateStart | format_date }}</b> | <b><a href="{{ url('rz_news_collection', {'collection': post.collection.slug }) }} ">{{ post.collection }}</a></b> | <b>{{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
+        <h4><b>{{ post.publicationDateStart | format_date }}</b> |  <b>{{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
         {% endblock post_title_details %}
 
         {% block post_abstract %}
