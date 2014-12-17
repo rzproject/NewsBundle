@@ -4,18 +4,18 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="rz_news_collection_view" pattern="/collection/{collection}/{permalink}.{_format}">
+    <route id="rz_news_collection_view" pattern="/{collection}/{permalink}.{_format}">
         <default key="_controller">RzNewsBundle:NewsCollection:collectionView</default>
         <requirement key="_format">html</requirement>
         <requirement key="collection">[^/]+</requirement>
         <requirement key="permalink">[^/]+</requirement>
     </route>
 
-    <route id="rz_news_collection" pattern="/collection/{collection}">
+    <route id="rz_news_collection" pattern="/{collection}">
         <default key="_controller">RzNewsBundle:NewsCollection:collection</default>
     </route>
 
-    <route id="rz_news_collection_pager" pattern="/collection/{collection}/page/{page}">
+    <route id="rz_news_collection_pager" pattern="/{collection}/page/{page}">
         <default key="_controller">RzNewsBundle:NewsCollection:collectionPager</default>
         <requirement key="page">\d+</requirement>
     </route>
