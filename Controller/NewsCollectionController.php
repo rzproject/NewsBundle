@@ -135,6 +135,11 @@ class NewsCollectionController extends AbstractNewsController
         }
 
         $pager = $this->fetchNews($parameters);
+
+        if ($pager->getNbResults() <= 0) {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+
         $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection));
 
         $template = $collection->getSetting('template');
