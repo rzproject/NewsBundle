@@ -15,7 +15,7 @@
         <default key="_controller">RzNewsBundle:NewsCollection:collection</default>
     </route>
 
-    <route id="rz_news_load_more" pattern="/load-more/{collection}/{page}">
+    <route id="rz_news_collection_load_more" pattern="/load-more/{collection}/{page}">
         <default key="_controller">RzNewsBundle:NewsCollection:collectionAjaxPager</default>
         <requirement key="page">\d+</requirement>
     </route>

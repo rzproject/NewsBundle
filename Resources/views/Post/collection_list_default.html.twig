@@ -18,7 +18,7 @@
                         <li style="text-align: center;">
                             <a id="load_more_button"
                                class="btn btn-rzcms-theme"
-                               href="{{ url('rz_news_load_more', {'page': pager.nextPage, 'collection': collection.slug }) }}"
+                               href="{{ url('rz_news_collection_load_more', {'page': pager.nextPage, 'collection': collection.slug }) }}"
                                title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
                         </li>
                     {% endif %}

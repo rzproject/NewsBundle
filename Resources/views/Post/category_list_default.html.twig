@@ -9,10 +9,42 @@
     <h4><a href="{{ url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
 {% endblock post_read_more %}
 
+{% block post_categories %}
+    <div class="post-meta muted">
+        <ul>
+            <li>Category: </li>
+            <li>
+                {{ category.name }}
+            </li>
+        </ul>
+    </div>
+{% endblock post_categories %}
+
 {% block post_paginator %}
     {% if pager.haveToPaginate %}
         {% spaceless %}
-            <div class="pagination">
+            <div id="load_more_container" class="pagination">
+            {% if is_ajax_pagination %}
+                <ul class="span12">
+                    {% if pager.hasNextPage %}
+                        <li style="text-align: center;">
+                            <a id="load_more_button"
+                               class="btn btn-rzcms-theme"
+                               href="{{ url('rz_news_news_category_load_more', {'page': pager.nextPage, 'permalink': permalink }) }}"
+                               title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <script type="text/javascript">
+                    jQuery(document).ready(function () {
+                        var rz_news_post_loadmore_js = new rz_news_post_loadmore({
+                            load_more_container: "load_more_container",
+                            load_more_button: "load_more_button",
+                            field_container: 'posts'
+                        });
+                    });
+                </script>
+            {% else %}
                 <ul class="span12">
                     {% if pager.hasPreviousPage %}
                     <li class="pull-left">
@@ -30,6 +62,7 @@
                     </li>
                     {% endif %}
                 </ul>
+            {% endif %}
             </div>
         {% endspaceless %}
     {% endif %}

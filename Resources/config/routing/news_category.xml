@@ -15,6 +15,12 @@
         <requirement key="permalink">[^/]+</requirement>
     </route>
 
+    <route id="rz_news_news_category_load_more" pattern="/load-more/category/{permalink}/{page}">
+        <default key="_controller">RzNewsBundle:NewsCategory:categoryAjaxPager</default>
+        <requirement key="permalink">.+</requirement>
+        <requirement key="page">\d+</requirement>
+    </route>
+
     <route id="rz_news_category_pager" pattern="/category/{permalink}/page/{page}">
         <default key="_controller">RzNewsBundle:NewsCategory:categoryPager</default>
         <requirement key="page">\d+</requirement>

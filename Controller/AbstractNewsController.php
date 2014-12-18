@@ -128,4 +128,8 @@ abstract class AbstractNewsController extends Controller
         return $viewTemplate['rz_news.template.view'];
     }
 
+    protected function getAjaxTemplates($template) {
+        return array('ajax_template'=>preg_replace('/.html.twig/', '_ajax.html.twig', $template),
+            'ajax_pager'=>preg_replace('/.html.twig/', '_ajax_pager.html.twig', $template));
+    }
 }

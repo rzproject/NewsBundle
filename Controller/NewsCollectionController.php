@@ -57,18 +57,11 @@ class NewsCollectionController extends AbstractNewsController
             return $this->redirect($this->generateUrl('rz_news_collection_pager', array('collection'=>$collection->getSlug(), 'page'=>$page)), 301);
         }
 
-        $parameters = array('collection' => $collection);
-        if($page) {
-            $parameters['page'] = $page;
+        try {
+            $parameters = $this->getCollectionDataForView($collection, $page);
+        } catch(\Exception $e) {
+            throw $e;
         }
-
-        $pager = $this->fetchNews($parameters);
-
-        if ($pager->getNbResults() <= 0) {
-            throw new NotFoundHttpException('Invalid URL');
-        }
-
-        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection));
 
         //for now reuse the template name TODO:implement on settings
         $template = $collection->getSetting('template');
@@ -178,6 +171,22 @@ class NewsCollectionController extends AbstractNewsController
 
     protected function renderCollectionList($collection, $page = null) {
 
+        try {
+            $parameters = $this->getCollectionDataForView($collection, $page);
+        } catch(\Exception $e) {
+            throw $e;
+        }
+
+        $template = $collection->getSetting('template');
+
+        if($template && $this->getTemplating()->exists($template) ) {
+            return $this->render($template, $parameters);
+        } else {
+            return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_COLLECTION);
+        }
+    }
+
+    protected function getCollectionDataForView($collection, $page = null) {
         $parameters = array('collection' => $collection);
         if($page) {
             $parameters['page'] = $page;
@@ -189,15 +198,7 @@ class NewsCollectionController extends AbstractNewsController
             throw new NotFoundHttpException('Invalid URL');
         }
 
-        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
-
-        $template = $collection->getSetting('template');
-
-        if($template && $this->getTemplating()->exists($template) ) {
-            return $this->render($template, $parameters);
-        } else {
-            return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_COLLECTION);
-        }
+        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
     }
 
     protected function verifyCollection($collection) {
@@ -215,10 +216,5 @@ class NewsCollectionController extends AbstractNewsController
         }
 
         return $collection;
-    }
-
-    protected function getAjaxTemplates($template) {
-        return array('ajax_template'=>preg_replace('/.html.twig/', '_ajax.html.twig', $template),
-                     'ajax_pager'=>preg_replace('/.html.twig/', '_ajax_pager.html.twig', $template));
     }
 }

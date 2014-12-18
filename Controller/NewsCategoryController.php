@@ -3,8 +3,8 @@
 namespace Rz\NewsBundle\Controller;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class NewsController
@@ -45,9 +45,58 @@ class NewsCategoryController extends AbstractNewsController
     public function categoryPagerAction($permalink, $page)
     {
         if ($category = $this->verifyCategoryPermalink($permalink)) {
-            return $this->renderCategoryList($category, $permalink, $page);
+
+            try {
+                return $this->renderCategoryList($category, $permalink, $page);
+            } catch(\Exception $e) {
+                throw $e;
+            }
+
         } else {
             throw new NotFoundHttpException('Invalid URL');
+        }
+    }
+
+    public function categoryAjaxPagerAction($permalink, $page) {
+
+        if (!$category = $this->verifyCategoryPermalink($permalink)) {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+
+        //redirect to normal controller if not ajax
+        if (!$this->get('request_stack')->getCurrentRequest()->isXmlHttpRequest()) {
+            return $this->redirect($this->generateUrl('rz_news_category_pager', array('permalink'=>$permalink, 'page'=>$page)), 301);
+        }
+
+        try {
+            $parameters = $this->getCategoryDataForView($category, $permalink, $page);
+        } catch(\Exception $e) {
+            throw $e;
+        }
+
+        //for now reuse the template name TODO:implement on settings
+        $template = $category->getSetting('template');
+        $templates = $this->getAjaxTemplates($template);
+        $templateAjax = $templates['ajax_template'];
+        $templatePagerAjax = $templates['ajax_pager'];
+
+        if($template && $this->getTemplating()->exists($template) &&
+            $templateAjax && $this->getTemplating()->exists($templateAjax) &&
+            $templatePagerAjax && $this->getTemplating()->exists($templatePagerAjax)) {
+
+            $html = $this->container->get('templating')->render($templateAjax, $parameters);
+            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
+            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
+
+        } else {
+            $defaultTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
+            $template = $defaultTemplate[sprintf('rz_news.template.%s_%s', self::NEWS_LIST_TYPE_CATEGORY,  'html')];
+            $templates = $this->getAjaxTemplates($template);
+            $templateAjax = $templates['ajax_template'];
+            $templatePagerAjax = $templates['ajax_pager'];
+            $html = $this->container->get('templating')->render($templateAjax, $parameters);
+            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
+            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
         }
     }
 
@@ -130,7 +179,7 @@ class NewsCategoryController extends AbstractNewsController
         ));
     }
 
-    protected function renderCategoryList($category, $permalink, $page = null) {
+    protected function getCategoryDataForView($category, $permalink, $page = null) {
 
         $parameters = array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink, true));
 
@@ -139,7 +188,21 @@ class NewsCategoryController extends AbstractNewsController
         }
 
         $pager = $this->fetchNews($parameters);
-        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'category'=>$category));
+
+        if ($pager->getNbResults() <= 0) {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+
+        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'category'=>$category, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+    }
+
+    protected function renderCategoryList($category, $permalink, $page = null) {
+
+        try {
+            $parameters = $this->getCategoryDataForView($category, $permalink, $page);
+        } catch(\Exception $e) {
+            throw $e;
+        }
 
         $template = $category->getSetting('template');
 
