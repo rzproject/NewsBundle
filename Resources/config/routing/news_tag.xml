@@ -15,6 +15,12 @@
         <default key="_controller">RzNewsBundle:NewsTag:tag</default>
     </route>
 
+    <route id="rz_news_tag_loadmore" pattern="/load-more/tag/{tag}/page/{page}">
+        <default key="_controller">RzNewsBundle:NewsTag:tagAjaxPager</default>
+        <requirement key="page">\d+</requirement>
+        <requirement key="_format">html|rss</requirement>
+    </route>
+
     <route id="rz_news_tag_pager" pattern="/tag/{tag}/page/{page}">
         <default key="_controller">RzNewsBundle:NewsTag:tagPager</default>
         <requirement key="page">\d+</requirement>

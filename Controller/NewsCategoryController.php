@@ -31,7 +31,12 @@ class NewsCategoryController extends AbstractNewsController
     public function categoryAction($permalink)
     {
         if ($category = $this->verifyCategoryPermalink($permalink)) {
-            return $this->renderCategoryList($category, $permalink);
+            try {
+                $response =  $this->renderCategoryList($category, $permalink);
+            } catch(\Exception $e) {
+                throw $e;
+            }
+            return $response;
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
@@ -45,13 +50,12 @@ class NewsCategoryController extends AbstractNewsController
     public function categoryPagerAction($permalink, $page)
     {
         if ($category = $this->verifyCategoryPermalink($permalink)) {
-
             try {
-                return $this->renderCategoryList($category, $permalink, $page);
+                $response =  $this->renderCategoryList($category, $permalink, $page);
             } catch(\Exception $e) {
                 throw $e;
             }
-
+            return $response;
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
@@ -74,30 +78,7 @@ class NewsCategoryController extends AbstractNewsController
             throw $e;
         }
 
-        //for now reuse the template name TODO:implement on settings
-        $template = $category->getSetting('template');
-        $templates = $this->getAjaxTemplates($template);
-        $templateAjax = $templates['ajax_template'];
-        $templatePagerAjax = $templates['ajax_pager'];
-
-        if($template && $this->getTemplating()->exists($template) &&
-            $templateAjax && $this->getTemplating()->exists($templateAjax) &&
-            $templatePagerAjax && $this->getTemplating()->exists($templatePagerAjax)) {
-
-            $html = $this->container->get('templating')->render($templateAjax, $parameters);
-            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
-            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
-
-        } else {
-            $defaultTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
-            $template = $defaultTemplate[sprintf('rz_news.template.%s_%s', self::NEWS_LIST_TYPE_CATEGORY,  'html')];
-            $templates = $this->getAjaxTemplates($template);
-            $templateAjax = $templates['ajax_template'];
-            $templatePagerAjax = $templates['ajax_pager'];
-            $html = $this->container->get('templating')->render($templateAjax, $parameters);
-            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
-            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
-        }
+        return $this->getAjaxResponse($category, $parameters, self::NEWS_LIST_TYPE_CATEGORY);
     }
 
 

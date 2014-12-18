@@ -4,6 +4,7 @@ namespace Rz\NewsBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class NewsController
@@ -131,5 +132,32 @@ abstract class AbstractNewsController extends Controller
     protected function getAjaxTemplates($template) {
         return array('ajax_template'=>preg_replace('/.html.twig/', '_ajax.html.twig', $template),
             'ajax_pager'=>preg_replace('/.html.twig/', '_ajax_pager.html.twig', $template));
+    }
+
+    protected function getAjaxResponse($object, $parameters, $type) {
+        //for now reuse the template name TODO:implement on settings
+        $template = $object->getSetting('template');
+        $templates = $this->getAjaxTemplates($template);
+        $templateAjax = $templates['ajax_template'];
+        $templatePagerAjax = $templates['ajax_pager'];
+
+        if($template && $this->getTemplating()->exists($template) &&
+            $templateAjax && $this->getTemplating()->exists($templateAjax) &&
+            $templatePagerAjax && $this->getTemplating()->exists($templatePagerAjax)) {
+
+            $html = $this->container->get('templating')->render($templateAjax, $parameters);
+            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
+            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
+
+        } else {
+            $defaultTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
+            $template = $defaultTemplate[sprintf('rz_news.template.%s_%s', $type,  'html')];
+            $templates = $this->getAjaxTemplates($template);
+            $templateAjax = $templates['ajax_template'];
+            $templatePagerAjax = $templates['ajax_pager'];
+            $html = $this->container->get('templating')->render($templateAjax, $parameters);
+            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
+            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
+        }
     }
 }

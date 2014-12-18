@@ -26,7 +26,13 @@ class NewsTagController extends AbstractNewsController
             throw new NotFoundHttpException('Unable to find the tag');
         }
 
-        return $this->renderTagList($tag);
+        try {
+            $response = $this->renderTagList($tag);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $response;
     }
 
     /**
@@ -43,7 +49,33 @@ class NewsTagController extends AbstractNewsController
             throw new NotFoundHttpException('Unable to find the tag');
         }
 
-        return $this->renderTagList($tag, $page);
+        try {
+            $response = $this->renderTagList($tag);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $response;
+    }
+
+    public function tagAjaxPagerAction($tag, $page) {
+
+        if(!$tag = $this->verifyTag($tag)) {
+            throw new NotFoundHttpException('Unable to find the tag');
+        }
+
+        //redirect to normal controller if not ajax
+        if (!$this->get('request_stack')->getCurrentRequest()->isXmlHttpRequest()) {
+            return $this->redirect($this->generateUrl('rz_news_tag_pager', array('tag'=>$tag->getSlug(), 'page'=>$page)), 301);
+        }
+
+        try {
+            $parameters = $this->getTagDataForView($tag, $page);
+        } catch(\Exception $e) {
+            throw $e;
+        }
+
+        return $this->getAjaxResponse($tag, $parameters, self::NEWS_LIST_TYPE_TAG);
     }
 
     /**
@@ -128,14 +160,11 @@ class NewsTagController extends AbstractNewsController
 
     protected function renderTagList($tag, $page = null) {
 
-        $parameters = array('tag' => $tag);
-
-        if($page) {
-            $parameters['page'] = $page;
+        try {
+            $parameters = $this->getTagDataForView($tag, $page);
+        } catch(\Exception $e) {
+            throw $e;
         }
-
-        $pager = $this->fetchNews($parameters);
-        $parameters = $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag));
 
         $template = $tag->getSetting('template');
 
@@ -144,6 +173,24 @@ class NewsTagController extends AbstractNewsController
         } else {
             return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_TAG);
         }
+    }
+
+    protected function getTagDataForView($tag, $page = null) {
+
+        $parameters = array('tag' => $tag);
+
+        if($page) {
+            $parameters['page'] = $page;
+        }
+
+        $pager = $this->fetchNews($parameters);
+
+        if ($pager->getNbResults() <= 0) {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+
+        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+
     }
 
     protected function verifyTag($tag) {

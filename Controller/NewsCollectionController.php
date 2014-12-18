@@ -26,7 +26,13 @@ class NewsCollectionController extends AbstractNewsController
             throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        return $this->renderCollectionList($collection);
+        try {
+            $response = $this->renderCollectionList($collection);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $response;
     }
 
 
@@ -43,7 +49,13 @@ class NewsCollectionController extends AbstractNewsController
             throw new NotFoundHttpException('Unable to find the collection');
         }
 
-        return $this->renderCollectionList($collection, $page);
+        try {
+            $response = $this->renderCollectionList($collection, $page);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $response;
     }
 
     public function collectionAjaxPagerAction($collection, $page) {
@@ -63,30 +75,7 @@ class NewsCollectionController extends AbstractNewsController
             throw $e;
         }
 
-        //for now reuse the template name TODO:implement on settings
-        $template = $collection->getSetting('template');
-        $templates = $this->getAjaxTemplates($template);
-        $templateAjax = $templates['ajax_template'];
-        $templatePagerAjax = $templates['ajax_pager'];
-
-        if($template && $this->getTemplating()->exists($template) &&
-           $templateAjax && $this->getTemplating()->exists($templateAjax) &&
-           $templatePagerAjax && $this->getTemplating()->exists($templatePagerAjax)) {
-
-            $html = $this->container->get('templating')->render($templateAjax, $parameters);
-            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
-            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
-
-        } else {
-            $defaultTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
-            $template = $defaultTemplate[sprintf('rz_news.template.%s_%s', self::NEWS_LIST_TYPE_COLLECTION,  'html')];
-            $templates = $this->getAjaxTemplates($template);
-            $templateAjax = $templates['ajax_template'];
-            $templatePagerAjax = $templates['ajax_pager'];
-            $html = $this->container->get('templating')->render($templateAjax, $parameters);
-            $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
-            return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
-        }
+        return $this->getAjaxResponse($collection, $parameters, self::NEWS_LIST_TYPE_COLLECTION);
     }
 
     /**
