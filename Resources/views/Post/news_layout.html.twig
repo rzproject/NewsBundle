@@ -1,8 +1,8 @@
 {% block post_body %}
 {% spaceless %}
+<div id="posts">
     {% for post in pager.getCurrentPageResults() %}
         <div class="pad20"></div>
-
         {% block post_media %}
         {% if post.image %}
             {% if post.image.providerName  == 'sonata.media.provider.image' %}
@@ -67,6 +67,7 @@
             </div>
         </div>
     {% endfor %}
+</div>
 {% endspaceless %}
 {% endblock post_body %}
 
