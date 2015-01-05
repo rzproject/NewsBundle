@@ -207,4 +207,19 @@ class PostManager extends ModelPostManager
 
         return null;
     }
+
+    /**
+     * @param $post
+     *
+     */
+    public function getNearestPost($post)
+    {
+        return $this->getObjectManager()->createQuery(sprintf("SELECT p FROM %s p WHERE p.id != %s and p.enabled = true ORDER BY ABS( DATE_DIFF( p.publicationDateStart, '%s' ))",
+            $this->getClass(),
+            $post->getId(),
+            $post->getPublicationDateStart()->format('Y-m-d h:i:s')))
+            ->setMaxResults(2)
+            ->execute();
+
+    }
 }
