@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz_news.manager.post_has_category.class">Rz\NewsBundle\Entity\PostHasCategoryManager</parameter>
+        <parameter key="rz_news.manager.post_has_media.class">Rz\NewsBundle\Entity\PostHasMediaManager</parameter>
+    </parameters>
+
+    <services>
+        <service id="rz_news.manager.post_has_category" class="%rz_news.manager.post_has_category.class%">
+            <argument>%rz_news.post_has_category.entity%</argument>
+            <argument type="service" id="doctrine" />
+        </service>
+
+        <service id="rz_news.manager.post_has_media" class="%rz_news.manager.post_has_media.class%">
+            <argument>%rz_news.post_has_media.entity%</argument>
+            <argument type="service" id="doctrine" />
+        </service>
+
+    </services>
+</container>

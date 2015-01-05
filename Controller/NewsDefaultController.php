@@ -138,16 +138,23 @@ class NewsDefaultController extends AbstractNewsController
                 ->addMeta('property', 'og:description', $post->getAbstract());
         }
 
-        //get generic template
-        $pool = $this->getNewsPool();
-        $defaultTemplateName = $pool->getDefaultTemplateNameByCollection($pool->getDefaultDefaultCollection());
-        $viewTemplate = $pool->getTemplateByCollection($defaultTemplateName);
+        //set default template
+        $template = $this->getFallbackTemplate();
 
+        $viewTemplate = $post->getSetting('template');
         if($viewTemplate) {
-            $template = $viewTemplate['path'];
-        } else {
-            $viewTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
-            $template = $viewTemplate['rz_news.template.view'];
+            if ($this->getTemplating()->exists($template)) {
+                $template = $viewTemplate;
+            } else {
+                //get generic template
+                $pool = $this->getNewsPool();
+                $defaultTemplateName = $pool->getDefaultTemplateNameByCollection($pool->getDefaultDefaultCollection());
+                $defaultViewTemplate = $pool->getTemplateByCollection($defaultTemplateName);
+
+                if($defaultViewTemplate) {
+                    $template = $viewTemplate['path'];
+                }
+            }
         }
 
         return $this->render($template, array(
@@ -155,5 +162,13 @@ class NewsDefaultController extends AbstractNewsController
             'form' => false,
             'blog' => $this->get('sonata.news.blog')
         ));
+    }
+
+    /**
+     * @return \Sonata\NewsBundle\Model\CommentManagerInterface
+     */
+    protected function getPostHasMediaManager()
+    {
+        return $this->get('rz_news.manager.post_has_media');
     }
 }

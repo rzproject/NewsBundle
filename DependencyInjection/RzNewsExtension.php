@@ -42,6 +42,7 @@ class RzNewsExtension extends Extension
         $loader->load('validators.xml');
         $loader->load('permalink.xml');
         $loader->load('provider.xml');
+        $loader->load('orm.xml');
 
         $config = $this->addDefaults($config);
         $this->registerDoctrineMapping($config, $container);
@@ -112,6 +113,9 @@ class RzNewsExtension extends Extension
         $container->setParameter(sprintf('sonata.news.admin.comment.%s', $modelType), $config['class']['comment']);
         $container->setParameter(sprintf('rz_news.admin.post_has_category.%s', $modelType), $config['class']['post_has_category']);
         $container->setParameter(sprintf('rz_news.admin.post_has_media.%s', $modelType), $config['class']['post_has_media']);
+
+        $container->setParameter(sprintf('rz_news.post_has_category.%s', $modelType), $config['class']['post_has_category']);
+        $container->setParameter(sprintf('rz_news.post_has_media.%s', $modelType), $config['class']['post_has_media']);
     }
 
     /**

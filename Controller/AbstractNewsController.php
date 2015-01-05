@@ -52,6 +52,7 @@ abstract class AbstractNewsController extends Controller
         return $this->get('rz_classification.pool.collection');
     }
 
+
     /**
      * @return \Sonata\NewsBundle\Model\CommentManagerInterface
      */
