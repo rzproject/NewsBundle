@@ -163,12 +163,4 @@ class NewsDefaultController extends AbstractNewsController
             'blog' => $this->get('sonata.news.blog')
         ));
     }
-
-    /**
-     * @return \Sonata\NewsBundle\Model\CommentManagerInterface
-     */
-    protected function getPostHasMediaManager()
-    {
-        return $this->get('rz_news.manager.post_has_media');
-    }
 }

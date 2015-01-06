@@ -161,4 +161,43 @@ abstract class AbstractNewsController extends Controller
             return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
         }
     }
+
+    protected function buildPostViewNavi($post) {
+
+        $posts = $this->container->get('sonata.news.manager.post')->getAllPostForSingleNavi();
+
+        $next = null;
+        $prev = null;
+
+        $total = count($posts);
+        $current = $this->searchForSlug($post->getSlug(), $posts)+1;
+
+        if((int) $current == 1 && $total > 1) {
+            $next = $posts[$current];
+        } elseif((int) $current > 1 && $total == $current) {
+            $prev = $posts[$current-2];
+        } elseif((int) $current > 1 && $total > $current) {
+            $next = $posts[$current];
+            $prev = $posts[$current-2];
+        }
+
+        return array('next'=>$next, 'prev'=>$prev);
+    }
+
+    protected function searchForSlug($slug, $array) {
+        foreach ($array as $key => $val) {
+            if ($val['slug'] === $slug) {
+                return $key;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return \Sonata\NewsBundle\Model\CommentManagerInterface
+     */
+    protected function getPostHasMediaManager()
+    {
+        return $this->get('rz_news.manager.post_has_media');
+    }
 }
