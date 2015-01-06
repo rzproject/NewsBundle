@@ -214,12 +214,20 @@ class PostManager extends ModelPostManager
      */
     public function getNearestPost($post)
     {
-        return $this->getObjectManager()->createQuery(sprintf("SELECT p FROM %s p WHERE p.id != %s and p.enabled = true ORDER BY ABS( DATE_DIFF( p.publicationDateStart, '%s' ))",
+        return $this->getObjectManager()->createQuery(sprintf("SELECT p FROM %s p WHERE p.id != %s and p.enabled = true ORDER BY DATE_DIFF( p.publicationDateStart, '%s' )",
             $this->getClass(),
             $post->getId(),
             $post->getPublicationDateStart()->format('Y-m-d h:i:s')))
             ->setMaxResults(2)
             ->execute();
 
+    }
+
+    public function getAllPostForSingleNavi() {
+        $query = $this->getRepository()
+            ->createQueryBuilder('p')
+            ->select('p.slug')
+            ->orderBy('p.publicationDateStart', 'DESC');
+        return $query->getQuery()->getArrayResult();
     }
 }
