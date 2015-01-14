@@ -26,7 +26,7 @@ class PostAdminController extends Controller
 
         if (!$currentCollection) {
             $collections = $this->getCollectiontManager()->findBy(array('context'=>$context->getId()));
-            $currentCollection = current($collections);
+            $currentCollection = array_shift($collections);
         } else {
             $collections = $this->getCollectiontManager()->findAllExcept(array('id'=>$currentCollection,'context'=>$context->getId()));
         }
