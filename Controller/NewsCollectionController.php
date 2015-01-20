@@ -169,6 +169,37 @@ class NewsCollectionController extends AbstractNewsController
 
         $template = $collection->getSetting('template');
 
+        if ($seoPage = $this->getSeoPage()) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+
+            if($collection->getSetting('seoTitle', null)) {
+                $seoPage->setTitle($collection->getSetting('seoTitle', null));
+            }
+
+            if($collection->getSetting('seoMetaDescription', null)) {
+                $seoPage->addMeta('name', 'description', $collection->getSetting('seoMetaDescription', null));
+            }
+
+            if($collection->getSetting('seoMetaKeyword', null)) {
+                $seoPage->addMeta('name', 'keywords', $collection->getSetting('seoMetaKeyword', null));
+            }
+
+            if($collection->getSetting('ogTitle', null)) {
+                $seoPage->addMeta('property', 'og:title', $collection->getSetting('ogTitle', null));
+            }
+
+            $seoPage->addMeta('property', 'og:type', $collection->getSetting('ogType', null) ? $collection->getSetting('ogType', null): 'Article');
+
+            $seoPage->addMeta('property', 'og:url',  $this->generateUrl('rz_news_collection', array(
+                'collection'  => $collection->getSlug(),
+                '_format' => $request->getRequestFormat()
+            ), true));
+
+            if($collection->getSetting('ogDescription', null)) {
+                $seoPage->addMeta('property', 'og:description', $collection->getSetting('ogDescription', null));
+            }
+        }
+
         if($template && $this->getTemplating()->exists($template) ) {
             return $this->render($template, $parameters);
         } else {

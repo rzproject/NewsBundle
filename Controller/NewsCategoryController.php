@@ -190,6 +190,38 @@ class NewsCategoryController extends AbstractNewsController
 
         $template = $category->getSetting('template');
 
+
+        if ($seoPage = $this->getSeoPage()) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+
+            if($category->getSetting('seoTitle', null)) {
+                $seoPage->setTitle($category->getSetting('seoTitle', null));
+            }
+
+            if($category->getSetting('seoMetaDescription', null)) {
+                $seoPage->addMeta('name', 'description', $category->getSetting('seoMetaDescription', null));
+            }
+
+            if($category->getSetting('seoMetaKeyword', null)) {
+                $seoPage->addMeta('name', 'keywords', $category->getSetting('seoMetaKeyword', null));
+            }
+
+            if($category->getSetting('ogTitle', null)) {
+                $seoPage->addMeta('property', 'og:title', $category->getSetting('ogTitle', null));
+            }
+
+            $seoPage->addMeta('property', 'og:type', $category->getSetting('ogType', null) ? $category->getSetting('ogType', null): 'Article');
+
+            $seoPage->addMeta('property', 'og:url',  $this->generateUrl('rz_news_category', array(
+                'permalink'  => $category->getSlug(),
+                '_format' => $request->getRequestFormat()
+            ), true));
+
+            if($category->getSetting('ogDescription', null)) {
+                $seoPage->addMeta('property', 'og:description', $category->getSetting('ogDescription', null));
+            }
+        }
+
         if($template && $this->getTemplating()->exists($template) ) {
             return $this->render($template, $parameters);
         } else {

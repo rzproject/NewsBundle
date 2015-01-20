@@ -161,6 +161,15 @@ class NewsTagController extends AbstractNewsController
         ));
     }
 
+//    protected function renderNewsList($parameters, $type) {
+//
+//
+//        dump($parameters);
+//        die();
+//
+//        return parent::renderNewsList($parameters, $type);
+//    }
+
     protected function renderTagList($tag, $page = null) {
 
         try {
@@ -170,6 +179,38 @@ class NewsTagController extends AbstractNewsController
         }
 
         $template = $tag->getSetting('template');
+
+
+        if ($seoPage = $this->getSeoPage()) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+
+            if($tag->getSetting('seoTitle', null)) {
+                $seoPage->setTitle($tag->getSetting('seoTitle', null));
+            }
+
+            if($tag->getSetting('seoMetaDescription', null)) {
+                $seoPage->addMeta('name', 'description', $tag->getSetting('seoMetaDescription', null));
+            }
+
+            if($tag->getSetting('seoMetaKeyword', null)) {
+                $seoPage->addMeta('name', 'keywords', $tag->getSetting('seoMetaKeyword', null));
+            }
+
+            if($tag->getSetting('ogTitle', null)) {
+                $seoPage->addMeta('property', 'og:title', $tag->getSetting('ogTitle', null));
+            }
+
+            $seoPage->addMeta('property', 'og:type', $tag->getSetting('ogType', null) ? $tag->getSetting('ogType', null): 'Article');
+
+            $seoPage->addMeta('property', 'og:url',  $this->generateUrl('rz_news_tag', array(
+                'tag'  => $tag->getSlug(),
+                '_format' => $request->getRequestFormat()
+            ), true));
+
+            if($tag->getSetting('ogDescription', null)) {
+                $seoPage->addMeta('property', 'og:description', $tag->getSetting('ogDescription', null));
+            }
+        }
 
         if($template && $this->getTemplating()->exists($template) ) {
             return $this->render($template, $parameters);
