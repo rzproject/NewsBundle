@@ -8,6 +8,7 @@ use Sonata\NewsBundle\Model\PostInterface;
 abstract class BaseProvider implements PostProviderInterface
 {
     protected $templates = array();
+    protected $metatagChoices = array();
     protected $postManager;
 
     /**
@@ -136,5 +137,25 @@ abstract class BaseProvider implements PostProviderInterface
     public function setPostManager($postManager)
     {
         $this->postManager = $postManager;
+    }
+
+    public function load(PostInterface $post) {
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getMetatagChoices()
+    {
+        return $this->metatagChoices;
+    }
+
+    /**
+     * @param array $metatagChoices
+     */
+    public function setMetatagChoices($metatagChoices)
+    {
+        $this->metatagChoices = $metatagChoices;
     }
 }

@@ -126,16 +126,18 @@ class NewsDefaultController extends AbstractNewsController
 
         if ($seoPage = $this->getSeoPage()) {
 
-            $seoPage
-                ->setTitle($post->getTitle())
-                ->addMeta('name', 'description', $post->getAbstract())
-                ->addMeta('property', 'og:title', $post->getTitle())
-                ->addMeta('property', 'og:type', 'blog')
-                ->addMeta('property', 'og:url', $this->generateUrl('rz_news_view', array(
+            $seoPage->setTitle($post->getSetting('seoTitle', null) ? $post->getSetting('seoTitle', null) : $post->getTitle());
+            $seoPage->addMeta('name', 'description', $post->getSetting('seoMetaDescription', null)? $post->getSetting('seoMetaDescription', null) : $post->getAbstract());
+            if($post->getSetting('seoMetaKeyword', null)) {
+                $seoPage->addMeta('name', 'keywords', $post->getSetting('seoMetaKeyword', null));
+            }
+            $seoPage->addMeta('property', 'og:title', $post->getSetting('ogTitle', null) ? $post->getSetting('ogTitle', null) : $post->getTitle());
+            $seoPage->addMeta('property', 'og:type', $post->getSetting('ogType', null) ? $post->getSetting('ogType', null): 'Article');
+            $seoPage->addMeta('property', 'og:url', $this->generateUrl('rz_news_view', array(
                     'permalink' => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
                     '_format' => $_format
-                ), true))
-                ->addMeta('property', 'og:description', $post->getAbstract());
+                ), true));
+            $seoPage->addMeta('property', 'og:description', $post->getSetting('ogDescription', null) ? $post->getSetting('ogDescription', null) : $post->getAbstract());
         }
 
         //set default template

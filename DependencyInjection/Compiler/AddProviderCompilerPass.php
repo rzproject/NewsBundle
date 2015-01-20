@@ -44,6 +44,9 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 $provider =$container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setTemplates', array($templates));
                 $provider->addMethodCall('setPostManager', array($id, new Reference('sonata.news.manager.post')));
+                $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
+                $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
+                $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
             }
         }
     }

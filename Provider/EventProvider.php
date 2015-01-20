@@ -10,11 +10,12 @@ class EventProvider extends DefaultProvider
 {
 
     /**
+     * @param \Sonata\AdminBundle\Form\FormMapper $formMapper
      * @return array
      */
-    public function getFormSettingsKeys()
+    public function getFormSettingsKeys(FormMapper $formMapper)
     {
-        return array_merge(parent::getFormSettingsKeys(),array(
+        return array_merge(parent::getFormSettingsKeys($formMapper),array(
             array('start_date', 'date', array('required' => false,'input'=>'array')),
             array('end_date', 'date', array('required' => false,'input'=>'array')),
             array('location', 'rz_google_maps', array('required' => false)),

@@ -114,18 +114,21 @@ class NewsTagController extends AbstractNewsController
 
         if ($seoPage = $this->getSeoPage()) {
             $request = $this->get('request_stack')->getCurrentRequest();
-            $seoPage
-                ->setTitle($post->getTitle())
-                ->addMeta('name', 'description', $post->getAbstract())
-                ->addMeta('property', 'og:title', $post->getTitle())
-                ->addMeta('property', 'og:type', 'blog')
-                ->addMeta('property', 'og:url',  $this->generateUrl('rz_news_tag_view', array(
-                    'tag'  => $tag->getSlug(),
-                    'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
-                    '_format' => $request->getRequestFormat()
-                ), true))
-                ->addMeta('property', 'og:description', $post->getAbstract())
-                ->setLinkCanonical($this->generateUrl('rz_news_view', array(
+
+            $seoPage->setTitle($post->getSetting('seoTitle', null) ? $post->getSetting('seoTitle', null) : $post->getTitle());
+            $seoPage->addMeta('name', 'description', $post->getSetting('seoMetaDescription', null)? $post->getSetting('seoMetaDescription', null) : $post->getAbstract());
+            if($post->getSetting('seoMetaKeyword', null)) {
+                $seoPage->addMeta('name', 'keywords', $post->getSetting('seoMetaKeyword', null));
+            }
+            $seoPage->addMeta('property', 'og:title', $post->getSetting('ogTitle', null) ? $post->getSetting('ogTitle', null) : $post->getTitle());
+            $seoPage->addMeta('property', 'og:type', $post->getSetting('ogType', null) ? $post->getSetting('ogType', null): 'Article');
+            $seoPage->addMeta('property', 'og:url',  $this->generateUrl('rz_news_tag_view', array(
+                'tag'  => $tag->getSlug(),
+                'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
+                '_format' => $request->getRequestFormat()
+            ), true));
+            $seoPage->addMeta('property', 'og:description', $post->getSetting('ogDescription', null) ? $post->getSetting('ogDescription', null) : $post->getAbstract());
+            $seoPage->setLinkCanonical($this->generateUrl('rz_news_view', array(
                     'permalink'  => $this->getBlog()->getPermalinkGenerator()->generate($post, true),
                     '_format' => $request->getRequestFormat()
                 ), true))

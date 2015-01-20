@@ -118,6 +118,7 @@ class PostAdmin extends BaseAdmin
        $provider = $this->getPoolProvider();
 
         if ($post->getId()) {
+            $provider->load($post);
             $provider->buildEditForm($formMapper);
         } else {
             $provider->buildCreateForm($formMapper);

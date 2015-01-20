@@ -14,12 +14,12 @@
             <argument />
         </service>
 
-        <service id="rz_news.provider.default" class="%rz_news.provider.default.class%">
+        <service id="rz_news.provider.default" class="%rz_news.provider.default.class%" scope="prototype">
             <tag name="rz_news.provider" />
             <argument>rz_news.provider.default</argument>
         </service>
 
-        <service id="rz_news.provider.event" class="%rz_news.provider.event.class%">
+        <service id="rz_news.provider.event" class="%rz_news.provider.event.class%" scope="prototype">
             <tag name="rz_news.provider" />
             <argument>rz_news.provider.event</argument>
         </service>

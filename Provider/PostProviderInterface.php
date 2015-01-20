@@ -107,5 +107,7 @@ interface PostProviderInterface
     /**
      * @return array
      */
-    public function getFormSettingsKeys();
+    public function getFormSettingsKeys(FormMapper $formMapper);
+
+    public function load(PostInterface $post);
 }
