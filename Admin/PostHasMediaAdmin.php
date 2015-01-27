@@ -6,9 +6,11 @@ namespace Rz\NewsBundle\Admin;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
 
 class PostHasMediaAdmin extends Admin
 {
+    protected $parentAssociationMapping = 'post';
 //    protected $formOptions = array(
 //        'cascade_validation' => true,
 //        'error_bubbling' => false,
@@ -22,23 +24,23 @@ class PostHasMediaAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $link_parameters = array();
-
-        if ($this->hasParentFieldDescription()) {
-            $link_parameters = $this->getParentFieldDescription()->getOption('link_parameters', array());
-        }
-
-        if ($this->hasRequest()) {
-            $context = $this->getRequest()->get('context', null);
-
-            if (null !== $context) {
-                $link_parameters['context'] = $context;
-            }
-        }
+//        $link_parameters = array();
+//
+//        if ($this->hasParentFieldDescription()) {
+//            $link_parameters = $this->getParentFieldDescription()->getOption('link_parameters', array());
+//        }
+//
+//        if ($this->hasRequest()) {
+//            $context = $this->getRequest()->get('context', null);
+//
+//            if (null !== $context) {
+//                $link_parameters['context'] = $context;
+//            }
+//        }
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             $formMapper->add('media', 'sonata_type_model_list', array('btn_delete' => false), array(
-                'link_parameters' => $link_parameters
+                'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
             ));
         }
 
@@ -97,5 +99,16 @@ class PostHasMediaAdmin extends Admin
     public function getListMode()
     {
         return parent::getListMode();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureDatagridFilters(DatagridMapper $filter)
+    {
+        $filter
+            ->add('post')
+            ->add('media.name')
+            ->add('enabled');
     }
 }

@@ -186,6 +186,10 @@ class RzNewsExtension extends Extension
         $container->setParameter('rz_news.configuration.post.templates', $config['admin']['post']['templates']);
         $container->setParameter('rz_news.configuration.comment.templates', $config['admin']['comment']['templates']);
         $container->setParameter('rz_news.templates', $config['templates']);
+
+        $container->setParameter('rz_news.admin.post_has_category.templates', $config['admin']['post_has_category']['templates']);
+        $container->setParameter('rz_news.admin.post_has_media.templates', $config['admin']['post_has_media']['templates']);
+
     }
 
     protected function registerService(array $config, ContainerBuilder $container)

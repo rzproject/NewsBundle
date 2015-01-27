@@ -34,6 +34,19 @@
                 <source>sidemenu.link_view_comments</source>
                 <target>Comments</target>
             </trans-unit>
+            <trans-unit id="breadcrumb.link_post_has_category_create">
+                <source>breadcrumb.link_post_has_category_create</source>
+                <target>Post Categories Create</target>
+            </trans-unit>
+
+            <trans-unit id="breadcrumb.link_post_has_media_list">
+                <source>breadcrumb.link_post_has_media_list</source>
+                <target>Post Media List</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_post_has_media_create">
+                <source>breadcrumb.link_post_has_media_create</source>
+                <target>Post Media Create</target>
+            </trans-unit>
             <trans-unit id="breadcrumb.link_comment_create">
                 <source>breadcrumb.link_comment_create</source>
                 <target>Create</target>
@@ -148,10 +161,16 @@ Quick moderation links :
                 <source>list.label_collection</source>
                 <target>Collection</target>
             </trans-unit>
-            <trans-unit id="list_label_enabled">
+            <trans-unit id="list.label_enabled">
                 <source>list.label_enabled</source>
                 <target>Enabled</target>
             </trans-unit>
+
+            <trans-unit id=" list.label_category_name">
+                <source>list.label_category_name</source>
+                <target>Category</target>
+            </trans-unit>
+
             <trans-unit id="list_label_label_tags">
                 <source>list.label_tags</source>
                 <target>Tags</target>
@@ -176,9 +195,13 @@ Quick moderation links :
                 <source>form.label_collection</source>
                 <target>Collection</target>
             </trans-unit>
-            <trans-unit id="form_label_title">
+            <trans-unit id="form.label_title">
                 <source>form.label_title</source>
                 <target>Title</target>
+            </trans-unit>
+            <trans-unit id="form.label_slug">
+                <source>form.label_slug</source>
+                <target>Slug</target>
             </trans-unit>
             <trans-unit id="form_label_abstract">
                 <source>form.label_abstract</source>
@@ -300,6 +323,12 @@ Quick moderation links :
                 <source>breadcrumb.link_collection_list</source>
                 <target>Categories</target>
             </trans-unit>
+
+            <trans-unit id="breadcrumb.link_post_has_category_list">
+                <source>breadcrumb.link_post_has_category_list</source>
+                <target>Post Categories</target>
+            </trans-unit>
+
             <trans-unit id="form_label_description">
                 <source>form.label_description</source>
                 <target>Description</target>
@@ -415,7 +444,7 @@ Quick moderation links :
 
             <trans-unit id="form.label_post_has_category">
                 <source>form.label_post_has_category</source>
-                <target>Post Category</target>
+                <target>Post</target>
             </trans-unit>
 
             <trans-unit id="form.label_category">
@@ -430,7 +459,7 @@ Quick moderation links :
 
             <trans-unit id="list.label_post_has_category">
                 <source>list.label_post_has_category</source>
-                <target>Post Category</target>
+                <target>Post</target>
             </trans-unit>
 
             <trans-unit id="list.label_category">
@@ -483,6 +512,11 @@ Quick moderation links :
                 <target>Medias</target>
             </trans-unit>
 
+            <trans-unit id="show.label_post_has_media">
+                <source>show.label_post_has_media</source>
+                <target>Medias</target>
+            </trans-unit>
+
            <trans-unit id="form.label_media">
                 <source>form.label_media</source>
                 <target>Media</target>
@@ -498,8 +532,35 @@ Quick moderation links :
                 <target>Collection</target>
             </trans-unit>
 
+           <trans-unit id="button.label.post_posthascategory_list">
+                <source>button.label.post_posthascategory_list</source>
+                <target>Categories</target>
+            </trans-unit>
 
+          <trans-unit id="button.label.post_posthasmedia_list">
+               <source>button.label.post_posthasmedia_list</source>
+               <target>Medias</target>
+           </trans-unit>
 
+            <trans-unit id="label_post_has_category">
+                <source>label_post_has_category</source>
+                <target>Post Category</target>
+            </trans-unit>
+
+            <trans-unit id="list.post_list">
+                <source>list.post_list</source>
+                <target>Post List</target>
+            </trans-unit>
+
+            <trans-unit id="label_post_has_media">
+                <source>label_post_has_media</source>
+                <target>Post Media</target>
+            </trans-unit>
+
+            <trans-unit id="filter.label_media_name">
+                <source>filter.label_media_name</source>
+                <target>Media Name</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

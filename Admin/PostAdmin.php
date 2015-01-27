@@ -19,6 +19,8 @@ use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Sonata\ClassificationBundle\Model\CollectionManagerInterface;
 use Rz\NewsBundle\Provider\Pool;
+use Knp\Menu\ItemInterface as MenuItemInterface;
+use Sonata\AdminBundle\Admin\AdminInterface;
 
 
 class PostAdmin extends BaseAdmin
@@ -61,10 +63,11 @@ class PostAdmin extends BaseAdmin
     {
         $listMapper
             ->add('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('enabled', null, array('editable' => true))
+            ->add('enabled', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet')), 'editable' => true))
             ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
             ->add('_action', 'actions', array(
                 'actions' => array(
+                    'Actions' => array('template' => 'RzNewsBundle:PostAdmin:manage_child_action_list.html.twig'),
                     'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
                     'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
                     'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
@@ -117,7 +120,7 @@ class PostAdmin extends BaseAdmin
 
        $provider = $this->getPoolProvider();
 
-        if ($post->getId()) {
+        if ($post && $post->getId()) {
             $provider->load($post);
             $provider->buildEditForm($formMapper);
         } else {
@@ -125,34 +128,34 @@ class PostAdmin extends BaseAdmin
         }
 
         $formMapper
-            ->with('Category', array('class' => 'col-md-4'))
-                ->add('postHasCategory', 'sonata_type_collection', array(
-                        'cascade_validation' => true,
-                        'error_bubbling' => false,
-                    ), array(
-                        'edit' => 'inline',
-                        'inline' => 'table',
-                        'sortable'  => 'position',
-                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
-                        'admin_code' => 'rz_news.admin.post_has_category',
-                        'error_bubbling' => false,
-                    )
-                )
-            ->end()
-
-            ->with('Media', array('class' => 'col-md-4'))
-                ->add('postHasMedia', 'sonata_type_collection', array(
-                        'cascade_validation' => true,
-                        'error_bubbling' => false,
-                    ), array(
-                        'edit' => 'inline',
-                        'sortable'  => 'position',
-                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
-                        'admin_code' => 'rz_news.admin.post_has_media',
-                        'error_bubbling' => false,
-                    )
-                )
-            ->end()
+//            ->with('Category', array('class' => 'col-md-4'))
+//                ->add('postHasCategory', 'sonata_type_collection', array(
+//                        'cascade_validation' => true,
+//                        'error_bubbling' => false,
+//                    ), array(
+//                        'edit' => 'inline',
+//                        'inline' => 'table',
+//                        'sortable'  => 'position',
+//                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
+//                        'admin_code' => 'rz_news.admin.post_has_category',
+//                        'error_bubbling' => false,
+//                    )
+//                )
+//            ->end()
+//
+//            ->with('Media', array('class' => 'col-md-4'))
+//                ->add('postHasMedia', 'sonata_type_collection', array(
+//                        'cascade_validation' => true,
+//                        'error_bubbling' => false,
+//                    ), array(
+//                        'edit' => 'inline',
+//                        'sortable'  => 'position',
+//                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
+//                        'admin_code' => 'rz_news.admin.post_has_media',
+//                        'error_bubbling' => false,
+//                    )
+//                )
+//            ->end()
             ->with('Tags')
                 ->add('tags', 'sonata_type_model', array(
                     'required' => false,
@@ -162,13 +165,13 @@ class PostAdmin extends BaseAdmin
                     ),
                     array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
             ->end()
-            ->with('Status')
-                ->add('enabled', null, array('required' => false))
-                ->add('commentsCloseAt')
-                ->add('commentsEnabled', null, array('required' => false))
-                ->add('commentsEnabled', null, array('required' => false))
-                ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
-            ->end()
+//            ->with('Status')
+//                ->add('enabled', null, array('required' => false))
+//                ->add('commentsCloseAt')
+//                ->add('commentsEnabled', null, array('required' => false))
+//                ->add('commentsEnabled', null, array('required' => false))
+//                ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
+//            ->end()
         ;
     }
 
@@ -218,23 +221,21 @@ class PostAdmin extends BaseAdmin
     public function getPersistentParameters()
     {
         $parameters = array(
-            'collectionId'      => $this->getDefaultCollection(),
-            'hide_collection' => (int)$this->getRequest()->get('hide_context', 0)
+            'collectionId' => $this->getDefaultCollection(),
+            'hide_collection' => $this->hasRequest() ? ((int)$this->getRequest()->get('hide_context', 0)) : 0
         );
 
         if ($this->getSubject()) {
             $parameters['collectionId'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getId() : '';
-
             return $parameters;
         }
 
-        if ($this->hasRequest()) {
+        if($this->hasRequest()) {
             $parameters['collectionId'] = $this->getRequest()->get('collectionId');
-
-            return $parameters;
         }
 
         return $parameters;
+
     }
 
     /**
@@ -354,5 +355,13 @@ class PostAdmin extends BaseAdmin
     public function getDefaultCollection() {
 
         return $this->collectionManager->findOneBy(array('slug'=>$this->pool->getDefaultCollection())) ?: null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+    {
+
     }
 }

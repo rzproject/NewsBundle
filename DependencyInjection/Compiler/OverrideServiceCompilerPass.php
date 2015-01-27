@@ -18,6 +18,8 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
         $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
         $definition->addMethodCall('setPool', array(new Reference('rz_news.pool')));
+        $definition->addMethodCall('addChild', array(new Reference('rz_news.admin.post_has_category')));
+        $definition->addMethodCall('addChild', array(new Reference('rz_news.admin.post_has_media')));
         $this->fixTemplates($container, $definition, 'rz_news.configuration.post.templates');
 
 
@@ -36,6 +38,18 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         //replace permalink class
         $container->getDefinition('sonata.news.blog')
             ->replaceArgument(3, new Reference('rz_news.permalink.post'));
+
+
+        $definition = $container->getDefinition('rz_news.admin.post_has_category');
+        $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
+                                        $container->getParameter('rz_news.admin.post_has_category.templates'));
+        $definition->addMethodCall('setTemplates', array($definedTemplates));
+
+
+        $definition = $container->getDefinition('rz_news.admin.post_has_media');
+        $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
+                                        $container->getParameter('rz_news.admin.post_has_media.templates'));
+        $definition->addMethodCall('setTemplates', array($definedTemplates));
     }
 
     /**

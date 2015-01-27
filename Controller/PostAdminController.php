@@ -22,8 +22,11 @@ class PostAdminController extends Controller
             $currentCollection = $this->getCollectiontManager()->findOneBy(array('slug'=>$this->get('rz_news.pool')->getDefaultCollection()));
         }
 
-        $context = $this->getContextManager()->find(PostAdmin::POST_DEFAULT_CONTEXT);
 
+
+
+        $context = $this->getContextManager()->find(PostAdmin::POST_DEFAULT_CONTEXT);
+        $collections = null;
         if (!$currentCollection) {
             $collections = $this->getCollectiontManager()->findBy(array('context'=>$context->getId()));
             $currentCollection = array_shift($collections);
