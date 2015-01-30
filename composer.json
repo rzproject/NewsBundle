@@ -22,7 +22,7 @@
         "rz/classification-bundle": "~1.3"
     },
     "require-dev": {
-        "rz/block-bundle": "~1.0"
+        "rz/block-bundle": "~1.1"
     },
     "autoload": {
         "psr-4": { "Rz\\NewsBundle\\": "" }
