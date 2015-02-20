@@ -37,6 +37,19 @@ class PostAdmin extends BaseAdmin
 
     protected $pool;
 
+    /**
+     * Predefined per page options
+     *
+     * @var array
+     */
+    protected $perPageOptions = array(5, 10, 15);
+
+    protected $datagridValues = array(
+        '_per_page' => 5,
+    );
+
+    protected $maxPerPage = 5;
+
 
     /**
      * {@inheritdoc}
