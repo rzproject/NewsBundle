@@ -5,6 +5,7 @@ namespace Rz\NewsBundle\Controller;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Sonata\AdminBundle\Form\Type\Filter\ChoiceType;
 use Rz\NewsBundle\Admin\PostAdmin;
+use Symfony\Component\HttpFoundation\Request;
 
 
 class PostAdminController extends Controller
@@ -12,11 +13,12 @@ class PostAdminController extends Controller
 
     /**
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function listAction()
+    public function listAction(Request $request = null)
     {
-        if ($collection = $this->get('request')->get('collectionId')) {
+        if ($collection = $request->get('collectionId')) {
             $currentCollection = $this->getCollectiontManager()->find($collection);
         } else {
             $currentCollection = $this->getCollectiontManager()->findOneBy(array('slug'=>$this->get('rz_news.pool')->getDefaultCollection()));
