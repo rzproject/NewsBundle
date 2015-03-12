@@ -2,7 +2,7 @@
 
 namespace Rz\NewsBundle\Provider;
 
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\NewsBundle\Model\PostInterface;
 
 abstract class BaseProvider implements PostProviderInterface

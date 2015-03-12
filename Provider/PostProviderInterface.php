@@ -4,7 +4,7 @@ namespace Rz\NewsBundle\Provider;
 use Sonata\CoreBundle\Model\MetadataInterface;
 use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Form\FormBuilder;
 
 interface PostProviderInterface

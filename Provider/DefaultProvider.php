@@ -5,7 +5,7 @@ namespace Rz\NewsBundle\Provider;
 
 use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 class DefaultProvider extends BaseProvider
 {
