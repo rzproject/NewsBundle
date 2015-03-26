@@ -4,22 +4,23 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
 <parameters>
-    <parameter key="rz_news.router.class">Rz\NewsBundle\Route\PostRouter</parameter>
+    <parameter key="rz_news.router.class">Rz\NewsBundle\Route\CmsNewsRouter</parameter>
     <!--<parameter key="rz_news.route.page.generator.class">Sonata\PageBundle\Route\RoutePostGenerator</parameter>-->
-    <parameter key="rz_news.service.post_category_page.class">Rz\NewsBundle\Page\Service\PostCategoryPageService</parameter>
+    <!--<parameter key="rz_news.service.post_category_page.class">Rz\NewsBundle\Page\Service\PostCategoryPageService</parameter>-->
 </parameters>
 
 <services>
     <service id="rz_news.router" class="%rz_news.router.class%">
         <argument type='service' id="router.default"/>
+        <argument>%rz_news.router.sequence%</argument>
     </service>
 
-    <service id="rz_news.service.post_category_page" class="%rz_news.service.post_category_page.class%">
-        <tag name="sonata.page"/>
-        <argument>Post Category Page</argument>
-        <argument type="service" id="sonata.page.template_manager" />
-        <argument type="service" id="sonata.seo.page" />
-    </service>
+    <!--<service id="rz_news.service.post_category_page" class="%rz_news.service.post_category_page.class%">-->
+        <!--<tag name="sonata.page"/>-->
+        <!--<argument>Post Category Page</argument>-->
+        <!--<argument type="service" id="sonata.page.template_manager" />-->
+        <!--<argument type="service" id="sonata.seo.page" />-->
+    <!--</service>-->
     <!--<service id="rz_news.route.page.generator" class="%rz_news.route.page.generator.class%">-->
         <!--<argument type='service' id="router.default" />-->
         <!--<argument type="service" id="sonata.page.manager.page" />-->

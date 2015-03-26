@@ -1,0 +1,53 @@
+{% extends sonata_block.templates.block_base %}
+
+{% block block %}
+<div id="posts">
+    {% for post in pager.getCurrentPageResults() %}
+        <div class="pad20"></div>
+            {% if post.image %}
+                {% if post.image.providerName  == 'sonata.media.provider.image' %}
+                    <div class="hover_img">
+                        <a href="{%  path post.image, 'reference' %}" data-rel="prettyPhoto"><img src="{%  path post.image, 'reference' %}" alt=""/></a>
+                    </div>
+                {% else %}
+                    <div class="vendor">
+                        {% media post.image, 'reference' %}
+                    </div>
+                {% endif %}
+            {% endif %}
+            <h1 class="blog"><a href="#">{{ post.title }}</a></h1>
+            <h4><b>{{ post.publicationDateStart | format_date }}</b> |  <b>{{ 'archive_author'| trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
+            <p>{{ post.abstract }}</p>
+            <div class="post-meta muted">
+                <ul>
+                    <li>Categories: </li>
+                    <li>
+                        {% for postHasCategory in post.postHasCategory %}
+                            <a href="#">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+            <div class="post-meta muted">
+                <ul>
+                    <li>Tags: </li>
+                    <li>
+                        {% for tag in post.tags %}
+                            <a href="#">{{ tag.name }}</a>{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+            <h4><a href="#"><b>READ &rarr;</b></a></h4>
+
+        <!--end post-->
+        <div class="pad30"></div>
+    {% else %}
+        <div class="row-fluid sonata-blog-post-list">
+            <div class="span12">
+                {{ 'no_post_found'|trans({}, 'SonataNewsBundle') }}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

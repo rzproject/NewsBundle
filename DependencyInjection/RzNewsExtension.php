@@ -37,7 +37,6 @@ class RzNewsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('admin_orm.xml');
         $loader->load('twig.xml');
-        $loader->load('block.xml');
         $loader->load('post.xml');
         $loader->load('validators.xml');
         $loader->load('permalink.xml');
@@ -54,7 +53,14 @@ class RzNewsExtension extends Extension
         $this->configureController($config, $container);
         $this->configureRzTemplates($config, $container);
         $this->registerService($config, $container);
-        $this->configureBlocks($config, $container);
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $loader->load('block.xml');
+            $loader->load('page.xml');
+            $this->configureBlocks($config['blocks'], $container);
+            $container->setParameter('rz_news.router.class', $config['route']['class']);
+            $container->setParameter('rz_news.router.sequence', $config['route']['sequence']);
+        }
 
         $this->configureSettings($config, $container);
         $this->configureProviders($container, $config);
@@ -209,8 +215,43 @@ class RzNewsExtension extends Extension
      */
     public function configureBlocks($config, ContainerBuilder $container)
     {
-        $container->setParameter('rz_news.block.recent_posts', $config['blocks']['class']['recent_posts']);
-        $container->setParameter('rz_news.block.recent_comments', $config['blocks']['class']['recent_comments']);
+        $container->setParameter('rz_news.block.collection.class', $config['collection']['class']);
+
+        $temp = $config['collection']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.post_by_collection.templates', $templates);
+
+        $container->setParameter('rz_news.block.recent_posts', $config['recent_posts']['class']);
+        $temp = $config['recent_posts']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.recent_posts.templates', $templates);
+
+        $container->setParameter('rz_news.block.recent_comments', $config['recent_comments']['class']);
+        $temp = $config['recent_comments']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.recent_comments.templates', $templates);
+
+    }
+
+    /**
+     * @param array                                                   $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     *
+     * @return void
+     */
+    public function configurePageAliasGenerator($config, ContainerBuilder $container)
+    {
+        //alias generator
+        $container->setParameter('rz_news.page_alias_generator.classification.class', $config['classification']);
     }
 
     public function configureIndex($config, ContainerBuilder $container)
@@ -232,7 +273,6 @@ class RzNewsExtension extends Extension
      */
     public function registerDoctrineMapping(array $config)
     {
-
         foreach ($config['class'] as $type => $class) {
             if (!class_exists($class)) {
                 return;
@@ -240,7 +280,6 @@ class RzNewsExtension extends Extension
         }
 
         $collector = DoctrineCollector::getInstance();
-
 
         if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
 

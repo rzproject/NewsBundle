@@ -11,7 +11,7 @@ use Sonata\PageBundle\Page\Service\BasePageService;
 use Sonata\PageBundle\Model\PageInterface;
 use Sonata\PageBundle\Page\TemplateManagerInterface;
 
-class PostCategoryPageService extends BasePageService
+class PostPageService extends BasePageService
 {
     /**
      * @var TemplateManagerInterface
@@ -42,6 +42,12 @@ class PostCategoryPageService extends BasePageService
      */
     public function execute(PageInterface $page, Request $request, array $parameters = array(), Response $response = null)
     {
+        if($request->attributes->has('_route_params')) {
+
+            dump($request->attributes->get('_route_params'));
+            dump($response);
+        }
+
         $this->updateSeoPage($page);
 
         $response = $this->templateManager->renderResponse($page->getTemplateCode(), $parameters, $response);

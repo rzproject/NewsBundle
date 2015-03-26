@@ -13,12 +13,11 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
-use Sonata\PageBundle\CmsManager\CmsManagerSelectorInterface;
+use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\PageBundle\Model\PageInterface;
 use Sonata\PageBundle\Exception\PageNotFoundException;
-use Sonata\PageBundle\Site\SiteSelectorInterface;
 
-class PostRouter implements ChainedRouterInterface
+class CmsNewsRouter implements ChainedRouterInterface
 {
     /**
      * @var RequestContext
@@ -30,14 +29,23 @@ class PostRouter implements ChainedRouterInterface
      */
     protected $router;
 
+    protected $seq;
+
+    protected $collectionManager;
+
+    protected $categoryManager;
+
+    protected $tagManager;
+
+    protected $postManager;
+
     /**
-     * @param CmsManagerSelectorInterface $cmsSelector  Cms manager selector
-     * @param SiteSelectorInterface       $siteSelector Sites selector
      * @param RouterInterface             $router       Router for hybrid pages
      */
-    public function __construct(RouterInterface $router)
+    public function __construct(RouterInterface $router, Array $seq)
     {
-        $this->router       = $router;
+        $this->router = $router;
+        $this->seq = $seq;
     }
 
     /**
@@ -69,7 +77,6 @@ class PostRouter implements ChainedRouterInterface
      */
     public function supports($name)
     {
-        die('supports');
         if (is_string($name) && !$this->isPageAlias($name) && !$this->isPageSlug($name)) {
             return false;
         }
@@ -86,32 +93,30 @@ class PostRouter implements ChainedRouterInterface
      */
     public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
     {
+        try {
+            $url = false;
 
-          var_dump('generate');
-//        try {
-//            $url = false;
-//
-//            if ($this->isPageAlias($name)) {
-//                $name = $this->getPageByPageAlias($name);
-//            }
-//
-//            if ($name instanceof PageInterface) {
-//                $url = $this->generateFromPage($name, $parameters, $referenceType);
-//            }
-//
-//            if ($this->isPageSlug($name)) {
-//                $url = $this->generateFromPageSlug($parameters, $referenceType);
-//            }
-//
-//            if ($url === false) {
-//                throw new RouteNotFoundException('The Sonata CmsPageRouter cannot find url');
-//            }
-//
-//        } catch (PageNotFoundException $exception) {
-//            throw new RouteNotFoundException('The Sonata CmsPageRouter cannot find page');
-//        }
-//
-//        return $url;
+            if ($this->isPageAlias($name)) {
+                $name = $this->getPageByPageAlias($name);
+            }
+
+            if ($name instanceof PageInterface) {
+                $url = $this->generateFromPage($name, $parameters, $referenceType);
+            }
+
+            if ($this->isPageSlug($name)) {
+                $url = $this->generateFromPageSlug($parameters, $referenceType);
+            }
+
+            if ($url === false) {
+                throw new RouteNotFoundException('The Sonata CmsPageRouter cannot find url');
+            }
+
+        } catch (PageNotFoundException $exception) {
+            throw new RouteNotFoundException('The Sonata CmsPageRouter cannot find page');
+        }
+
+        return $url;
     }
 
     /**
@@ -127,50 +132,95 @@ class PostRouter implements ChainedRouterInterface
     }
 
     /**
+     * Parse out url query string into an associative array
+     *
+     * $qry can be any valid url or just the query string portion.
+     * Will return false if no valid querystring found
+     *
+     * @param $pathinfo String
+     * @return Array
+     */
+    protected function queryToArray($pathinfo) {
+        $result = array();
+        //string must contain at least one = and cannot be in first position
+        if(strpos($pathinfo,'=')) {
+
+            if(strpos($pathinfo,'?')!==false) {
+                $q = parse_url($pathinfo);
+                $qry = $q['query'];
+            }
+        }else {
+            return false;
+        }
+
+        foreach (explode('&', $qry) as $couple) {
+            list ($key, $val) = explode('=', $couple);
+            $result[$key] = $val;
+        }
+
+        return empty($result) ? false : $result;
+
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function match($pathinfo)
     {
 
-//        $parsed_url = parse_url($pathinfo);
-//        var_dump($parsed_url['path']);
-//        $cat = array_filter(explode('/', $parsed_url['path']));
-//        var_dump($cat);
-        die('match');
-//        $cms = $this->cmsSelector->retrieve();
-//        $site = $this->siteSelector->retrieve();
+        $urlParameters = array_filter(explode('/', $pathinfo));
+        $paramCount = count($urlParameters);
+
+        dump($this->context);
 //
-//        if (!$cms instanceof CmsManagerInterface) {
-//            throw new ResourceNotFoundException("No CmsManager defined");
+        if ($paramCount == 1) {
+
+            dump($paramCount);
+        } elseif($paramCount > 1) {
+            dump($urlParameters);
+        }
+//
+//        foreach($this->seq as $sequence) {
+//            dump($sequence);
 //        }
-//
-//        if (!$site instanceof SiteInterface) {
-//            throw new ResourceNotFoundException("No site defined");
-//        }
-//
-//        try {
-//            $page = $cms->getPageByUrl($site, $pathinfo);
-//        } catch (PageNotFoundException $e) {
-//            throw new ResourceNotFoundException($pathinfo, 0, $e);
-//        }
-//
-//        if (!$page || !$page->isCms()) {
-//            throw new ResourceNotFoundException($pathinfo);
-//        }
-//
-//        if (!$page->getEnabled() && !$this->cmsSelector->isEditor()) {
-//            throw new ResourceNotFoundException($pathinfo);
-//        }
-//
-//        $cms->setCurrentPage($page);
-//
-//        return array (
-//            '_controller' => 'sonata.page.page_service_manager:execute',
-//            '_route'      => PageInterface::PAGE_ROUTE_CMS_NAME,
-//            'page'        => $page,
-//            'path'        => $pathinfo,
-//            'params'      => array()
-//        );
+//        dump($this->seq);
+        dump($this->router);
+        dump($pathinfo);
+        die('rommel');
+        $cms = $this->cmsSelector->retrieve();
+        $site = $this->siteSelector->retrieve();
+
+        if (!$cms instanceof CmsManagerInterface) {
+            throw new ResourceNotFoundException("No CmsManager defined");
+        }
+
+        if (!$site instanceof SiteInterface) {
+            throw new ResourceNotFoundException("No site defined");
+        }
+
+        try {
+            $page = $cms->getPageByUrl($site, $pathinfo);
+        } catch (PageNotFoundException $e) {
+            throw new ResourceNotFoundException($pathinfo, 0, $e);
+        }
+
+        if (!$page || !$page->isCms()) {
+            throw new ResourceNotFoundException($pathinfo);
+        }
+
+        if (!$page->getEnabled() && !$this->cmsSelector->isEditor()) {
+            throw new ResourceNotFoundException($pathinfo);
+        }
+
+        $cms->setCurrentPage($page);
+
+        return array (
+            '_controller' => 'sonata.page.page_service_manager:execute',
+            '_route'      => PageInterface::PAGE_ROUTE_CMS_NAME,
+            'page'        => $page,
+            'path'        => $pathinfo,
+            'params'      => array()
+        );
     }
 
     /**
@@ -277,56 +327,122 @@ class PostRouter implements ChainedRouterInterface
         return UrlGenerator::getRelativePath($basePath, $targetPath);
     }
 
-//    /**
-//     * Retrieves a page object from a page alias
-//     *
-//     * @param string $alias
-//     *
-//     * @return \Sonata\PageBundle\Model\PageInterface|null
-//     *
-//     * @throws PageNotFoundException
-//     */
-//    protected function getPageByPageAlias($alias)
-//    {
-//        $site = $this->siteSelector->retrieve();
-//        $page = $this->cmsSelector->retrieve()->getPageByPageAlias($site, $alias);
-//
-//        return $page;
-//    }
-//
-//    /**
-//     * Returns the Url from a Page object
-//     *
-//     * @param PageInterface $page
-//     *
-//     * @return string
-//     */
-//    protected function getUrlFromPage(PageInterface $page)
-//    {
-//        return $page->getCustomUrl() ?: $page->getUrl();
-//    }
-//
-//    /**
-//     * Returns whether this name is a page alias or not
-//     *
-//     * @param string $name
-//     *
-//     * @return bool
-//     */
-//    protected function isPageAlias($name)
-//    {
-//        return (is_string($name) && substr($name, 0, 12) === '_page_alias_');
-//    }
-//
-//    /**
-//     * Returns whether this name is a page slug route or not
-//     *
-//     * @param string $name
-//     *
-//     * @return bool
-//     */
-//    protected function isPageSlug($name)
-//    {
-//        return (is_string($name) && $name == PageInterface::PAGE_ROUTE_CMS_NAME);
-//    }
+    /**
+     * Retrieves a page object from a page alias
+     *
+     * @param string $alias
+     *
+     * @return \Sonata\PageBundle\Model\PageInterface|null
+     *
+     * @throws PageNotFoundException
+     */
+    protected function getPageByPageAlias($alias)
+    {
+        $site = $this->siteSelector->retrieve();
+        $page = $this->cmsSelector->retrieve()->getPageByPageAlias($site, $alias);
+
+        return $page;
+    }
+
+    /**
+     * Returns the Url from a Page object
+     *
+     * @param PageInterface $page
+     *
+     * @return string
+     */
+    protected function getUrlFromPage(PageInterface $page)
+    {
+        return $page->getCustomUrl() ?: $page->getUrl();
+    }
+
+    /**
+     * Returns whether this name is a page alias or not
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    protected function isPageAlias($name)
+    {
+        return (is_string($name) && substr($name, 0, 12) === '_page_alias_');
+    }
+
+    /**
+     * Returns whether this name is a page slug route or not
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    protected function isPageSlug($name)
+    {
+        return (is_string($name) && $name == PageInterface::PAGE_ROUTE_CMS_NAME);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCollectionManager()
+    {
+        return $this->collectionManager;
+    }
+
+    /**
+     * @param mixed $collectionManager
+     */
+    public function setCollectionManager($collectionManager)
+    {
+        $this->collectionManager = $collectionManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategoryManager()
+    {
+        return $this->categoryManager;
+    }
+
+    /**
+     * @param mixed $categoryManager
+     */
+    public function setCategoryManager($categoryManager)
+    {
+        $this->categoryManager = $categoryManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTagManager()
+    {
+        return $this->tagManager;
+    }
+
+    /**
+     * @param mixed $tagManager
+     */
+    public function setTagManager($tagManager)
+    {
+        $this->tagManager = $tagManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostManager()
+    {
+        return $this->postManager;
+    }
+
+    /**
+     * @param mixed $postManager
+     */
+    public function setPostManager($postManager)
+    {
+        $this->postManager = $postManager;
+    }
+
+
 }

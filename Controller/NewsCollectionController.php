@@ -19,7 +19,7 @@ class NewsCollectionController extends AbstractNewsController
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function collectionAction($collection){
+    public function collectionAction($collection, $_classification = 'collection'){
         if(!$collection = $this->verifyCollection($collection)) {
             throw new NotFoundHttpException('Unable to find the collection');
         }
