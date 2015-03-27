@@ -35,6 +35,8 @@
             <argument type="service" id="sonata.classification.admin.collection" />
             <argument type="service" id="sonata.news.manager.post" />
             <argument>%rz_news.block.post_by_collection.templates%</argument>
+            <argument>%rz_news.block.post_by_collection.ajax_templates%</argument>
+            <argument>%rz_news.settings.news_pager_max_per_page%</argument>
         </service>
 
     </services>

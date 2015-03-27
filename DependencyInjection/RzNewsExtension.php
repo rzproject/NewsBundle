@@ -215,14 +215,21 @@ class RzNewsExtension extends Extension
      */
     public function configureBlocks($config, ContainerBuilder $container)
     {
-        $container->setParameter('rz_news.block.collection.class', $config['collection']['class']);
+        $container->setParameter('rz_news.block.collection.class', $config['post_by_collection_list']['class']);
 
-        $temp = $config['collection']['templates'];
+        $temp = $config['post_by_collection_list']['templates'];
         $templates = array();
         foreach ($temp as $template) {
             $templates[$template['path']] = $template['name'];
         }
         $container->setParameter('rz_news.block.post_by_collection.templates', $templates);
+
+        $ajaxTemp = $config['post_by_collection_list']['ajax_templates'];
+        $ajaxTemplates = array();
+        foreach ($ajaxTemp as $ajaxTemplate) {
+            $ajaxTemplates[$ajaxTemplate['path']] = $ajaxTemplate['name'];
+        }
+        $container->setParameter('rz_news.block.post_by_collection.ajax_templates', $ajaxTemplates);
 
         $container->setParameter('rz_news.block.recent_posts', $config['recent_posts']['class']);
         $temp = $config['recent_posts']['templates'];

@@ -6,6 +6,7 @@
 
     <route id="rz_news_collection_view" pattern="/{collection}/{permalink}.{_format}">
         <default key="_controller">RzNewsBundle:NewsCollection:collectionView</default>
+        <default key="_classification">collection_post</default>
         <requirement key="_format">html</requirement>
         <requirement key="collection">[^/]+</requirement>
         <requirement key="permalink">[^/]+</requirement>
@@ -13,15 +14,18 @@
 
     <route id="rz_news_collection" pattern="/{collection}">
         <default key="_controller">RzNewsBundle:NewsCollection:collection</default>
+        <default key="_classification">collection</default>
     </route>
 
     <route id="rz_news_collection_load_more" pattern="/load-more/{collection}/{page}">
         <default key="_controller">RzNewsBundle:NewsCollection:collectionAjaxPager</default>
+        <default key="_classification">collection_load_more</default>
         <requirement key="page">\d+</requirement>
     </route>
 
     <route id="rz_news_collection_pager" pattern="/{collection}/page/{page}">
         <default key="_controller">RzNewsBundle:NewsCollection:collectionPager</default>
+        <default key="_classification">collection_pager</default>
         <requirement key="page">\d+</requirement>
     </route>
 

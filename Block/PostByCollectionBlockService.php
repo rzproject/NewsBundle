@@ -18,13 +18,22 @@ class PostByCollectionBlockService extends BaseBlockService
     protected $collectionManager;
     protected $collectionAdmin;
     protected $templates;
+    protected $ajaxTemplates;
     protected $postManager;
+    protected $maxPerPage;
 
     /**
      * @param string          $name
      * @param EngineInterface $templating
      */
-    public function __construct($name, EngineInterface $templating, ManagerInterface $collectionManager, AdminInterface $collectionAdmin, ManagerInterface $postManager, $templates)
+    public function __construct($name,
+                                EngineInterface $templating,
+                                ManagerInterface $collectionManager,
+                                AdminInterface $collectionAdmin,
+                                ManagerInterface $postManager,
+                                $templates,
+                                $ajaxTemplates,
+                                $maxPerPage)
     {
         $this->name       = $name;
         $this->templating = $templating;
@@ -32,6 +41,8 @@ class PostByCollectionBlockService extends BaseBlockService
         $this->collectionAdmin = $collectionAdmin;
         $this->postManager = $postManager;
         $this->templates = $templates;
+        $this->ajaxTemplates = $ajaxTemplates;
+        $this->maxPerPage = $maxPerPage;
     }
 
     /**
@@ -52,8 +63,8 @@ class PostByCollectionBlockService extends BaseBlockService
                         'admin'  => 'admin'
                     )
                 )),
-                array('template', 'choice', array(
-                    'choices' => $this->templates)),
+                array('template', 'choice', array('choices' => $this->templates)),
+                array('ajaxTemplate', 'choice', array('choices' => $this->ajaxTemplates)),
             )
         ));
     }
@@ -131,11 +142,17 @@ class PostByCollectionBlockService extends BaseBlockService
         );
 
         if(isset($settings['collection']) && $settings['collection'] instanceof CollectionInterface) {
+
             $criteria['mode'] = $settings['mode'];
             $criteria['enabled'] = true;
             $criteria['collection'] = $settings['collection'];
-            $posts = $this->postManager->getNewsPager($criteria);
-            $parameters['pager'] = $posts;
+
+            $pager = $this->postManager->getNewsPager($criteria);
+            $pager->setMaxPerPage($this->maxPerPage ?: 5);
+            $pager->setCurrentPage(1, false, true);
+
+            $parameters['pager'] = $pager;
+            $parameters['collection'] = $criteria['collection'];
         }
 
         if ($blockContext->getSetting('mode') !== 'public') {
@@ -163,6 +180,7 @@ class PostByCollectionBlockService extends BaseBlockService
         $resolver->setDefaults(array(
             'mode'       => 'public',
             'template'   => 'RzNewsBundle:Block:post_by_collection_list.html.twig',
+            'ajaxTemplate'   => 'RzNewsBundle:Block:post_by_collection_ajax.html.twig',
             'collection' => null,
         ));
     }
