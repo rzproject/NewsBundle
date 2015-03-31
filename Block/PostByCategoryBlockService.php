@@ -53,13 +53,13 @@ class PostByCategoryBlockService extends BaseBlockService
      */
     public function buildEditForm(FormMapper $formMapper, BlockInterface $block) {
 
-        if (!$block->getSetting('collection') instanceof CollectionInterface) {
+        if (!$block->getSetting('category') instanceof CategoryInterface) {
             $this->load($block);
         }
 
         $formMapper->add('settings', 'sonata_type_immutable_array', array(
             'keys' => array(
-                array($this->getCollectionBuilder($formMapper), null, array('attr'=>array('class'=>'span8'))),
+                array($this->getCategoryBuilder($formMapper), null, array('attr'=>array('class'=>'span8'))),
                 array('mode', 'choice', array(
                     'choices' => array(
                         'public' => 'public',
@@ -78,14 +78,14 @@ class PostByCategoryBlockService extends BaseBlockService
      *
      * @return \Symfony\Component\Form\FormBuilder
      */
-    protected function getCollectionBuilder(FormMapper $formMapper)
+    protected function getCategoryBuilder(FormMapper $formMapper)
     {
         // simulate an association ...
         $fieldDescription = $this->categoryAdmin->getModelManager()->getNewFieldDescriptionInstance($this->categoryAdmin->getClass(), 'collection' );
         $fieldDescription->setAssociationAdmin($this->categoryAdmin);
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
-        $fieldDescription->setAssociationMapping(array('fieldName' => 'collection',
+        $fieldDescription->setAssociationMapping(array('fieldName' => 'Category',
             'type' => \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY,
             'targetEntity' => $this->categoryAdmin->getClass(),
             'cascade'       => array(
