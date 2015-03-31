@@ -126,7 +126,7 @@ class PostManager extends ModelPostManager
         if (isset($criteria['category'])) {
             if (!is_array($criteria['category'])) {
                 $query->andWhere('cat.slug LIKE :category');
-                $parameters['category'] = $criteria['category'];
+                $parameters['category'] = $criteria['category']->getSlug();
             } else {
                 $cat = null;
                 foreach($criteria['category'] as $slug) {

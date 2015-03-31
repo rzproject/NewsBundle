@@ -15,10 +15,8 @@ class NewsTagController extends AbstractNewsController
 
     /**
      * @param string $tag
-     *
      * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \Exception
      */
     public function tagAction($tag)
     {
@@ -36,12 +34,11 @@ class NewsTagController extends AbstractNewsController
     }
 
     /**
-     * @param $page
      * @param string $tag
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @param $page
      * @return \Symfony\Component\HttpFoundation\Response
-     *
+     * @throws \Exception
      */
     public function tagPagerAction($tag, $page)
     {
@@ -160,15 +157,6 @@ class NewsTagController extends AbstractNewsController
             'blog' => $this->get('sonata.news.blog')
         ));
     }
-
-//    protected function renderNewsList($parameters, $type) {
-//
-//
-//        dump($parameters);
-//        die();
-//
-//        return parent::renderNewsList($parameters, $type);
-//    }
 
     protected function renderTagList($tag, $page = null) {
 

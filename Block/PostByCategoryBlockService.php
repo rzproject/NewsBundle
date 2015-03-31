@@ -3,7 +3,7 @@
 namespace Rz\NewsBundle\Block;
 
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\CoreBundle\Model\ManagerInterface;;
+use Sonata\CoreBundle\Model\ManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -11,14 +11,15 @@ use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
-use Sonata\ClassificationBundle\Model\CollectionInterface;
+use Sonata\ClassificationBundle\Model\CategoryInterface;
 
-class PostByCollectionBlockService extends BaseBlockService
+class PostByCategoryBlockService extends BaseBlockService
 {
-    protected $collectionManager;
-    protected $collectionAdmin;
+    protected $categoryManager;
+    protected $categoryAdmin;
     protected $templates;
     protected $ajaxTemplates;
+    protected $ajaxPagerTemplates;
     protected $postManager;
     protected $maxPerPage;
 
@@ -28,20 +29,22 @@ class PostByCollectionBlockService extends BaseBlockService
      */
     public function __construct($name,
                                 EngineInterface $templating,
-                                ManagerInterface $collectionManager,
-                                AdminInterface $collectionAdmin,
+                                ManagerInterface $categoryManager,
+                                AdminInterface $categoryAdmin,
                                 ManagerInterface $postManager,
                                 $templates,
                                 $ajaxTemplates,
+                                $ajaxPagerTemplates,
                                 $maxPerPage)
     {
         $this->name       = $name;
         $this->templating = $templating;
-        $this->collectionManager = $collectionManager;
-        $this->collectionAdmin = $collectionAdmin;
+        $this->categoryManager = $categoryManager;
+        $this->categoryAdmin = $categoryAdmin;
         $this->postManager = $postManager;
         $this->templates = $templates;
         $this->ajaxTemplates = $ajaxTemplates;
+        $this->ajaxPagerTemplates = $ajaxPagerTemplates;
         $this->maxPerPage = $maxPerPage;
     }
 
@@ -65,6 +68,7 @@ class PostByCollectionBlockService extends BaseBlockService
                 )),
                 array('template', 'choice', array('choices' => $this->templates)),
                 array('ajaxTemplate', 'choice', array('choices' => $this->ajaxTemplates)),
+                array('ajaxPagerTemplate', 'choice', array('choices' => $this->ajaxPagerTemplates)),
             )
         ));
     }
@@ -77,23 +81,23 @@ class PostByCollectionBlockService extends BaseBlockService
     protected function getCollectionBuilder(FormMapper $formMapper)
     {
         // simulate an association ...
-        $fieldDescription = $this->collectionAdmin->getModelManager()->getNewFieldDescriptionInstance($this->collectionAdmin->getClass(), 'collection' );
-        $fieldDescription->setAssociationAdmin($this->collectionAdmin);
+        $fieldDescription = $this->categoryAdmin->getModelManager()->getNewFieldDescriptionInstance($this->categoryAdmin->getClass(), 'collection' );
+        $fieldDescription->setAssociationAdmin($this->categoryAdmin);
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
         $fieldDescription->setAssociationMapping(array('fieldName' => 'collection',
             'type' => \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY,
-            'targetEntity' => $this->collectionAdmin->getClass(),
+            'targetEntity' => $this->categoryAdmin->getClass(),
             'cascade'       => array(
                 0 => 'persist',
             )));
 
         // TODO: add label on config
 
-        return $formMapper->create('collection', 'sonata_type_model_list', array(
+        return $formMapper->create('category', 'sonata_type_model_list', array(
             'sonata_field_description' => $fieldDescription,
-            'class'                    => $this->collectionAdmin->getClass(),
-            'model_manager'            => $this->collectionAdmin->getModelManager()),
+            'class'                    => $this->categoryAdmin->getClass(),
+            'model_manager'            => $this->categoryAdmin->getModelManager()),
             array('link_parameters' => array('context' => 'news', 'hide_context' => true))
         );
     }
@@ -103,7 +107,7 @@ class PostByCollectionBlockService extends BaseBlockService
      */
     public function prePersist(BlockInterface $block)
     {
-        $block->setSetting('collection', is_object($block->getSetting('collection')) ? $block->getSetting('collection')->getId() : null);
+        $block->setSetting('category', is_object($block->getSetting('category')) ? $block->getSetting('category')->getId() : null);
     }
 
     /**
@@ -111,7 +115,7 @@ class PostByCollectionBlockService extends BaseBlockService
      */
     public function preUpdate(BlockInterface $block)
     {
-        $block->setSetting('collection', is_object($block->getSetting('collection')) ? $block->getSetting('collection')->getId() : null);
+        $block->setSetting('category', is_object($block->getSetting('category')) ? $block->getSetting('category')->getId() : null);
     }
 
     /**
@@ -119,13 +123,13 @@ class PostByCollectionBlockService extends BaseBlockService
      */
     public function load(BlockInterface $block)
     {
-        $collection = $block->getSetting('collection', null);
+        $category = $block->getSetting('category', null);
 
-        if (is_int($collection)) {
-            $collection = $this->collectionManager->findOneBy(array('id' => $collection));
+        if (is_int($category)) {
+            $category = $this->categoryManager->findOneBy(array('id' => $category));
         }
 
-        $block->setSetting('collection', $collection);
+        $block->setSetting('category', $category);
     }
 
     /**
@@ -133,7 +137,7 @@ class PostByCollectionBlockService extends BaseBlockService
      */
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
-        $settings = $blockContext->getBlock()->getSettings('collection');
+        $settings = $blockContext->getBlock()->getSettings('category');
 
         $parameters = array(
             'block_context'  => $blockContext,
@@ -141,18 +145,18 @@ class PostByCollectionBlockService extends BaseBlockService
             'block'          => $blockContext->getBlock(),
         );
 
-        if(isset($settings['collection']) && $settings['collection'] instanceof CollectionInterface) {
+        if(isset($settings['category']) && $settings['category'] instanceof CategoryInterface) {
 
             $criteria['mode'] = $settings['mode'];
             $criteria['enabled'] = true;
-            $criteria['collection'] = $settings['collection'];
+            $criteria['category'] = $settings['category'];
 
             $pager = $this->postManager->getNewsPager($criteria);
             $pager->setMaxPerPage($this->maxPerPage ?: 5);
             $pager->setCurrentPage(1, false, true);
 
             $parameters['pager'] = $pager;
-            $parameters['collection'] = $criteria['collection'];
+            $parameters['category'] = $criteria['category'];
         }
 
         if ($blockContext->getSetting('mode') !== 'public') {
@@ -168,7 +172,7 @@ class PostByCollectionBlockService extends BaseBlockService
      */
     public function getName()
     {
-        return 'Post By Collection List';
+        return 'Post By Category List';
     }
 
 
@@ -179,9 +183,10 @@ class PostByCollectionBlockService extends BaseBlockService
     {
         $resolver->setDefaults(array(
             'mode'       => 'public',
-            'template'   => 'RzNewsBundle:Block:post_by_collection_list.html.twig',
-            'ajaxTemplate'   => 'RzNewsBundle:Block:post_by_collection_ajax.html.twig',
-            'collection' => null,
+            'template'   => 'RzNewsBundle:Block:post_by_category_list.html.twig',
+            'ajaxTemplate'   => 'RzNewsBundle:Block:post_by_category_ajax.html.twig',
+            'ajaxPagerTemplate'   => 'RzNewsBundle:Block:post_by_category_ajax_pager.html.twig',
+            'category' => null,
         ));
     }
 }

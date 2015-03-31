@@ -15,54 +15,18 @@ use Symfony\Component\HttpFoundation\Request;
 class PostByClassificationController extends AbstractNewsController
 {
 
-    /**
-     * @param Request $request
-     * @param $collectionId
-     * @param $page
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     * @internal param $collection
-     */
-    public function postsByCollectionAjaxPagerAction(Request $request, $collectionId, $blockId, $page = 1) {
-
-        if(!$collection = $this->verifyCollection($collectionId)) {
-            throw new NotFoundHttpException('Unable to find the collection');
-        }
-
-        if(!$block = $this->verifyBlock($blockId)) {
-            throw new NotFoundHttpException('Unable to find the block');
-        }
-
-
-        //redirect to normal controller if not ajax
-        if (!$this->get('request_stack')->getCurrentRequest()->isXmlHttpRequest()) {
-            //TODO implement central pager for SEO purposes
-            //return $this->redirect($this->generateUrl('rz_news_collection_pager', array('collection'=>$collection->getSlug(), 'page'=>$page)), 301);
-        }
-
-        try {
-            $parameters = $this->getCollectionDataForView($collection, $block, $page);
-        } catch(\Exception $e) {
-            throw $e;
-        }
-
-        return $this->getXHRResponse($collection, $block, $parameters);
-    }
-
-    protected function getXhrResponse($collection, $block, $parameters) {
+    protected function getCategoryXhrResponse($category, $block, $parameters) {
         $settings = $block->getSettings();
-        $ajaxTemplate = isset($settings['ajaxTemplate']) ? $settings['ajaxTemplate'] : 'RzNewsBundle:Block:post_by_collection_ajax.html.twig';
-
-
-        $templatePagerAjax = 'RzNewsBundle:Post:collection_list_default_ajax_pager.html.twig';
+        $ajaxTemplate = isset($settings['ajaxTemplate']) ? $settings['ajaxTemplate'] : 'RzNewsBundle:Block:post_by_category_ajax.html.twig';
+        $templatePagerAjax = isset($settings['ajaxPagerTemplate']) ? $settings['ajaxPagerTemplate'] : 'RzNewsBundle:Block:post_by_category_ajax_pager.html.twig';
         $html = $this->container->get('templating')->render($ajaxTemplate, $parameters);
         $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
         return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
     }
 
-    protected function getCollectionDataForView($collection, $block, $page = null) {
+    protected function getCategoryDataForView($category, $block, $page = null) {
 
-        $parameters = array('collection' => $collection);
+        $parameters = array('category' => $category);
 
         if($page) {
             $parameters['page'] = $page;
@@ -74,13 +38,13 @@ class PostByClassificationController extends AbstractNewsController
             throw new NotFoundHttpException('Invalid URL');
         }
 
-        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('collection' => $collection, 'block'=>$block));
+        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('category' => $category, 'block'=>$block));
     }
 
-    protected function verifyCollection($collectionId) {
+    protected function verifyCategory($categoryId) {
 
-        $collection = $this->get('sonata.classification.manager.collection')->findOneBy(array(
-            'id' => $collectionId,
+        $collection = $this->get('sonata.classification.manager.category')->findOneBy(array(
+            'id' => $categoryId,
             'enabled' => true
         ));
 
@@ -111,4 +75,42 @@ class PostByClassificationController extends AbstractNewsController
 
         return $block;
     }
+
+
+    /**
+     * @param Request $request
+     * @param $categiryId
+     * @param $blockId
+     * @param int $page
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     * @internal param $collectionId
+     * @internal param $collection
+     */
+    public function postsByCategoryAjaxPagerAction(Request $request, $categoryId, $blockId, $page = 1) {
+
+        if(!$category = $this->verifyCategory($categoryId)) {
+            throw new NotFoundHttpException('Unable to find the collection');
+        }
+
+        if(!$block = $this->verifyBlock($blockId)) {
+            throw new NotFoundHttpException('Unable to find the block');
+        }
+
+
+        //redirect to normal controller if not ajax
+        if (!$this->get('request_stack')->getCurrentRequest()->isXmlHttpRequest()) {
+            //TODO implement central pager for SEO purposes
+            //return $this->redirect($this->generateUrl('rz_news_collection_pager', array('collection'=>$collection->getSlug(), 'page'=>$page)), 301);
+        }
+
+        try {
+            $parameters = $this->getCategoryDataForView($category, $block, $page);
+        } catch(\Exception $e) {
+            throw $e;
+        }
+
+        return $this->getCategoryXhrResponse($category, $block, $parameters);
+    }
+
 }

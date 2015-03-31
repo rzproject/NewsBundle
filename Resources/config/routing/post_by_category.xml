@@ -4,9 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="rz_news_post_by_classification_collection_load_more" pattern="/_collection/load-more/{collectionId}-{blockId}/{page}">
-        <default key="_controller">RzNewsBundle:PostByClassification:postsByCollectionAjaxPager</default>
-        <default key="_classification">collection_load_more</default>
+    <route id="rz_news_post_by_classification_category_load_more" pattern="/_category/load-more/{categoryId}-{blockId}/{page}">
+        <default key="_controller">RzNewsBundle:PostByClassification:postsByCategoryAjaxPager</default>
+        <default key="_classification">category_load_more</default>
         <requirement key="page">\d+</requirement>
     </route>
 
