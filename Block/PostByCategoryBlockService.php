@@ -81,11 +81,11 @@ class PostByCategoryBlockService extends BaseBlockService
     protected function getCategoryBuilder(FormMapper $formMapper)
     {
         // simulate an association ...
-        $fieldDescription = $this->categoryAdmin->getModelManager()->getNewFieldDescriptionInstance($this->categoryAdmin->getClass(), 'collection' );
+        $fieldDescription = $this->categoryAdmin->getModelManager()->getNewFieldDescriptionInstance($this->categoryAdmin->getClass(), 'category' );
         $fieldDescription->setAssociationAdmin($this->categoryAdmin);
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
-        $fieldDescription->setAssociationMapping(array('fieldName' => 'Category',
+        $fieldDescription->setAssociationMapping(array('fieldName' => 'category',
             'type' => \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY,
             'targetEntity' => $this->categoryAdmin->getClass(),
             'cascade'       => array(
