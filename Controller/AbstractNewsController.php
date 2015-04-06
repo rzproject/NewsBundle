@@ -81,6 +81,21 @@ abstract class AbstractNewsController extends Controller
         $pager = $this->getPostManager()->getNewsPager($criteria);
         $pager->setMaxPerPage($this->container->hasParameter('rz_news.settings.news_pager_max_per_page')?$this->container->getParameter('rz_news.settings.news_pager_max_per_page'): 5);
         $pager->setCurrentPage($page, false, true);
+
+        return $pager;
+    }
+
+    protected function fetchNewsNative(array $criteria = array()) {
+
+        if(array_key_exists('page', $criteria)) {
+            $page = $criteria['page'];
+            unset($criteria['page']);
+        } else {
+            $page = 1;
+        }
+
+        $limit = $this->container->hasParameter('rz_news.settings.news_pager_max_per_page')?$this->container->getParameter('rz_news.settings.news_pager_max_per_page'): 5;
+        $pager = $this->getPostManager()->getNewsNativePager($criteria, $page, $limit);
         return $pager;
     }
 

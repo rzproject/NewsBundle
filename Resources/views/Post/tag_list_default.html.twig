@@ -14,11 +14,11 @@
             <div id="load_more_container" class="pagination">
                 {% if is_ajax_pagination %}
                 <ul class="span12">
-                    {% if pager.hasNextPage %}
+                    {% if pager.nextpage %}
                         <li style="text-align: center;">
                             <a id="load_more_button"
                                class="btn btn-rzcms-theme"
-                               href="{{ url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug }) }}"
+                               href="{{ url('rz_news_tag_loadmore', {'page': pager.nextpage, 'tag': tag.slug }) }}"
                                title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
                         </li>
                     {% endif %}
@@ -34,18 +34,18 @@
                 </script>
                 {% else %}
                 <ul class="span12">
-                    {% if pager.hasPreviousPage %}
+                    {% if pager.previouspage %}
                         <li class="pull-left">
                             <a class="btn btn-rzcms-theme"
-                               href="{{ url('rz_news_tag_pager',{'page': pager.previousPage, 'tag': tag.slug }) }}"
+                               href="{{ url('rz_news_tag_pager',{'page': pager.previouspage, 'tag': tag.slug }) }}"
                                title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
                             </a>
                         </li>
                     {% endif %}
-                    {% if pager.hasNextPage %}
+                    {% if pager.nextpage %}
                         <li class="pull-right">
                             <a class="btn btn-rzcms-theme"
-                               href="{{ url('rz_news_tag_pager', {'page': pager.nextPage, 'tag': tag.slug }) }}"
+                               href="{{ url('rz_news_tag_pager', {'page': pager.nextpage, 'tag': tag.slug }) }}"
                                title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
                             </a>
                         </li>

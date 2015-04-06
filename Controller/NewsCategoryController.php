@@ -171,7 +171,7 @@ class NewsCategoryController extends AbstractNewsController
             $parameters['page'] = $page;
         }
 
-        $pager = $this->fetchNews($parameters);
+        $pager = $this->fetchNewsNative($parameters);
 
         if ($pager->getNbResults() <= 0) {
             throw new NotFoundHttpException('Invalid URL');

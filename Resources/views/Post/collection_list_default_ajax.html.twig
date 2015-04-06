@@ -1,4 +1,4 @@
-{% set posts = pager.getCurrentPageResults() %}
+{% set posts = pager.getResults() %}
 {% if posts | length > 0 %}
     {% for post in posts %}
         <div class="pad20"></div>

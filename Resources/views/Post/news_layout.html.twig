@@ -1,7 +1,7 @@
 {% block post_body %}
 {% spaceless %}
 <div id="posts">
-    {% for post in pager.getCurrentPageResults() %}
+    {% for post in pager.getResults() %}
         <div class="pad20"></div>
         {% block post_media %}
         {% if post.image %}
