@@ -2,11 +2,11 @@
     {% spaceless %}
         {% if pager.haveToPaginate() %}
             <ul class="span12">
-                {% if pager.hasNextPage %}
+                {% if pager.nextpage %}
                     <li style="text-align: center;">
                         <a id="load_more_button"
                            class="btn btn-rzcms-theme"
-                           href="{{ url('rz_news_tag_loadmore', {'page': pager.nextPage, 'tag': tag.slug }) }}"
+                           href="{{ url('rz_news_tag_loadmore', {'page': pager.nextpage, 'tag': tag.slug }) }}"
                            title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
                     </li>
                 {% endif %}

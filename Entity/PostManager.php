@@ -11,6 +11,8 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
+use Sonata\DatagridBundle\Pager\Doctrine\Pager;
 
 
 class PostManager extends ModelPostManager
@@ -70,7 +72,39 @@ class PostManager extends ModelPostManager
      */
     public function getNewsPager(array $criteria, array $sort = array())
     {
+        $query = $this->buildQuery($criteria, $sort);
+        try {
+            return new Pagerfanta(new DoctrineORMAdapter($query));
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Valid criteria are:
+     *    enabled - boolean
+     *    date - query
+     *    tag - string
+     *    author - 'NULL', 'NOT NULL', id, array of ids
+     *    collections - CollectionInterface
+     *    mode - string public|admin
+     */
+    public function getNewsNativePager(array $criteria, $page, $limit = 10, array $sort = array())
+    {
+        $query = $this->buildQuery($criteria, $sort);
+
+        $pager = new Pager();
+        $pager->setMaxPerPage($limit);
+        $pager->setQuery(new ProxyQuery($query));
+        $pager->setPage($page);
+        $pager->init();
+
+        return $pager;
+    }
+
+    protected function buildQuery(array $criteria, array $sort = array()) {
         if (!isset($criteria['mode'])) {
             $criteria['mode'] = 'public';
         }
@@ -79,7 +113,7 @@ class PostManager extends ModelPostManager
         $query = $this->getRepository()
             ->createQueryBuilder('p')
             ->select('p, t')
-            ->orderBy('p.publicationDateStart', 'DESC');
+            ;
 
         if ($criteria['mode'] == 'admin') {
             $query
@@ -96,6 +130,8 @@ class PostManager extends ModelPostManager
                 ->leftJoin('phc.category', 'cat',  Join::WITH, 'cat.enabled = true')
             ;
         }
+
+        $query->addOrderBy('p.publicationDateStart', 'DESC');
 
         if (!isset($criteria['enabled']) && $criteria['mode'] == 'public') {
             $criteria['enabled'] = true;
@@ -143,12 +179,7 @@ class PostManager extends ModelPostManager
 
         $query->setParameters($parameters);
 
-
-        try {
-            return new Pagerfanta(new DoctrineORMAdapter($query));
-        } catch (NoResultException $e) {
-            return null;
-        }
+        return $query;
     }
 
     /**
