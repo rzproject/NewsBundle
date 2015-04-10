@@ -2,13 +2,13 @@ function rz_news_post_loadmore(options) {
     this.field_container = options.field_container;
     this.load_more_container = options.load_more_container;
     this.load_more_button = options.load_more_button;
+    this.load_more_data_auto_append = this.load_more_data_auto_append;
+    this.load_more_data = null;
     this.init();
 }
 
 rz_news_post_loadmore.prototype = {
     init: function() {
-
-        console.log('catch click');
         var that = this;
         that.initLoadMoreButton(jQuery(sprintf('#%s', that.load_more_button)));
     },
@@ -23,16 +23,16 @@ rz_news_post_loadmore.prototype = {
 
         var url_load_more = jQuery(sprintf("#%s", that.load_more_button)).attr('href');
 
-        console.log(url_load_more);
-
-
         jQuery.ajax({
             type: 'GET',
             dataType: 'json',
             url: url_load_more
         })
             .done(function(data, textStatus, jqXHR) {
-                jQuery(sprintf('#%s', that.field_container)).append(data.html);
+                that.setLoadMoreData(data.html);
+                if(that.load_more_data_auto_append) {
+                    jQuery(sprintf('#%s', that.field_container)).append(data.html);
+                }
                 jQuery(sprintf('#%s', that.load_more_container)).html(data.html_pager);
             })
             .fail(function(jqXHR, textStatus, errorThrown){
@@ -42,6 +42,7 @@ rz_news_post_loadmore.prototype = {
             .always(function(data) {
                 that.initThumbnails( jQuery('.porthumb img'));
                 that.initLoadMoreButton(jQuery(sprintf('#%s', that.load_more_button)));
+                jQuery( document ).trigger( "rz:post_loadmore_custom_event" )
                 //jQuery.unblockUI();
             });
         return;
@@ -62,5 +63,15 @@ rz_news_post_loadmore.prototype = {
             that.loadMore(event);
             return false;
         });
+    },
+
+    setLoadMoreData: function(data) {
+        var that = this;
+        that.load_more_data = data;
+    },
+
+    getLoadMoreData: function() {
+        var that = this;
+        return that.load_more_data;
     }
 }
