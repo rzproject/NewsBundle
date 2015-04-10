@@ -2,7 +2,7 @@ function rz_news_post_loadmore(options) {
     this.field_container = options.field_container;
     this.load_more_container = options.load_more_container;
     this.load_more_button = options.load_more_button;
-    this.load_more_data_auto_append = this.load_more_data_auto_append;
+    this.load_more_data_auto_append = options.load_more_data_auto_append;
     this.load_more_data = null;
     this.init();
 }
