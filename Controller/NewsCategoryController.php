@@ -351,7 +351,7 @@ class NewsCategoryController extends AbstractNewsController
             $page = 1;
         }
         $pager = $this->getCategoryManager()->getSubCategoryPager($criteria['category']->getId());
-        $pager->setMaxPerPage($this->container->hasParameter('rz_news.settings.news_pager_max_per_page')?$this->container->getParameter('rz_news.settings.news_pager_max_per_page'): 5);
+        $pager->setMaxPerPage($this->container->hasParameter('rz_classification.settings.category.category_list_max_per_page')?$this->container->getParameter('rz_classification.settings.category.category_list_max_per_page'): 6);
         $pager->setCurrentPage($page, false, true);
         return $pager;
     }

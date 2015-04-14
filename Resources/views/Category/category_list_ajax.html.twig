@@ -1,9 +1,5 @@
 {% for category in pager.getCurrentPageResults() %}
-    {% if category.page %}
-        {% set url = rz_render_page_alias_url(category.page.getPageAlias()) %}
-    {% else %}
-        {% set url = null %}
-    {% endif %}
+    {% set category_url = url('rz_news_category', { 'permalink':  rz_classification_category_permalink(category) }) %}
     <div class="category-item">
         <div class="category">
             {% if category.media %}
@@ -18,10 +14,10 @@
                 {% endif %}
             {% endif %}
             <div class="item-description">
-                <h1 class="blog"><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}">{{ category.name }}</a></h1>
+                <h1 class="blog"><a href="{{ category_url }}">{{ category.name }}</a></h1>
                 <p>{{ category.description }}</p>
                 {#<p>{{ category.content|raw }}</p>#}
-                <h4><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}"><b>READ &rarr;</b></a></h4>
+                <h4><a href="{{ category_url }}"><b>READ &rarr;</b></a></h4>
             </div>
             <!--end post-->
         </div>
