@@ -3,6 +3,12 @@
 {% spaceless %}
 <div id="posts">
     {% for post in pager.getCurrentPageResults() %}
+        {% if enable_category_canonical_page is defined and enable_category_canonical_page == true %}
+            {% set post_url = url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) %}
+        {% else %}
+            {% set post_url = url('rz_news_view', { 'permalink': post.slug, '_format': 'html' }) %}
+        {% endif %}
+
         <div class="pad20"></div>
         {% block post_media %}
         {% if post.image %}
@@ -19,7 +25,7 @@
         {% endblock post_media %}
 
         {% block post_title %}
-        <h1 class="blog"><a href="{{ url('rz_news_view', { 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
+        <h1 class="blog"><a href="{{ post_url }}">{{ post.title }}</a></h1>
         {% endblock post_title %}
 
         {% block post_title_details %}
@@ -36,7 +42,7 @@
                     <li>Categories: </li>
                     <li>
                         {% for postHasCategory in post.postHasCategory %}
-                            <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                            <a href="{{ post_url }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
                         {% endfor %}
                     </li>
                 </ul>

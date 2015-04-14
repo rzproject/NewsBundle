@@ -4,6 +4,7 @@ namespace Rz\NewsBundle\Entity;
 
 use Sonata\NewsBundle\Entity\PostManager as ModelPostManager;
 use Sonata\ClassificationBundle\Model\CollectionInterface;
+use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\NewsBundle\Model\BlogInterface;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
@@ -126,7 +127,11 @@ class PostManager extends ModelPostManager
         if (isset($criteria['category'])) {
             if (!is_array($criteria['category'])) {
                 $query->andWhere('cat.slug LIKE :category');
-                $parameters['category'] = $criteria['category']->getSlug();
+                if($criteria['category'] instanceof CategoryInterface) {
+                    $parameters['category'] = $criteria['category']->getSlug();
+                } else {
+                    $parameters['category'] = $criteria['category'];
+                }
             } else {
                 $cat = null;
                 foreach($criteria['category'] as $slug) {

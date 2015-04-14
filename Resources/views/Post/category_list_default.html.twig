@@ -2,11 +2,11 @@
 
 
 {% block post_title %}
-    <h1 class="blog"><a href="{{ url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
+    <h1 class="blog"><a href="{{ post_url }}">{{ post.title }}</a></h1>
 {% endblock post_title %}
 
 {% block post_read_more %}
-    <h4><a href="{{ url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
+    <h4><a href="{{ post_url }}"><b>READ &rarr;</b></a></h4>
 {% endblock post_read_more %}
 
 {% block post_categories %}
@@ -40,7 +40,8 @@
                         var rz_news_post_loadmore_js = new rz_news_post_loadmore({
                             load_more_container: "load_more_container",
                             load_more_button: "load_more_button",
-                            field_container: 'posts'
+                            field_container: 'posts',
+                            load_more_data_auto_append: true
                         });
                     });
                 </script>

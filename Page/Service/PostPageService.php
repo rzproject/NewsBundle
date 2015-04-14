@@ -42,12 +42,6 @@ class PostPageService extends BasePageService
      */
     public function execute(PageInterface $page, Request $request, array $parameters = array(), Response $response = null)
     {
-        if($request->attributes->has('_route_params')) {
-
-            dump($request->attributes->get('_route_params'));
-            dump($response);
-        }
-
         $this->updateSeoPage($page);
 
         $response = $this->templateManager->renderResponse($page->getTemplateCode(), $parameters, $response);

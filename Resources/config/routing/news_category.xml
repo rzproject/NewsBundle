@@ -4,11 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="rz_news_category_home" pattern="/category">
-        <default key="_controller">RzNewsBundle:NewsCategory:categoryHome</default>
-    </route>
-
-    <route id="rz_news_category_view" pattern="/category/{category}/{permalink}.{_format}">
+    <route id="rz_news_category_view" pattern="/{category}/{permalink}.{_format}">
         <default key="_controller">RzNewsBundle:NewsCategory:categoryView</default>
         <requirement key="_format">html</requirement>
         <requirement key="category">.+</requirement>
@@ -21,13 +17,13 @@
         <requirement key="page">\d+</requirement>
     </route>
 
-    <route id="rz_news_category_pager" pattern="/category/{permalink}/page/{page}">
+    <route id="rz_news_category_pager" pattern="/{permalink}/page/{page}">
         <default key="_controller">RzNewsBundle:NewsCategory:categoryPager</default>
         <requirement key="page">\d+</requirement>
         <requirement key="permalink">.+</requirement>
     </route>
 
-    <route id="rz_news_category" pattern="/category/{permalink}">
+    <route id="rz_news_category" pattern="/{permalink}">
         <default key="_controller">RzNewsBundle:NewsCategory:category</default>
         <requirement key="permalink">.+</requirement>
     </route>

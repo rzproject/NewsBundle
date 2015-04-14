@@ -1,0 +1,95 @@
+<div class="row-fluid">
+    <div class="span12">
+        <div class="masonry-container">
+            <div id="posts" class="category-list" data-masonry-options="{ 'isFitWidth': true, 'itemSelector': '.category-item', 'gutter': 10 }">
+                {% for category in pager.getCurrentPageResults() %}
+                    {% set category_url = url('rz_news_category', { 'permalink':  rz_classification_category_permalink(category) }) %}
+                    <div class="category-item">
+                        <div class="category">
+                            {% if category.media %}
+                                {% if category.media.providerName  == 'sonata.media.provider.image' %}
+                                    <a href="{%  path category.media, 'reference' %}" data-rel="prettyPhoto">
+                                        {% media category.media, 'reference' with {'style':'width:380px;', 'height': 'auto'} %}
+                                    </a>
+                                {% else %}
+                                    <div class="vendor">
+                                        {% media category.media, 'reference' %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            <div class="item-description">
+                                <h1 class="blog"><a href="{{ category_url }}">{{ category.name }}</a></h1>
+                                <p>{{ category.description }}</p>
+                                {#<p>{{ category.content|raw }}</p>#}
+                                <h4><a href="{{ category_url }}"><b>READ &rarr;</b></a></h4>
+                            </div>
+                            <!--end post-->
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row-fluid sonata-blog-post-list">
+                        <div class="span12">
+                            {{ 'no_post_found'|trans({}, 'RzClassificationBundle') }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% if pager and pager.haveToPaginate %}
+            {% spaceless %}
+                <div id="load_more_container" class="pagination">
+                    <ul class="span12">
+                        {% if pager.hasNextPage %}
+                            <li style="text-align: center;">
+                                <a id="load_more_button"
+                                   class="btn btn-rzcms-theme"
+                                   href="{{ url('rz_news_news_category_load_more', {'page': pager.nextPage, 'permalink': permalink }) }}"
+                                   title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <script type="text/javascript">
+                        jQuery(document).ready(function () {
+                            var rz_news_post_loadmore_js = new rz_news_post_loadmore({
+                                load_more_container: "load_more_container",
+                                load_more_button: "load_more_button",
+                                field_container: 'posts',
+                                load_more_data_auto_append: false
+                            });
+
+                            jQuery(".category-list").imagesLoaded(function(){
+                                jQuery(".category-list").masonry({
+                                    'isFitWidth': true,
+                                    'itemSelector': '.category-item',
+                                    'gutter': 10
+                                });
+                            });
+
+                            jQuery(document).on( "rz:post_loadmore_custom_event", function( event ) {
+                                var data = rz_news_post_loadmore_js.getLoadMoreData();
+                                jQuery(".category-list").masonry().append( data ).each(function(){
+                                    jQuery(".category-list").masonry('reloadItems');
+                                });
+                                jQuery(".category-list").masonry();
+
+                            });
+                        });
+                    </script>
+                </div>
+            {% endspaceless %}
+        {% else %}
+            <script type="text/javascript">
+                jQuery(document).ready(function () {
+                    jQuery(".category-list").imagesLoaded(function(){
+                        jQuery(".category-list").masonry({
+                            'isFitWidth': true,
+                            'itemSelector': '.category-item',
+                            'gutter': 10
+                        });
+                    });
+                });
+            </script>
+        {% endif %}
+        <div class="clearfix"></div>
+    </div>
+</div>
