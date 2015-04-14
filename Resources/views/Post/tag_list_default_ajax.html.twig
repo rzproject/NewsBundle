@@ -1,4 +1,4 @@
-{% extends 'RzNewsBundle:Post:collection_list_default_ajax.html.twig' %}
+{% extends rz_admin_get_template('rz_news.template.news_layout_ajax') %}
 
 {% block post_title %}
     <h1 class="blog"><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>

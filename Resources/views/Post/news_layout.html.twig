@@ -36,19 +36,6 @@
         <p>{{ post.abstract }}</p>
         {% endblock post_abstract %}
 
-        {% block post_categories %}
-            <div class="post-meta muted">
-                <ul>
-                    <li>Categories: </li>
-                    <li>
-                        {% for postHasCategory in post.postHasCategory %}
-                            <a href="{{ post_url }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
-                        {% endfor %}
-                    </li>
-                </ul>
-            </div>
-        {% endblock post_categories %}
-
         {% block post_tags %}
         <div class="post-meta muted">
             <ul>

@@ -275,7 +275,8 @@ class NewsCategoryController extends AbstractNewsController
             throw $e;
         }
 
-        $this->getCmsPage()->getCurrentPage()->setTemplateCode($this->container->getParameter('rz_classification.settings.category.parent_category_page_template'));
+        $manager = $this->getCmsManagerSelector()->retrieve();
+        $manager->getCurrentPage()->setTemplateCode($this->container->getParameter('rz_classification.settings.category.parent_category_page_template'));
 
         $template = $category->getSetting('template');
 
@@ -333,10 +334,10 @@ class NewsCategoryController extends AbstractNewsController
         return $category;
     }
 
-    public function getCmsPage()
-    {
-        if ($this->has('sonata.page.cms.page')) {
-            return $this->get('sonata.page.cms.page');
+    public function getCmsManagerSelector() {
+
+        if ($this->has('sonata.page.cms_manager_selector')) {
+            return $this->get('sonata.page.cms_manager_selector');
         }
 
         return null;
