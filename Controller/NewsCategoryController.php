@@ -167,6 +167,7 @@ class NewsCategoryController extends AbstractNewsController
 
         return $this->render($template, array(
             'post' => $post,
+            'category' => $category,
             'form' => false,
             'blog' => $this->get('sonata.news.blog')
         ));

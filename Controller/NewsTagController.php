@@ -136,6 +136,7 @@ class NewsTagController extends AbstractNewsController
         $template = $this->getFallbackTemplate();
 
         $viewTemplate = $post->getSetting('template');
+
         if($viewTemplate) {
             if ($this->getTemplating()->exists($template)) {
                 $template = $viewTemplate;
@@ -154,6 +155,7 @@ class NewsTagController extends AbstractNewsController
         return $this->render($template, array(
             'post' => $post,
             'form' => false,
+            'tag'  => $tag,
             'blog' => $this->get('sonata.news.blog')
         ));
     }

@@ -1,4 +1,8 @@
-<div class="row-fluid">
+{% block sonata_page_breadcrumb %}
+    {{ sonata_block_render_event('breadcrumb', { 'context': 'category_list_breadcrumb', 'category': category, 'current_uri': app.request.requestUri, 'container_attr': {'class': 'breadcrumb'}, 'separator': '<i class="icon-angle-right"></i>', 'current_class': 'active' }) }}
+{% endblock %}
+
+<div class="row-fluid category-container">
     <div class="span12">
         <div class="masonry-container">
             <div id="posts" class="category-list" data-masonry-options="{ 'isFitWidth': true, 'itemSelector': '.category-item', 'gutter': 10 }">

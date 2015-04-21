@@ -1,7 +1,14 @@
 <div class="container">
-    <div class="row-fluid">
+    {% block sonata_page_breadcrumb %}
+        {% if category is defined %}
+            {{ sonata_block_render_event('breadcrumb', { 'context': 'post_by_category_view_breadcrumb', 'category': category, 'post' : post, 'blog' : blog, 'current_uri': app.request.requestUri, 'container_attr': {'class': 'breadcrumb'}, 'separator': '<i class="icon-angle-right"></i>', 'current_class': 'active' }) }}
+        {% elseif tag is  defined %}
+            {{ sonata_block_render_event('breadcrumb', { 'context': 'post_by_tag_view_breadcrumb', 'tag': tag, 'post' : post, 'blog' : blog, 'current_uri': app.request.requestUri, 'container_attr': {'class': 'breadcrumb'}, 'separator': '<i class="icon-angle-right"></i>', 'current_class': 'active' }) }}
+        {% endif %}
+    {% endblock %}
+    {% block post_view_body %}
+    <div class="row-fluid post-container">
         <div class="span12">
-
             {% if post.image %}
                 {% if post.image.providerName  == 'sonata.media.provider.image' %}
                     <div class="hover_img">
@@ -40,7 +47,9 @@
             {{ post.content|raw }}
         </div>
     </div>
+    {% endblock %}
 </div>
+{% block post_comment %}
 {% if post.iscommentable %}
 <article class="sonata-blog-post-container">
     {% render(controller('SonataNewsBundle:Post:comments', {'postId': post.id})) %}
@@ -57,3 +66,4 @@
     {% endif %}
 </article>
 {% endif %}
+{% endblock post_comment %}

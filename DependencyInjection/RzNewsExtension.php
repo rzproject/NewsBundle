@@ -42,6 +42,7 @@ class RzNewsExtension extends Extension
         $loader->load('permalink.xml');
         $loader->load('provider.xml');
         $loader->load('orm.xml');
+        $loader->load('seo_block.xml');
 
         $config = $this->addDefaults($config);
         $this->registerDoctrineMapping($config, $container);

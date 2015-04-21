@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz_news.block.category_list_breadcrumb.class">Rz\NewsBundle\Block\Breadcrumb\CategoryListBreadcrumbBlockService</parameter>
+        <parameter key="rz_news.block.post_by_category_view_breadcrumb.class">Rz\NewsBundle\Block\Breadcrumb\PostByCategoryViewBreadcrumbBlockService</parameter>
+        <parameter key="rz_news.block.tag_list_breadcrumb.class">Rz\NewsBundle\Block\Breadcrumb\TagListBreadcrumbBlockService</parameter>
+        <parameter key="rz_news.block.post_by_tag_view_breadcrumb.class">Rz\NewsBundle\Block\Breadcrumb\PostByTagViewBreadcrumbBlockService</parameter>
+    </parameters>
+
+    <services>
+        <service id="rz_news.block.category_list_breadcrumb" class="%rz_news.block.category_list_breadcrumb.class%">
+            <tag name="sonata.block"/>
+            <tag name="sonata.breadcrumb"/>
+
+            <argument>category_list_breadcrumb</argument>
+            <argument>rz_news.block.category_list_breadcrumb.class</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="knp_menu.menu_provider" />
+            <argument type="service" id="knp_menu.factory" />
+            <argument type="service" id="sonata.classification.manager.category" />
+        </service>
+
+        <service id="rz_news.block.post_by_category_view_breadcrumb" class="%rz_news.block.post_by_category_view_breadcrumb.class%">
+            <tag name="sonata.block"/>
+            <tag name="sonata.breadcrumb"/>
+
+            <argument>post_by_category_view_breadcrumb</argument>
+            <argument>rz_news.block.post_by_category_view_breadcrumb.class</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="knp_menu.menu_provider" />
+            <argument type="service" id="knp_menu.factory" />
+            <argument type="service" id="sonata.classification.manager.category" />
+            <argument type="service" id="sonata.news.manager.post" />
+        </service>
+
+        <service id="rz_news.block.tag_list_breadcrumb" class="%rz_news.block.tag_list_breadcrumb.class%">
+            <tag name="sonata.block"/>
+            <tag name="sonata.breadcrumb"/>
+
+            <argument>tag_list_breadcrumb</argument>
+            <argument>rz_news.block.tag_list_breadcrumb.class</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="knp_menu.menu_provider" />
+            <argument type="service" id="knp_menu.factory" />
+        </service>
+
+        <service id="rz_news.block.post_by_tag_view_breadcrumb" class="%rz_news.block.post_by_tag_view_breadcrumb.class%">
+            <tag name="sonata.block"/>
+            <tag name="sonata.breadcrumb"/>
+
+            <argument>post_by_tag_view_breadcrumb</argument>
+            <argument>rz_news.block.post_by_tag_view_breadcrumb.class</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="knp_menu.menu_provider" />
+            <argument type="service" id="knp_menu.factory" />
+            <argument type="service" id="sonata.news.manager.post" />
+        </service>
+
+    </services>
+</container>

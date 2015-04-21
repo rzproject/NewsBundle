@@ -164,8 +164,6 @@ class PostManager extends ModelPostManager
      */
     public function findOneByCategoryPermalink($permalink, BlogInterface $blog)
     {
-
-
         $repository = $this->getRepository();
 
         $query = $repository->createQueryBuilder('p');

@@ -1,3 +1,7 @@
+{% block sonata_page_breadcrumb %}
+    {{ sonata_block_render_event('breadcrumb', { 'context': 'category_list_breadcrumb', 'category': category, 'current_uri': app.request.requestUri, 'container_attr': {'class': 'breadcrumb'}, 'separator': '<i class="icon-angle-right"></i>', 'current_class': 'active' }) }}
+{% endblock %}
+
 {% block post_container_top %}{% endblock post_container_top %}
 {% block post_body %}
 {% spaceless %}
