@@ -169,6 +169,7 @@ class NewsCategoryController extends AbstractNewsController
             'post' => $post,
             'category' => $category,
             'form' => false,
+            'is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers'),
             'blog' => $this->get('sonata.news.blog')
         ));
     }

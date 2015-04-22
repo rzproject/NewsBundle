@@ -68,6 +68,7 @@ class NewsDefaultController extends AbstractNewsController
         return $this->render($template, array(
             'post' => $post,
             'form' => false,
+            'is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers'),
             'blog' => $this->get('sonata.news.blog')
         ));
     }

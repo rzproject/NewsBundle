@@ -56,6 +56,7 @@ class CategoryListBreadcrumbBlockService extends BaseBreadcrumbMenuBlockService
     protected function getMenu(BlockContextInterface $blockContext)
     {
         $menu = parent::getRootMenu($blockContext);
+
         if ($category = $blockContext->getBlock()->getSetting('category')) {
             $this->addMenu($category, $menu);
             while($this->menuData != null || $this->menuData != array()) {

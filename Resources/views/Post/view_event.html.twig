@@ -49,19 +49,28 @@
             <h1>{{ post.title }}</h1>
             <h2 class="center">
                 {{ post.publicationDateStart | format_date }} {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}
-                {% if post.postHasCategory | length > 0 %} |
+            </h2>
+            {% if post.postHasCategory | length > 0 %}
+                <h3 class="center">
                     {% for postHasCategory in post.postHasCategory %}
-                        {% if postHasCategory.enabled  and postHasCategory.category.page %}
-                            {% set category_url = rz_render_page_alias_url(postHasCategory.category.page.getPageAlias()) %}
-                            {% if  category_url %}
-                                <a href="{{ url(category_url) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                        {% if postHasCategory.enabled %}
+                            {% if is_controller_enabled and postHasCategory.category.page %}
+                                {% set category_url = rz_render_page_alias_url(postHasCategory.category.page.getPageAlias()) %}
+                                {% if  category_url %}
+                                    <a href="{{ url(category_url) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                                {% else %}
+                                    <a href="#">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                                {% endif %}
                             {% else %}
-                                <a href="#">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                                {% if postHasCategory.enabled %}
+                                    <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                                {% endif %}
                             {% endif %}
+
                         {% endif %}
                     {% endfor %}
-                {% endif %}
-            </h2>
+                </h3>
+            {% endif %}
             <h4 class="center">
                 <i class="icon-tags grey"></i>
                 {% for tag in post.tags %}
