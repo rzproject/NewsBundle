@@ -162,22 +162,4 @@ class FeaturedPostBlockService extends BaseBlockService
     {
         $block->setSetting('post', is_object($block->getSetting('post')) ? $block->getSetting('post')->getId() : null);
     }
-
-//    /**
-//     * {@inheritdoc}
-//     */
-//    public function getStylesheets($media)
-//    {
-//        return array(
-//            '/bundles/rznews/css/featured_post_block.css'
-//        );
-//    }
-//
-//    /**
-//     * {@inheritdoc}
-//     */
-//    public function getJavascripts($media)
-//    {
-//        return array('/bundles/rmzamorajquery/jquery-plugins/eqheight/jquery.eqheight.js');
-//    }
 }
