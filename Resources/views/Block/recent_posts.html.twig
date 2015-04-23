@@ -51,8 +51,8 @@
                     <li>{{ 'no_post_found'|trans({}, 'SonataNewsBundle') }}</li>
                 {% endfor %}
             </ul>
-            {% if show_view_all_button %}
-            {#<a href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>#}
+            {% if settings.show_view_all_button %}
+            <a href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
             {% endif %}
         </div>
     {% endif %}
