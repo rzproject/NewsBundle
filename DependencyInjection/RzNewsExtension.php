@@ -37,7 +37,6 @@ class RzNewsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('admin_orm.xml');
         $loader->load('twig.xml');
-        $loader->load('post.xml');
         $loader->load('validators.xml');
         $loader->load('permalink.xml');
         $loader->load('provider.xml');
@@ -59,8 +58,6 @@ class RzNewsExtension extends Extension
             $loader->load('block.xml');
             $loader->load('page.xml');
             $this->configureBlocks($config['blocks'], $container);
-            $container->setParameter('rz_news.router.class', $config['route']['class']);
-            $container->setParameter('rz_news.router.sequence', $config['route']['sequence']);
         }
 
         $this->configureSettings($config, $container);

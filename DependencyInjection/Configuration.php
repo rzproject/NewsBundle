@@ -259,16 +259,6 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('comments')->defaultValue('RzNewsBundle:Post:comments.html.twig')->end()
                     ->end()
                 ->end()
-
-                ->arrayNode('route')
-                    ->addDefaultsIfNotSet()
-                    ->canBeUnset()
-                    ->children()
-                        ->scalarNode('class')->defaultValue('Rz\\NewsBundle\\Route\\CmsNewsRouter')->end()
-                        ->scalarNode('sequence')->defaultValue(array(BasePost::ROUTE_CLASSIFICATION_SEQ_COLLECTION, BasePost::ROUTE_CLASSIFICATION_SEQ_TAG, BasePost::ROUTE_CLASSIFICATION_SEQ_CATEGORY, BasePost::ROUTE_CLASSIFICATION_SEQ_POST))->end()
-                    ->end()
-                ->end()
-
             ->end();
     }
 

@@ -50,15 +50,6 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
                                         $container->getParameter('rz_news.admin.post_has_media.templates'));
         $definition->addMethodCall('setTemplates', array($definedTemplates));
-
-
-        //override Route
-
-        $definition = $container->getDefinition('rz_news.router');
-        $definition->addMethodCall('setPostManager', array(new Reference('sonata.news.manager.post')));
-        $definition->addMethodCall('setTagManager', array(new Reference('sonata.classification.manager.tag')));
-        $definition->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
-        $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
     }
 
     /**

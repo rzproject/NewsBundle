@@ -42,8 +42,6 @@ class TagsBlockService extends BaseBlockService
      */
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
-//        var_dump($this->manager->getTagCount());
-//        die();
         $parameters = array(
             'context'   => $blockContext,
             'settings'  => $blockContext->getSettings(),
