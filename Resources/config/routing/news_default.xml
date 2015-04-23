@@ -9,4 +9,5 @@
         <requirement key="_format">html</requirement>
         <requirement key="permalink">[^/]+</requirement>
     </route>
+
 </routes>

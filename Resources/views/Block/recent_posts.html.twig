@@ -39,40 +39,21 @@
             </div>
         </div>
     {% else %}
-        {% if settings.block_type is defined and settings.block_type == 'sidebar' %}
+        <div class="sonata-news-block-recent-post rz-block-news-recent-post">
             {% if settings.title %}
                 <h3 class="sonata-news-block-recent-post">{{ settings.title }}</h3>
             {% endif %}
-            <ul class="media-list blog recent-post-sidebar">
+
+            <ul class="sonata-blog-post-container rz-block-news-post-container">
                 {% for post in pager.getResults() %}
-                    <li>
-                        <a href="{{ url('rz_news_view', { 'permalink': post.slug, '_format' : 'html' }) }}">{{ post.title }}</a><br/>
-                        <small>{{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</small>
-                        <small>{{ post.publicationDateStart | format_date }}</small>
-                    </li>
+                    <li><a href="{{ url('rz_news_view', { 'permalink': post.slug, '_format' : 'html' }) }}">{{ post.title }}</a> - {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }} - {{ post.publicationDateStart | format_date }}</li>
                 {% else %}
                     <li>{{ 'no_post_found'|trans({}, 'SonataNewsBundle') }}</li>
                 {% endfor %}
             </ul>
-            {% if settings.show_view_all_button == 'true' %}
-                <a class="btn btn-rzcms-theme" href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
+            {% if show_view_all_button %}
+            {#<a href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>#}
             {% endif %}
-            <div class="pad20"></div>
-        {% else %}
-            <div class="sonata-news-block-recent-post rz-block-news-recent-post">
-                {% if settings.title %}
-                    <h3 class="sonata-news-block-recent-post">{{ settings.title }}</h3>
-                {% endif %}
-
-                <ul class="sonata-blog-post-container rz-block-news-post-container">
-                    {% for post in pager.getResults() %}
-                        <li><a href="{{ url('rz_news_view', { 'permalink': post.slug, '_format' : 'html' }) }}">{{ post.title }}</a> - {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }} - {{ post.publicationDateStart | format_date }}</li>
-                    {% else %}
-                        <li>{{ 'no_post_found'|trans({}, 'SonataNewsBundle') }}</li>
-                    {% endfor %}
-                </ul>
-                <a href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
-            </div>
-        {% endif %}
+        </div>
     {% endif %}
 {% endblock %}

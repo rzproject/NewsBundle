@@ -37,6 +37,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         # Recent Post
         $definition = $container->getDefinition('sonata.news.block.recent_posts');
         $definition->setClass($container->getParameter('rz_news.block.recent_posts'));
+        $definition->addMethodCall('setTemplates', array($container->getParameter('rz_news.block.recent_posts.templates')));
 
         # Recent Comments
         $definition = $container->getDefinition('sonata.news.block.recent_comments');
