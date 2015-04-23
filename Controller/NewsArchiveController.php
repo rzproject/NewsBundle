@@ -43,7 +43,7 @@ class NewsArchiveController extends AbstractNewsController
     {
         if (preg_match('/^\d{4}$/', $year) && preg_match('/^\d{2}$/', $month)) {
             $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, $month, 1), 'month')));
-            return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'monthly')));
+            return $this->renderNewsArchiveDate($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'monthly')));
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
@@ -56,7 +56,7 @@ class NewsArchiveController extends AbstractNewsController
     {
         if (preg_match('/^\d{4}$/', $year) && preg_match('/^\d{2}$/', $month)) {
             $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, $month, 1), 'month'), 'page' => $page));
-            return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'monthly')));
+            return $this->renderNewsArchiveDate($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'monthly')));
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
@@ -71,7 +71,7 @@ class NewsArchiveController extends AbstractNewsController
     {
         if (preg_match('/^\d{4}$/', $year)) {
             $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, 1, 1), 'year')));
-            return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'yearly')));
+            return $this->renderNewsArchiveDate($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'yearly')));
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
@@ -87,7 +87,7 @@ class NewsArchiveController extends AbstractNewsController
     {
         if (preg_match('/^\d{4}$/', $year)) {
             $pager = $this->fetchNews(array('date' => $this->getPostManager()->fetchPublicationDateQueryParts(sprintf('%d-%d-%d', $year, 1, 1), 'year'), 'page' => $page));
-            return $this->renderNewsArchive($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'yearly')));
+            return $this->renderNewsArchiveDate($this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('type' => 'yearly')));
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
@@ -98,8 +98,13 @@ class NewsArchiveController extends AbstractNewsController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function renderNewsArchive(array $parameters = array())
+    public function renderNewsArchiveDate(array $parameters = array())
     {
+
+        if ($seoPage = $this->getSeoPage()) {
+
+            $seoPage->setLinkCanonical($this->generateUrl('rz_news_archive', array(), true));
+        }
         $request = $this->get('request_stack')->getCurrentRequest();
         $template = $this->container->get('rz_admin.template.loader')->getTemplates();
         $response = $this->render($template[sprintf('rz_news.template.archive_%s', $request->getRequestFormat())], array_merge($parameters, array('is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers'))));
@@ -108,4 +113,17 @@ class NewsArchiveController extends AbstractNewsController
         }
         return $response;
     }
+
+    protected function renderNewsArchive(array $parameters = array()) {
+
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
+        $response = $this->render($template[sprintf('rz_news.template.archive_%s', $request->getRequestFormat())], array_merge($parameters, array('is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers'))));
+        if ('rss' === $request->getRequestFormat()) {
+            $response->headers->set('Content-Type', 'application/rss+xml');
+        }
+        return $response;
+    }
+
+
 }

@@ -256,6 +256,8 @@ class NewsCategoryController extends AbstractNewsController
                 '_format' => $request->getRequestFormat()
             ), true));
 
+            $seoPage->setLinkCanonical($this->generateUrl('rz_news_archive', array(), true));
+
             if($category->getSetting('ogDescription', null)) {
                 $seoPage->addMeta('property', 'og:description', $category->getSetting('ogDescription', null));
             }

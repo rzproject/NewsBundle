@@ -109,6 +109,7 @@
                         </a>
                     {% else %}
                         <a class="btn btn-rzcms-theme"
+                           rel="prev"
                            href="{{ url('rz_news_archive_pager', route_parameters|merge({'page': pager.previousPage})) }}"
                            title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
                         </a>
@@ -129,6 +130,7 @@
                         </a>
                     {% else %}
                         <a class="btn btn-rzcms-theme"
+                           rel="next"
                            href="{{ url('rz_news_archive_pager', route_parameters|merge({'page': pager.nextPage})) }}"
                            title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
                         </a>
