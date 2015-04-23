@@ -41,7 +41,7 @@
     {% else %}
         {% if settings.block_type is defined and settings.block_type == 'sidebar' %}
             {% if settings.title %}
-            <h3 class="sonata-news-block-recent-post">{{ settings.title }}</h3>
+                <h3 class="sonata-news-block-recent-post">{{ settings.title }}</h3>
             {% endif %}
             <ul class="media-list blog recent-post-sidebar">
                 {% for post in pager.getResults() %}
@@ -55,7 +55,7 @@
                 {% endfor %}
             </ul>
             {% if settings.show_view_all_button == 'true' %}
-            <a class="btn btn-rzcms-theme" href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
+                <a class="btn btn-rzcms-theme" href="{{ url('rz_news_archive', {'_format': 'html'}) }}"> {{ 'view_all_posts'|trans({}, 'SonataNewsBundle') }}</a>
             {% endif %}
             <div class="pad20"></div>
         {% else %}
@@ -66,7 +66,7 @@
 
                 <ul class="sonata-blog-post-container rz-block-news-post-container">
                     {% for post in pager.getResults() %}
-                            <li><a href="{{ url('rz_news_view', { 'permalink': post.slug, '_format' : 'html' }) }}">{{ post.title }}</a> - {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }} - {{ post.publicationDateStart | format_date }}</li>
+                        <li><a href="{{ url('rz_news_view', { 'permalink': post.slug, '_format' : 'html' }) }}">{{ post.title }}</a> - {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }} - {{ post.publicationDateStart | format_date }}</li>
                     {% else %}
                         <li>{{ 'no_post_found'|trans({}, 'SonataNewsBundle') }}</li>
                     {% endfor %}

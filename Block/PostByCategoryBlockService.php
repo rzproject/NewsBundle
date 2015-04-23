@@ -85,6 +85,7 @@ class PostByCategoryBlockService extends BaseBlockService
         $fieldDescription->setAssociationAdmin($this->categoryAdmin);
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
+        $fieldDescription->setOptions(array('link_parameters' => array('context' => 'news', 'hide_context' => true)));
         $fieldDescription->setAssociationMapping(array('fieldName' => 'category',
             'type' => \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY,
             'targetEntity' => $this->categoryAdmin->getClass(),
@@ -97,8 +98,7 @@ class PostByCategoryBlockService extends BaseBlockService
         return $formMapper->create('category', 'sonata_type_model_list', array(
             'sonata_field_description' => $fieldDescription,
             'class'                    => $this->categoryAdmin->getClass(),
-            'model_manager'            => $this->categoryAdmin->getModelManager()),
-            array('link_parameters' => array('context' => 'news', 'hide_context' => true))
+            'model_manager'            => $this->categoryAdmin->getModelManager())
         );
     }
 

@@ -239,6 +239,8 @@ class RzNewsExtension extends Extension
         }
         $container->setParameter('rz_news.block.post_by_category.ajax_pager_templates', $ajaxPagerTemplates);
 
+
+        #recent post
         $container->setParameter('rz_news.block.recent_posts', $config['recent_posts']['class']);
         $temp = $config['recent_posts']['templates'];
         $templates = array();
@@ -246,6 +248,18 @@ class RzNewsExtension extends Extension
             $templates[$template['path']] = $template['name'];
         }
         $container->setParameter('rz_news.block.recent_posts.templates', $templates);
+
+
+        #fetured post
+        $container->setParameter('rz_news.block.featured_post', $config['featured_post']['class']);
+        $temp = $config['featured_post']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.featured_post.templates', $templates);
+
+
 
         $container->setParameter('rz_news.block.recent_comments', $config['recent_comments']['class']);
         $temp = $config['recent_comments']['templates'];

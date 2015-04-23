@@ -6,17 +6,19 @@
 
     <parameters>
         <parameter key="rz_news.block.post_by_category.class">Rz\NewsBundle\Block\PostByCategoryBlockService</parameter>
-        <parameter key="rz_news.block.featured_posts.class">Rz\NewsBundle\Block\FeaturedPostsBlockService</parameter>
+        <parameter key="rz_news.block.featured_post.class">Rz\NewsBundle\Block\FeaturedPostBlockService</parameter>
         <parameter key="rz_news.block.tags.class">Rz\NewsBundle\Block\TagsBlockService</parameter>
     </parameters>
 
     <services>
-        <service id="rz_news.block.featured_posts" class="%rz_news.block.featured_posts.class%" scope="prototype">
+        <service id="rz_news.block.featured_post" class="%rz_news.block.featured_post.class%" scope="prototype">
             <tag name="sonata.block"/>
-            <argument>rz_news.block.featured_posts</argument>
+            <argument>rz_news.block.featured_post</argument>
             <argument type="service" id="templating" />
-            <argument type="service" id="service_container" />
+            <argument type="service" id="sonata.news.admin.post" />
             <argument type="service" id="sonata.news.manager.post" />
+            <argument>%rz_news.block.featured_post.templates%</argument>
+            <argument>%rz_classification.enable_controllers%</argument>
         </service>
 
         <service id="rz_news.block.tags" class="%rz_news.block.tags.class%"  scope="prototype">
