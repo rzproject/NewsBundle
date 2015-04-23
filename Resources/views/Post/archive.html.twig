@@ -102,9 +102,14 @@
                        href="{{ url('rz_news_archive_yearly_pager', route_parameters|merge({'page': pager.previousPage})) }}"
                        title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
                     </a>
-                    {% else %}
+                    {% elseif type == 'monthly' %}
                         <a class="btn btn-rzcms-theme"
                            href="{{ url('rz_news_archive_monthly_pager', route_parameters|merge({'page': pager.previousPage})) }}"
+                           title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
+                        </a>
+                    {% else %}
+                        <a class="btn btn-rzcms-theme"
+                           href="{{ url('rz_news_archive_pager', route_parameters|merge({'page': pager.previousPage})) }}"
                            title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
                         </a>
                     {% endif %}
@@ -117,9 +122,14 @@
                            href="{{ url('rz_news_archive_yearly_pager', route_parameters|merge({'page': pager.nextPage})) }}"
                            title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
                         </a>
-                    {% else %}
+                    {% elseif type == 'monthly' %}
                         <a class="btn btn-rzcms-theme"
                            href="{{ url('rz_news_archive_monthly_pager', route_parameters|merge({'page': pager.nextPage})) }}"
+                           title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
+                        </a>
+                    {% else %}
+                        <a class="btn btn-rzcms-theme"
+                           href="{{ url('rz_news_archive_pager', route_parameters|merge({'page': pager.nextPage})) }}"
                            title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
                         </a>
                     {% endif %}
