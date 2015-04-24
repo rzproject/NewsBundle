@@ -30,7 +30,7 @@ class FeaturedPostBlockService extends BaseBlockService
      * @param array $templates
      * @param bool $isControllerEnabled
      */
-    public function __construct($name, EngineInterface $templating, AdminInterface $postAdmin, ManagerInterface $postManager, $templates =array(), $isControllerEnabled = true)
+    public function __construct($name, EngineInterface $templating, AdminInterface $postAdmin, ManagerInterface $postManager, array $templates =array(), $isControllerEnabled = true)
     {
         $this->postManager = $postManager;
         $this->postAdmin      = $postAdmin;

@@ -76,7 +76,7 @@ class Configuration implements ConfigurationInterface
     {
         /**
          * TODO: refactor as not to copy the whole configuration of SonataUserBundle
-         * This section will allow RzBundle to override SonataUserBundle via rz_user configuration
+         * This section will allow RzBundle to override SonataNewsBundle via rz_news configuration
          */
         $supportedManagerTypes = array('orm', 'mongodb');
 
@@ -189,58 +189,6 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-//                ->arrayNode('blocks')
-//                ->addDefaultsIfNotSet()
-//                    ->children()
-//                        ->arrayNode('collection')
-//                            ->addDefaultsIfNotSet()
-//                            ->children()
-//                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\PostByCollectionBlockService')->end()
-//                                ->arrayNode('templates')
-//                                    ->useAttributeAsKey('id')
-//                                    ->prototype('array')
-//                                        ->children()
-//                                            ->scalarNode('name')->defaultValue('default')->end()
-//                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:post_by_collection_list.html.twig')->end()
-//                                        ->end()
-//                                    ->end()
-//                                ->end()
-//                            ->end()
-//                        ->end()
-//                        ->arrayNode('recent_posts')
-//                            ->addDefaultsIfNotSet()
-//                            ->children()
-//                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\RecentPostsBlockService')->end()
-//                                ->arrayNode('templates')
-//                                    ->useAttributeAsKey('id')
-//                                    ->prototype('array')
-//                                        ->children()
-//                                            ->scalarNode('name')->defaultValue('default')->end()
-//                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:recent_posts.html.twig')->end()
-//                                        ->end()
-//                                    ->end()
-//                                ->end()
-//                            ->end()
-//                        ->end()
-//
-//                        ->arrayNode('recent_comments')
-//                            ->addDefaultsIfNotSet()
-//                            ->children()
-//                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\RecentCommentsBlockService')->end()
-//                                ->arrayNode('templates')
-//                                    ->useAttributeAsKey('id')
-//                                    ->prototype('array')
-//                                        ->children()
-//                                            ->scalarNode('name')->defaultValue('default')->end()
-//                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:recent_comments.html.twig')->end()
-//                                        ->end()
-//                                    ->end()
-//                                ->end()
-//                            ->end()
-//                        ->end()
-//
-//                    ->end()
-//                ->end()
                 ->arrayNode('templates')
                     ->addDefaultsIfNotSet()
                     ->canBeUnset()
@@ -336,7 +284,6 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
-
                         ->arrayNode('recent_comments')
                             ->addDefaultsIfNotSet()
                             ->children()
@@ -352,10 +299,23 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
-
+                        ->arrayNode('tags')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\TagsBlockService')->end()
+                                ->arrayNode('templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:tags.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
-
             ->end();
     }
 }

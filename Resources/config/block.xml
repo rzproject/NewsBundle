@@ -20,15 +20,13 @@
             <argument>%rz_news.block.featured_post.templates%</argument>
             <argument>%rz_classification.enable_controllers%</argument>
         </service>
-
         <service id="rz_news.block.tags" class="%rz_news.block.tags.class%"  scope="prototype">
             <tag name="sonata.block"/>
             <argument>rz_news.block.tags</argument>
             <argument type="service" id="templating" />
-            <argument type="service" id="service_container" />
             <argument type="service" id="sonata.news.manager.post" />
+            <argument>%rz_news.block.tags.templates%</argument>
         </service>
-
         <service id="rz_news.block.post_by_category" class="%rz_news.block.post_by_category.class%" scope="prototype">
             <tag name="sonata.block"/>
             <argument>rz_news.block.post_by_category</argument>
@@ -41,7 +39,5 @@
             <argument>%rz_news.block.post_by_category.ajax_pager_templates%</argument>
             <argument>%rz_news.settings.news_pager_max_per_page%</argument>
         </service>
-
     </services>
-
 </container>

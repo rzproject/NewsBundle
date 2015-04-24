@@ -32,7 +32,6 @@ class RzNewsExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $bundles = $container->getParameter('kernel.bundles');
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('admin_orm.xml');
@@ -260,7 +259,7 @@ class RzNewsExtension extends Extension
         $container->setParameter('rz_news.block.featured_post.templates', $templates);
 
 
-
+        #recent comments
         $container->setParameter('rz_news.block.recent_comments', $config['recent_comments']['class']);
         $temp = $config['recent_comments']['templates'];
         $templates = array();
@@ -269,6 +268,15 @@ class RzNewsExtension extends Extension
         }
         $container->setParameter('rz_news.block.recent_comments.templates', $templates);
 
+
+        #tags
+        $container->setParameter('rz_news.block.tags', $config['tags']['class']);
+        $temp = $config['tags']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.tags.templates', $templates);
     }
 
     /**
@@ -411,9 +419,6 @@ class RzNewsExtension extends Extension
                     'position' => 'ASC',
                 ),
             ));
-
-
-
         }
     }
 }

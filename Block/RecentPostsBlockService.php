@@ -12,7 +12,6 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class RecentPostsBlockService extends BaseRecentPostsBlockService
 {
-
     protected $templates;
 
     /**

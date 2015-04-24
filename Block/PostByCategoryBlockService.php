@@ -24,17 +24,24 @@ class PostByCategoryBlockService extends BaseBlockService
     protected $maxPerPage;
 
     /**
-     * @param string          $name
+     * @param string $name
      * @param EngineInterface $templating
+     * @param ManagerInterface $categoryManager
+     * @param AdminInterface $categoryAdmin
+     * @param ManagerInterface $postManager
+     * @param array $templates
+     * @param array $ajaxTemplates
+     * @param array $ajaxPagerTemplates
+     * @param $maxPerPage
      */
     public function __construct($name,
                                 EngineInterface $templating,
                                 ManagerInterface $categoryManager,
                                 AdminInterface $categoryAdmin,
                                 ManagerInterface $postManager,
-                                $templates,
-                                $ajaxTemplates,
-                                $ajaxPagerTemplates,
+                                array $templates = array(),
+                                array $ajaxTemplates = array(),
+                                array $ajaxPagerTemplates = array(),
                                 $maxPerPage)
     {
         $this->name       = $name;
