@@ -61,7 +61,7 @@
                                 {% else %}
                                     <a href="#">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
                                 {% endif %}
-                            {% else %}
+                            {% elseif is_controller_enabled  %}
                                 {% if postHasCategory.enabled %}
                                     <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
                                 {% endif %}

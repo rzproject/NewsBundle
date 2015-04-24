@@ -38,6 +38,8 @@
             <argument>%rz_news.block.post_by_category.ajax_templates%</argument>
             <argument>%rz_news.block.post_by_category.ajax_pager_templates%</argument>
             <argument>%rz_news.settings.news_pager_max_per_page%</argument>
+            <argument>%rz_classification.enable_controllers%</argument>
+            <argument>%rz_classification.settings.category.enable_category_canonical_page%</argument>
         </service>
     </services>
 </container>

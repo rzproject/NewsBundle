@@ -12,6 +12,8 @@ class PostByCategoryViewBreadcrumbBlockService extends CategoryListBreadcrumbBlo
 {
     protected $postManager;
 
+    protected $isEnabledController;
+
     /**
      * @param string $context
      * @param string $name
@@ -20,10 +22,19 @@ class PostByCategoryViewBreadcrumbBlockService extends CategoryListBreadcrumbBlo
      * @param FactoryInterface $factory
      * @param null $categoryManager
      * @param null $postManager
+     * @param bool $isEnabledController
      */
-    public function __construct($context, $name, EngineInterface $templating, MenuProviderInterface $menuProvider, FactoryInterface $factory, $categoryManager = null, $postManager = null)
+    public function __construct($context,
+                                $name,
+                                EngineInterface $templating,
+                                MenuProviderInterface $menuProvider,
+                                FactoryInterface $factory,
+                                $categoryManager = null,
+                                $postManager = null,
+                                $isEnabledController = true)
     {
         parent::__construct($context, $name, $templating, $menuProvider, $factory, $categoryManager);
+        $this->isEnabledController = $isEnabledController;
         $this->postManager = $postManager;
     }
 
@@ -40,10 +51,35 @@ class PostByCategoryViewBreadcrumbBlockService extends CategoryListBreadcrumbBlo
      */
     protected function getMenu(BlockContextInterface $blockContext)
     {
-        $menu = parent::getMenu($blockContext);
+        if ($this->isEnabledController) {
+            $menu = parent::getMenu($blockContext);
+        } else {
+            $menu = parent::getRootMenu($blockContext);
+
+            if ($category = $blockContext->getBlock()->getSetting('category')) {
+                $this->addMenu($category, $menu);
+                while($this->menuData != null || $this->menuData != array()) {
+                    $cat = array_pop($this->menuData);
+
+                    if($page = $cat->getPage()) {
+                        $menu->addChild($cat->getName(), array(
+                            'route'           => 'page_slug',
+                            'routeParameters' => array(
+                                'path' => $page->getUrl()
+                            ),
+                        ));
+                    } else {
+                        $menu->addChild($cat->getName(), array('uri' => '#'));
+                    }
+                }
+            }
+        }
+
         $category = $blockContext->getBlock()->getSetting('category');
         $post = $blockContext->getBlock()->getSetting('post');
         $blog = $blockContext->getBlock()->getSetting('blog');
+
+
         if ($category && $post && $blog) {
             $menu->addChild($post->getTitle(), array(
                 'route'           => 'rz_news_category_view',

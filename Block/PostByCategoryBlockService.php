@@ -22,6 +22,8 @@ class PostByCategoryBlockService extends BaseBlockService
     protected $ajaxPagerTemplates;
     protected $postManager;
     protected $maxPerPage;
+    protected $isEnabledController;
+    protected $isCanonicalPageEnabled;
 
     /**
      * @param string $name
@@ -33,6 +35,8 @@ class PostByCategoryBlockService extends BaseBlockService
      * @param array $ajaxTemplates
      * @param array $ajaxPagerTemplates
      * @param $maxPerPage
+     * @param $isEnabledController
+     * @param $isCanonicalPageEnabled
      */
     public function __construct($name,
                                 EngineInterface $templating,
@@ -42,7 +46,9 @@ class PostByCategoryBlockService extends BaseBlockService
                                 array $templates = array(),
                                 array $ajaxTemplates = array(),
                                 array $ajaxPagerTemplates = array(),
-                                $maxPerPage)
+                                $maxPerPage,
+                                $isEnabledController = true,
+                                $isCanonicalPageEnabled = false)
     {
         $this->name       = $name;
         $this->templating = $templating;
@@ -53,6 +59,8 @@ class PostByCategoryBlockService extends BaseBlockService
         $this->ajaxTemplates = $ajaxTemplates;
         $this->ajaxPagerTemplates = $ajaxPagerTemplates;
         $this->maxPerPage = $maxPerPage;
+        $this->isEnabledController = $isEnabledController;
+        $this->isCanonicalPageEnabled = $isCanonicalPageEnabled;
     }
 
     /**
@@ -150,6 +158,8 @@ class PostByCategoryBlockService extends BaseBlockService
             'block_context'  => $blockContext,
             'settings'       => $blockContext->getSettings(),
             'block'          => $blockContext->getBlock(),
+            'enable_category_canonical_page' => $this->isCanonicalPageEnabled,
+            'is_controller_enabled' => $this->isEnabledController,
         );
 
         if(isset($settings['category']) && $settings['category'] instanceof CategoryInterface) {

@@ -34,6 +34,7 @@
             <argument type="service" id="knp_menu.factory" />
             <argument type="service" id="sonata.classification.manager.category" />
             <argument type="service" id="sonata.news.manager.post" />
+            <argument>%rz_classification.enable_controllers%</argument>
         </service>
 
         <service id="rz_news.block.tag_list_breadcrumb" class="%rz_news.block.tag_list_breadcrumb.class%">

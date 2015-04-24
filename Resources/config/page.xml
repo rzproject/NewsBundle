@@ -5,6 +5,7 @@
 
     <parameters>
         <parameter key="rz_news.page.service.post.class">Rz\NewsBundle\Page\Service\PostPageService</parameter>
+        <parameter key="rz_news.page.service.category_list.class">Rz\NewsBundle\Page\Service\CategoryListPageService</parameter>
     </parameters>
 
     <services>
@@ -13,6 +14,13 @@
             <argument>Post</argument>
             <argument type="service" id="sonata.page.template_manager" />
             <argument type="service" id="sonata.seo.page" />
+        </service>
+        <service id="rz_news.page.service.category_list" class="%rz_news.page.service.category_list.class%">
+            <tag name="sonata.page"/>
+            <argument>Category List</argument>
+            <argument type="service" id="sonata.page.template_manager" />
+            <argument type="service" id="sonata.seo.page" />
+            <argument type="service" id="router" />
         </service>
     </services>
 </container>

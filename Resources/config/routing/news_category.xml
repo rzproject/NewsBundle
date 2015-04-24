@@ -4,13 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="rz_news_category_view" pattern="/{category}/{permalink}.{_format}">
-        <default key="_controller">RzNewsBundle:NewsCategory:categoryView</default>
-        <requirement key="_format">html</requirement>
-        <requirement key="category">.+</requirement>
-        <requirement key="permalink">[^/]+</requirement>
-    </route>
-
     <route id="rz_news_news_category_load_more" pattern="/load-more/category/{permalink}/{page}">
         <default key="_controller">RzNewsBundle:NewsCategory:categoryAjaxPager</default>
         <requirement key="permalink">.+</requirement>

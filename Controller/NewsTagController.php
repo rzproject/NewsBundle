@@ -224,7 +224,9 @@ class NewsTagController extends AbstractNewsController
             throw new NotFoundHttpException('Invalid URL');
         }
 
-        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag,
+                                                                                                      'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination'),
+                                                                                                      'is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers')));
 
     }
 
