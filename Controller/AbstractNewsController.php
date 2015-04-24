@@ -145,17 +145,19 @@ abstract class AbstractNewsController extends Controller
         return $viewTemplate['rz_news.template.view'];
     }
 
-    protected function getAjaxTemplates($template) {
-        return array('ajax_template'=>preg_replace('/.html.twig/', '_ajax.html.twig', $template),
-            'ajax_pager'=>preg_replace('/.html.twig/', '_ajax_pager.html.twig', $template));
+    protected function getAjaxTemplate($template) {
+        return preg_replace('/.html.twig/', '_ajax.html.twig', $template);
+    }
+
+    protected function getAjaxPagerTemplate($template) {
+        return preg_replace('/.html.twig/', '_ajax_pager.html.twig', $template);
     }
 
     protected function getAjaxResponse($object, $parameters, $type) {
         //for now reuse the template name TODO:implement on settings
         $template = $object->getSetting('template');
-        $templates = $this->getAjaxTemplates($template);
-        $templateAjax = $templates['ajax_template'];
-        $templatePagerAjax = $templates['ajax_pager'];
+        $templateAjax = $object->getSetting('ajax_template') ? $object->getSetting('ajax_template') : $this->getAjaxTemplate($template);
+        $templatePagerAjax = $object->getSetting('ajax_pager_template') ? $object->getSetting('ajax_pager_template') : $this->getAjaxPagerTemplate($template);
 
         if($template && $this->getTemplating()->exists($template) &&
             $templateAjax && $this->getTemplating()->exists($templateAjax) &&

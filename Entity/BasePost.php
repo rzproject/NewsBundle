@@ -21,6 +21,11 @@ abstract class BasePost extends Post
 
     protected $settings;
 
+    const ROUTE_CLASSIFICATION_SEQ_COLLECTION = 'collection';
+    const ROUTE_CLASSIFICATION_SEQ_CATEGORY = 'category';
+    const ROUTE_CLASSIFICATION_SEQ_TAG = 'tag';
+    const ROUTE_CLASSIFICATION_SEQ_POST = 'post';
+
 
     /**
      * {@inheritdoc}

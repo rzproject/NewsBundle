@@ -3,6 +3,7 @@
 namespace Rz\NewsBundle\Form\Type;
 
 use Symfony\Component\Form\Extension\Core\ChoiceList\SimpleChoiceList;
+use Rz\NewsBundle\Form\Type\TreeList\TreeList;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;

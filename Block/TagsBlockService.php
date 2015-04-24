@@ -6,34 +6,30 @@ use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
-
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
-
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
-use Doctrine\Common\Collections\ArrayCollection;
 
 
 class TagsBlockService extends BaseBlockService
 {
-    protected $manager;
+    protected $tagManager;
+    protected $templates;
 
     /**
      * @param string $name
      * @param EngineInterface $templating
-     * @param ContainerInterface $container
-     * @param \Sonata\CoreBundle\Model\ManagerInterface $manager
+     * @param ManagerInterface $tagManager
+     * @param array $templates
      */
-    public function __construct($name, EngineInterface $templating, ContainerInterface $container, ManagerInterface $manager)
+    public function __construct($name, EngineInterface $templating, ManagerInterface $tagManager, array $templates =array())
     {
-        $this->manager = $manager;
-        $this->container      = $container;
+        $this->tagManager = $tagManager;
+        $this->templates = $templates;
         parent::__construct($name, $templating);
     }
 
@@ -42,13 +38,11 @@ class TagsBlockService extends BaseBlockService
      */
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
-//        var_dump($this->manager->getTagCount());
-//        die();
         $parameters = array(
             'context'   => $blockContext,
             'settings'  => $blockContext->getSettings(),
             'block'     => $blockContext->getBlock(),
-            'tags'     => $this->manager->getTagCount()
+            'tags'     => $this->tagManager->getTagCount()
         );
 
         return $this->renderResponse($blockContext->getTemplate(), $parameters, $response);
@@ -71,6 +65,7 @@ class TagsBlockService extends BaseBlockService
             'keys' => array(
                 array('number', 'integer', array('required' => true)),
                 array('title', 'text', array('required' => false)),
+                array('template', 'choice', array('choices' => $this->templates)),
                 array('mode', 'choice', array(
                     'choices' => array(
                         'public' => 'public',
@@ -98,5 +93,21 @@ class TagsBlockService extends BaseBlockService
             'title'      => 'Tags',
             'template'   => 'RzNewsBundle:Block:tags.html.twig'
         ));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTemplates()
+    {
+        return $this->templates;
+    }
+
+    /**
+     * @param mixed $templates
+     */
+    public function setTemplates($templates)
+    {
+        $this->templates = $templates;
     }
 }

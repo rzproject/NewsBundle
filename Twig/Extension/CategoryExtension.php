@@ -68,7 +68,7 @@ class CategoryExtension extends \Twig_Extension
             }
         }
 
-        die();
+        die('rommel');
 
         return $nestedTree;
 

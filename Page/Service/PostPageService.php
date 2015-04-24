@@ -11,7 +11,7 @@ use Sonata\PageBundle\Page\Service\BasePageService;
 use Sonata\PageBundle\Model\PageInterface;
 use Sonata\PageBundle\Page\TemplateManagerInterface;
 
-class PostCategoryPageService extends BasePageService
+class PostPageService extends BasePageService
 {
     /**
      * @var TemplateManagerInterface

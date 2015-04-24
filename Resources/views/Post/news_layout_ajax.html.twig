@@ -1,4 +1,4 @@
-{% set posts = pager.getResults() %}
+{% set posts = pager.getCurrentPageResults() %}
 {% if posts | length > 0 %}
     {% for post in posts %}
         <div class="pad20"></div>
@@ -34,7 +34,20 @@
                     <li>Categories: </li>
                     <li>
                         {% for postHasCategory in post.postHasCategory %}
-                            <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                            {% if postHasCategory.enabled %}
+                                {% if not is_controller_enabled and postHasCategory.category.page %}
+                                    {% set category_url = rz_render_page_alias_url(postHasCategory.category.page.getPageAlias()) %}
+                                    {% if  category_url %}
+                                        <a href="{{ url(category_url) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                                    {% else %}
+                                        <a href="#">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                                    {% endif %}
+                                {% elseif is_controller_enabled %}
+                                    {% if postHasCategory.enabled %}
+                                        <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
                         {% endfor %}
                     </li>
                 </ul>

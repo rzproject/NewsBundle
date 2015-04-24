@@ -141,34 +141,6 @@ class PostAdmin extends BaseAdmin
         }
 
         $formMapper
-//            ->with('Category', array('class' => 'col-md-4'))
-//                ->add('postHasCategory', 'sonata_type_collection', array(
-//                        'cascade_validation' => true,
-//                        'error_bubbling' => false,
-//                    ), array(
-//                        'edit' => 'inline',
-//                        'inline' => 'table',
-//                        'sortable'  => 'position',
-//                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
-//                        'admin_code' => 'rz_news.admin.post_has_category',
-//                        'error_bubbling' => false,
-//                    )
-//                )
-//            ->end()
-//
-//            ->with('Media', array('class' => 'col-md-4'))
-//                ->add('postHasMedia', 'sonata_type_collection', array(
-//                        'cascade_validation' => true,
-//                        'error_bubbling' => false,
-//                    ), array(
-//                        'edit' => 'inline',
-//                        'sortable'  => 'position',
-//                        'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
-//                        'admin_code' => 'rz_news.admin.post_has_media',
-//                        'error_bubbling' => false,
-//                    )
-//                )
-//            ->end()
             ->with('Tags')
                 ->add('tags', 'sonata_type_model', array(
                     'required' => false,
@@ -178,13 +150,13 @@ class PostAdmin extends BaseAdmin
                     ),
                     array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
             ->end()
-//            ->with('Status')
-//                ->add('enabled', null, array('required' => false))
-//                ->add('commentsCloseAt')
-//                ->add('commentsEnabled', null, array('required' => false))
-//                ->add('commentsEnabled', null, array('required' => false))
-//                ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
-//            ->end()
+            ->with('Status')
+                ->add('enabled', null, array('required' => false))
+                ->add('commentsCloseAt')
+                ->add('commentsEnabled', null, array('required' => false))
+                ->add('commentsEnabled', null, array('required' => false))
+                ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
+            ->end()
         ;
     }
 

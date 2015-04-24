@@ -4,6 +4,7 @@ namespace Rz\NewsBundle\Entity;
 
 use Sonata\NewsBundle\Entity\PostManager as ModelPostManager;
 use Sonata\ClassificationBundle\Model\CollectionInterface;
+use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\NewsBundle\Model\BlogInterface;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
@@ -113,7 +114,7 @@ class PostManager extends ModelPostManager
         $query = $this->getRepository()
             ->createQueryBuilder('p')
             ->select('p, t')
-            ;
+            ->orderBy('p.publicationDateStart', 'DESC');
 
         if ($criteria['mode'] == 'admin') {
             $query
@@ -130,8 +131,6 @@ class PostManager extends ModelPostManager
                 ->leftJoin('phc.category', 'cat',  Join::WITH, 'cat.enabled = true')
             ;
         }
-
-        $query->addOrderBy('p.publicationDateStart', 'DESC');
 
         if (!isset($criteria['enabled']) && $criteria['mode'] == 'public') {
             $criteria['enabled'] = true;
@@ -162,7 +161,11 @@ class PostManager extends ModelPostManager
         if (isset($criteria['category'])) {
             if (!is_array($criteria['category'])) {
                 $query->andWhere('cat.slug LIKE :category');
-                $parameters['category'] = $criteria['category'];
+                if($criteria['category'] instanceof CategoryInterface) {
+                    $parameters['category'] = $criteria['category']->getSlug();
+                } else {
+                    $parameters['category'] = $criteria['category'];
+                }
             } else {
                 $cat = null;
                 foreach($criteria['category'] as $slug) {
@@ -190,8 +193,6 @@ class PostManager extends ModelPostManager
      */
     public function findOneByCategoryPermalink($permalink, BlogInterface $blog)
     {
-
-
         $repository = $this->getRepository();
 
         $query = $repository->createQueryBuilder('p');
