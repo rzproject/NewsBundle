@@ -15,10 +15,8 @@ class NewsTagController extends AbstractNewsController
 
     /**
      * @param string $tag
-     *
      * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \Exception
      */
     public function tagAction($tag)
     {
@@ -36,12 +34,11 @@ class NewsTagController extends AbstractNewsController
     }
 
     /**
-     * @param $page
      * @param string $tag
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @param $page
      * @return \Symfony\Component\HttpFoundation\Response
-     *
+     * @throws \Exception
      */
     public function tagPagerAction($tag, $page)
     {
@@ -139,6 +136,7 @@ class NewsTagController extends AbstractNewsController
         $template = $this->getFallbackTemplate();
 
         $viewTemplate = $post->getSetting('template');
+
         if($viewTemplate) {
             if ($this->getTemplating()->exists($template)) {
                 $template = $viewTemplate;
@@ -157,18 +155,11 @@ class NewsTagController extends AbstractNewsController
         return $this->render($template, array(
             'post' => $post,
             'form' => false,
+            'tag'  => $tag,
+            'is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers'),
             'blog' => $this->get('sonata.news.blog')
         ));
     }
-
-//    protected function renderNewsList($parameters, $type) {
-//
-//
-//        dump($parameters);
-//        die();
-//
-//        return parent::renderNewsList($parameters, $type);
-//    }
 
     protected function renderTagList($tag, $page = null) {
 
@@ -233,7 +224,9 @@ class NewsTagController extends AbstractNewsController
             throw new NotFoundHttpException('Invalid URL');
         }
 
-        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag,
+                                                                                                      'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination'),
+                                                                                                      'is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers')));
 
     }
 

@@ -5,6 +5,7 @@ namespace Rz\NewsBundle\Provider;
 use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Validator\ErrorElement;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class EventProvider extends DefaultProvider
 {

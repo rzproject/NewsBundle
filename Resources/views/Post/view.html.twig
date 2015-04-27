@@ -1,28 +1,61 @@
 <div class="container">
-    <div class="row-fluid">
+    {% block sonata_page_breadcrumb %}
+        {% if category is defined %}
+            {{ sonata_block_render_event('breadcrumb', { 'context': 'post_by_category_view_breadcrumb', 'category': category, 'post' : post, 'blog' : blog, 'current_uri': app.request.requestUri, 'container_attr': {'class': 'breadcrumb'}, 'separator': '<i class="icon-angle-right"></i>', 'current_class': 'active' }) }}
+        {% elseif tag is  defined %}
+            {{ sonata_block_render_event('breadcrumb', { 'context': 'post_by_tag_view_breadcrumb', 'tag': tag, 'post' : post, 'blog' : blog, 'current_uri': app.request.requestUri, 'container_attr': {'class': 'breadcrumb'}, 'separator': '<i class="icon-angle-right"></i>', 'current_class': 'active' }) }}
+        {% endif %}
+    {% endblock %}
+    {% block post_view_body %}
+    <div class="row-fluid post-container">
         <div class="span12">
+            {% if post.image %}
+                {% if post.image.providerName  == 'sonata.media.provider.image' %}
+                    <div class="hover_img">
+                        <a href="{%  path post.image, 'reference' %}" data-rel="prettyPhoto"><img src="{%  path post.image, 'reference' %}" alt=""/></a>
+                    </div>
+                {% else %}
+                    <div class="vendor">
+                        {% media post.image, 'wide' %}
+                    </div>
+                {% endif %}
+            {% endif %}
+
             <h1>{{ post.title }}</h1>
-            <h2 class="center">
-                {{ post.publicationDateStart | format_date }} {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}
-                {% if post.postHasCategory | length > 0 %} |
+            <h2 class="center">{{ post.publicationDateStart | format_date }} {{ 'archive_author'|trans({'%author%': post.author }, 'SonataNewsBundle') }}</h2>
+            {% if post.postHasCategory | length > 0 %}
+            <h3 class="center">
                 {% for postHasCategory in post.postHasCategory %}
                     {% if postHasCategory.enabled %}
-                    <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
-                   {% endif %}
+                        {% if not is_controller_enabled and postHasCategory.category.page %}
+                            {% set category_url = rz_render_page_alias_url(postHasCategory.category.page.getPageAlias()) %}
+                            {% if  category_url %}
+                                <a href="{{ url(category_url) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                            {% else %}
+                                <a href="#">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                            {% endif %}
+                        {% elseif is_controller_enabled %}
+                            {% if postHasCategory.enabled %}
+                                <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
                 {% endfor %}
-                {% endif %}
-            </h2>
+            </h3>
+            {% endif %}
             <h4 class="center">
                 <i class="icon-tags grey"></i>
                 {% for tag in post.tags %}
-                    <a href="{{ url('rz_news_tag', { 'tag': tag.slug, '_format': 'html' } ) }}">{{ tag.name }}</a>{% if not loop.last %}, {% endif %}
+                    <a href="{{ url('rz_news_tag', { 'tag': tag.slug } ) }}">{{ tag.name }}</a>{% if not loop.last %}, {% endif %}
                 {% endfor %}
             </h4>
             <div class="pad25"></div>
             {{ post.content|raw }}
         </div>
     </div>
+    {% endblock %}
 </div>
+{% block post_comment %}
 {% if post.iscommentable %}
 <article class="sonata-blog-post-container">
     {% render(controller('SonataNewsBundle:Post:comments', {'postId': post.id})) %}
@@ -39,3 +72,4 @@
     {% endif %}
 </article>
 {% endif %}
+{% endblock post_comment %}

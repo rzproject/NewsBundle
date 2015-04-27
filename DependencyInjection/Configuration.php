@@ -14,6 +14,7 @@ namespace Rz\NewsBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Rz\NewsBundle\Entity\BasePost;
 
 /**
  * This is the class that validates and merges configuration from your app/config files
@@ -31,6 +32,9 @@ class Configuration implements ConfigurationInterface
         $node = $treeBuilder->root('rz_news');
         $this->addBundleSettings($node);
         $this->addSettingsSection($node);
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $this->addBlockSettings($node);
+        }
         return $treeBuilder;
     }
 
@@ -65,14 +69,14 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-        /**
+    /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
     private function addBundleSettings(ArrayNodeDefinition $node)
     {
         /**
          * TODO: refactor as not to copy the whole configuration of SonataUserBundle
-         * This section will allow RzBundle to override SonataUserBundle via rz_user configuration
+         * This section will allow RzBundle to override SonataNewsBundle via rz_news configuration
          */
         $supportedManagerTypes = array('orm', 'mongodb');
 
@@ -185,37 +189,131 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-                ->arrayNode('blocks')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->arrayNode('class')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->scalarNode('recent_posts')->defaultValue('Rz\\NewsBundle\\Block\\RecentPostsBlockService')->end()
-                                ->scalarNode('recent_comments')->defaultValue('Rz\\NewsBundle\\Block\\RecentCommentsBlockService')->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
                 ->arrayNode('templates')
                     ->addDefaultsIfNotSet()
                     ->canBeUnset()
                     ->children()
                         ->scalarNode('news_layout_html')->defaultValue('RzNewsBundle:Post:news_layout.html.twig')->end()
+                        ->scalarNode('news_layout_ajax')->defaultValue('RzNewsBundle:Post:news_layout_ajax.html.twig')->end()
                         ->scalarNode('news_layout_rss')->defaultValue('RzNewsBundle:Post:news_layout.rss.twig')->end()
                         ->scalarNode('view')->defaultValue('RzNewsBundle:Post:view.html.twig')->end()
                         ->scalarNode('archive_rss')->defaultValue('RzNewsBundle:Post:archive.rss.twig')->end()
                         ->scalarNode('archive_html')->defaultValue('RzNewsBundle:Post:archive.html.twig')->end()
                         ->scalarNode('category_html')->defaultValue('RzNewsBundle:Post:category_list_default.html.twig')->end()
                         ->scalarNode('category_rss')->defaultValue('RzNewsBundle:Post:category.rss.twig')->end()
-                        ->scalarNode('collection_html')->defaultValue('RzNewsBundle:Post:collection_list_default.html.twig')->end()
-                        ->scalarNode('collection_html_ajax')->defaultValue('RzNewsBundle:Post:collection_list_default_ajax.html.twig')->end()
-                        ->scalarNode('collection_html_ajax_pager')->defaultValue('RzNewsBundle:Post:collection_list_default_ajax_pager.html.twig')->end()
-                        ->scalarNode('collection_rss')->defaultValue('RzNewsBundle:Post:collection.rss.twig')->end()
                         ->scalarNode('tag_html')->defaultValue('RzNewsBundle:Post:tag_list_default.html.twig')->end()
                         ->scalarNode('tag_rss')->defaultValue('RzNewsBundle:Post:tag.rss.twig')->end()
                         ->scalarNode('comment_form')->defaultValue('RzNewsBundle:Post:comment_form.html.twig')->end()
                         ->scalarNode('comments')->defaultValue('RzNewsBundle:Post:comments.html.twig')->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addBlockSettings(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('blocks')
+                ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('post_by_category_list')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\PostByCategoryBlockService')->end()
+                                ->arrayNode('ajax_templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:post_by_category_ajax.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                                ->arrayNode('ajax_pager_templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:post_by_category_ajax_pager.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                                ->arrayNode('templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:post_by_category_list.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('featured_post')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\FeaturedPostBlockService')->end()
+                                ->arrayNode('templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:recent_posts.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('recent_posts')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\RecentPostsBlockService')->end()
+                                ->arrayNode('templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:recent_posts.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('recent_comments')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\RecentCommentsBlockService')->end()
+                                ->arrayNode('templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:recent_comments.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('tags')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Block\\TagsBlockService')->end()
+                                ->arrayNode('templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzNewsBundle:Block:tags.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
             ->end();

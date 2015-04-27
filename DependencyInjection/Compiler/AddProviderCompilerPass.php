@@ -18,8 +18,6 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $this->attachProviders($container);
     }
 
-
-
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      */

@@ -4,30 +4,42 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <services>
-        <service id="rz_news.block.featured_posts" class="Rz\NewsBundle\Block\FeaturedPostsBlockService">
-            <tag name="sonata.block"/>
-            <argument>rz_news.block.featured_posts</argument>
-            <argument type="service" id="templating" />
-            <argument type="service" id="service_container" />
-            <argument type="service" id="sonata.news.manager.post" />
-        </service>
+    <parameters>
+        <parameter key="rz_news.block.post_by_category.class">Rz\NewsBundle\Block\PostByCategoryBlockService</parameter>
+        <parameter key="rz_news.block.featured_post.class">Rz\NewsBundle\Block\FeaturedPostBlockService</parameter>
+        <parameter key="rz_news.block.tags.class">Rz\NewsBundle\Block\TagsBlockService</parameter>
+    </parameters>
 
-        <service id="rz_news.block.tags" class="Rz\NewsBundle\Block\TagsBlockService">
+    <services>
+        <service id="rz_news.block.featured_post" class="%rz_news.block.featured_post.class%" scope="prototype">
+            <tag name="sonata.block"/>
+            <argument>rz_news.block.featured_post</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="sonata.news.admin.post" />
+            <argument type="service" id="sonata.news.manager.post" />
+            <argument>%rz_news.block.featured_post.templates%</argument>
+            <argument>%rz_classification.enable_controllers%</argument>
+        </service>
+        <service id="rz_news.block.tags" class="%rz_news.block.tags.class%"  scope="prototype">
             <tag name="sonata.block"/>
             <argument>rz_news.block.tags</argument>
             <argument type="service" id="templating" />
-            <argument type="service" id="service_container" />
             <argument type="service" id="sonata.news.manager.post" />
+            <argument>%rz_news.block.tags.templates%</argument>
         </service>
-
-        <service id="rz_news.block.collection" class="Rz\NewsBundle\Block\CollectionBlockService">
+        <service id="rz_news.block.post_by_category" class="%rz_news.block.post_by_category.class%" scope="prototype">
             <tag name="sonata.block"/>
-            <argument>rz_news.block.collection</argument>
+            <argument>rz_news.block.post_by_category</argument>
             <argument type="service" id="templating" />
-            <argument type="service" id="service_container" />
+            <argument type="service" id="sonata.classification.manager.category" />
+            <argument type="service" id="sonata.classification.admin.category" />
             <argument type="service" id="sonata.news.manager.post" />
+            <argument>%rz_news.block.post_by_category.templates%</argument>
+            <argument>%rz_news.block.post_by_category.ajax_templates%</argument>
+            <argument>%rz_news.block.post_by_category.ajax_pager_templates%</argument>
+            <argument>%rz_news.settings.news_pager_max_per_page%</argument>
+            <argument>%rz_classification.enable_controllers%</argument>
+            <argument>%rz_classification.settings.category.enable_category_canonical_page%</argument>
         </service>
     </services>
-
 </container>

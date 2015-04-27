@@ -1,13 +1,3 @@
-{#
-
-This file is part of the Sonata package.
-
-(c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
-
-For the full copyright and license information, please view the LICENSE
-file that was distributed with this source code.
-
-#}
 {% extends sonata_block.templates.block_base %}
 
 {% block block %}
@@ -45,37 +35,20 @@ file that was distributed with this source code.
             </div>
         </div>
     {% else %}
-        {% if settings.block_type is defined and settings.block_type == 'sidebar' %}
-            {% if settings.title %}
-                <h3 class="sonata-news-block-recent-comment">{{ settings.title }}</h3>
-            {% endif %}
-            <ul class="media-list blog recent-comment-sidebar">
-                {% for comment in pager.getResults() %}
-                    <li>
-                        <p><a href="{{ url('rz_news_view', { 'permalink': comment.post.slug, '_format' : 'html' }) }}">{{ comment.message|truncate(120) }}</a></p>
-                        <small><a href="{{ url('rz_news_view', { 'permalink': comment.post.slug, '_format' : 'html' }) }}">- {{ comment.name }} | {{ comment.createdAt | format_date }}</a></small>
-                    </li>
-                {% else %}
-                    <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>
-                {% endfor %}
-            </ul>
-            <div class="pad20"></div>
-        {% else %}
         <div class="sonata-news-block-recent-comment rz-block-news-recent-comment">
             {% if settings.title %}
                 <h3 class="sonata-news-block-recent-comment">{{ settings.title }}</h3>
             {% endif %}
-
             <ul class="sonata-blog-post-container rz-block-news-comment-container">
+                {% set truncate_character = settings.max_characters %}
                 {% for comment in pager.getResults() %}
                         <li>
-                            <a href="{{ url('admin_sonata_news_comment_edit', { 'id': comment.id }) }}">{{ comment.name }} - {{ comment.message|truncate(30) }}</a>
+                            <a href="{{ url('admin_sonata_news_comment_edit', { 'id': comment.id }) }}">{{ comment.name }} - {{ comment.message|truncate(truncate_character) }}</a>
                         </li>
                 {% else %}
                     <li>{{ 'no_comment_found'|trans({}, 'SonataNewsBundle') }}</li>
                 {% endfor %}
             </ul>
         </div>
-        {% endif %}
     {% endif %}
 {% endblock %}

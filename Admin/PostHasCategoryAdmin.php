@@ -12,11 +12,6 @@ class PostHasCategoryAdmin extends Admin
 {
 
     protected $parentAssociationMapping = 'post';
-//    protected $formOptions = array(
-//        'cascade_validation' => true,
-//        'error_bubbling' => false,
-//        'validation_groups'=>array('admin')
-//    );
 
     /**
      * @param \Sonata\AdminBundle\Form\FormMapper $formMapper
@@ -25,20 +20,6 @@ class PostHasCategoryAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-//        $link_parameters = array();
-//
-//        if ($this->hasParentFieldDescription()) {
-//            $link_parameters = $this->getParentFieldDescription()->getOption('link_parameters', array());
-//        }
-//
-//        if ($this->hasRequest()) {
-//            $context = $this->getRequest()->get('context', null);
-//
-//            if (null !== $context) {
-//                $link_parameters['context'] = $context;
-//            }
-//        }
-
         if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
             $formMapper->add('category', 'sonata_type_model_list', array('btn_delete' => false), array(
                 'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),

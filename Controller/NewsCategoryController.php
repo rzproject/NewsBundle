@@ -16,14 +16,6 @@ class NewsCategoryController extends AbstractNewsController
     const NEWS_LIST_TYPE_CATEGORY = 'category';
 
     /**
-     * @return RedirectResponse
-     */
-    public function categoryHomeAction()
-    {
-        return $this->redirect($this->generateUrl('rz_news_archive'));
-    }
-
-    /**
      * @param $permalink
      * @throws \Exception
      * @return RedirectResponse
@@ -32,7 +24,12 @@ class NewsCategoryController extends AbstractNewsController
     {
         if ($category = $this->verifyCategoryPermalink($permalink)) {
             try {
-                $response =  $this->renderCategoryList($category, $permalink);
+                //parent category
+                if($category->getParent() != null && $category->getParent()->getSlug() == 'news') {
+                    $response =  $this->renderSubCategories($category);
+                } else {
+                    $response =  $this->renderPostByCategory($category, $permalink);
+                }
             } catch(\Exception $e) {
                 throw $e;
             }
@@ -51,7 +48,12 @@ class NewsCategoryController extends AbstractNewsController
     {
         if ($category = $this->verifyCategoryPermalink($permalink)) {
             try {
-                $response =  $this->renderCategoryList($category, $permalink, $page);
+
+                if($category->getParent() != null && $category->getParent()->getSlug() == 'news') {
+                    die('rommel');
+                } else {
+                    $response =  $this->renderPostByCategory($category, $permalink, $page);
+                }
             } catch(\Exception $e) {
                 throw $e;
             }
@@ -73,7 +75,14 @@ class NewsCategoryController extends AbstractNewsController
         }
 
         try {
-            $parameters = $this->getCategoryDataForView($category, $permalink, $page);
+            //parent category
+            if($category->getParent() != null && $category->getParent()->getSlug() == 'news') {
+                $parameters = $this->getSubCategoriesDataForView($category, $page);
+            } else {
+                $parameters = $this->getPostByCategoryDataForView($category, $permalink, $page);
+            }
+
+
         } catch(\Exception $e) {
             throw $e;
         }
@@ -158,12 +167,14 @@ class NewsCategoryController extends AbstractNewsController
 
         return $this->render($template, array(
             'post' => $post,
+            'category' => $category,
             'form' => false,
+            'is_controller_enabled' => $this->container->getParameter('rz_classification.enable_controllers'),
             'blog' => $this->get('sonata.news.blog')
         ));
     }
 
-    protected function getCategoryDataForView($category, $permalink, $page = null) {
+    protected function getPostByCategoryDataForView($category, $permalink, $page = null) {
 
         $parameters = array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink, true));
 
@@ -177,19 +188,46 @@ class NewsCategoryController extends AbstractNewsController
             throw new NotFoundHttpException('Invalid URL');
         }
 
-        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('permalink' => $permalink, 'category'=>$category, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+        return $this->buildParameters($pager,
+                                      $this->get('request_stack')->getCurrentRequest(),
+                                      array('permalink' => $permalink,
+                                            'category'=>$category,
+                                            'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination'),
+                                            'enable_category_canonical_page'=>$this->container->getParameter('rz_classification.settings.category.enable_category_canonical_page')));
     }
 
-    protected function renderCategoryList($category, $permalink, $page = null) {
+    protected function getSubCategoriesDataForView($category, $page = null) {
+
+        $parameters = array('category' => $category);
+
+        if($page) {
+            $parameters['page'] = $page;
+        }
+
+        $permalink = $this->getCategoryManager()->getPermalinkGenerator()->generate($category);
+
+        $pager = $this->fetchSubCategories($parameters);
+
+        if ($pager->getNbResults() <= 0) {
+            throw new NotFoundHttpException('Invalid URL');
+        }
+
+        return $this->buildParameters($pager,
+            $this->get('request_stack')->getCurrentRequest(),
+            array('permalink' => $permalink,
+                  'category'=>$category,
+                  'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+    }
+
+    protected function renderPostByCategory($category, $permalink, $page = null) {
 
         try {
-            $parameters = $this->getCategoryDataForView($category, $permalink, $page);
+            $parameters = $this->getPostByCategoryDataForView($category, $permalink, $page);
         } catch(\Exception $e) {
             throw $e;
         }
 
         $template = $category->getSetting('template');
-
 
         if ($seoPage = $this->getSeoPage()) {
             $request = $this->get('request_stack')->getCurrentRequest();
@@ -211,6 +249,62 @@ class NewsCategoryController extends AbstractNewsController
             }
 
             $seoPage->addMeta('property', 'og:type', $category->getSetting('ogType', null) ? $category->getSetting('ogType', null): 'Article');
+
+
+            $seoPage->addMeta('property', 'og:url',  $this->generateUrl('rz_news_category', array(
+                'permalink'  => $category->getSlug(),
+                '_format' => $request->getRequestFormat()
+            ), true));
+
+            $seoPage->setLinkCanonical($this->generateUrl('rz_news_archive', array(), true));
+
+            if($category->getSetting('ogDescription', null)) {
+                $seoPage->addMeta('property', 'og:description', $category->getSetting('ogDescription', null));
+            }
+        }
+
+        if($template && $this->getTemplating()->exists($template) ) {
+            return $this->render($template, $parameters);
+        } else {
+            //TODO create fallback template for category
+            return $this->renderNewsList($parameters, self::NEWS_LIST_TYPE_CATEGORY);
+        }
+    }
+
+    protected function renderSubCategories($category, $page = null) {
+
+        try {
+            $parameters = $this->getSubCategoriesDataForView($category, $page);
+        } catch(\Exception $e) {
+            throw $e;
+        }
+
+        $manager = $this->getCmsManagerSelector()->retrieve();
+        $manager->getCurrentPage()->setTemplateCode($this->container->getParameter('rz_classification.settings.category.parent_category_page_template'));
+
+        $template = $category->getSetting('template');
+
+        if ($seoPage = $this->getSeoPage()) {
+            $request = $this->get('request_stack')->getCurrentRequest();
+
+            if($category->getSetting('seoTitle', null)) {
+                $seoPage->setTitle($category->getSetting('seoTitle', null));
+            }
+
+            if($category->getSetting('seoMetaDescription', null)) {
+                $seoPage->addMeta('name', 'description', $category->getSetting('seoMetaDescription', null));
+            }
+
+            if($category->getSetting('seoMetaKeyword', null)) {
+                $seoPage->addMeta('name', 'keywords', $category->getSetting('seoMetaKeyword', null));
+            }
+
+            if($category->getSetting('ogTitle', null)) {
+                $seoPage->addMeta('property', 'og:title', $category->getSetting('ogTitle', null));
+            }
+
+            $seoPage->addMeta('property', 'og:type', $category->getSetting('ogType', null) ? $category->getSetting('ogType', null): 'Article');
+
 
             $seoPage->addMeta('property', 'og:url',  $this->generateUrl('rz_news_category', array(
                 'permalink'  => $category->getSlug(),
@@ -242,5 +336,28 @@ class NewsCategoryController extends AbstractNewsController
         }
 
         return $category;
+    }
+
+    public function getCmsManagerSelector() {
+
+        if ($this->has('sonata.page.cms_manager_selector')) {
+            return $this->get('sonata.page.cms_manager_selector');
+        }
+
+        return null;
+    }
+
+    protected function fetchSubCategories(array $criteria = array()) {
+
+        if(array_key_exists('page', $criteria)) {
+            $page = $criteria['page'];
+            unset($criteria['page']);
+        } else {
+            $page = 1;
+        }
+        $pager = $this->getCategoryManager()->getSubCategoryPager($criteria['category']->getId());
+        $pager->setMaxPerPage($this->container->hasParameter('rz_classification.settings.category.category_list_max_per_page')?$this->container->getParameter('rz_classification.settings.category.category_list_max_per_page'): 6);
+        $pager->setCurrentPage($page, false, true);
+        return $pager;
     }
 }
