@@ -5,6 +5,11 @@ Symfony2 Bundle - An extension of [SonataNewsBundle](https://github.com/sonata-p
 
 Uses a forked version of SonataNewsBundle
 
-**DEV VERSION**
-Refactoring of the news bundle to support multiple categories and gallery
+Version
+=======
+
+* 1.4.0 - development version before page, classification and news bundle upgrade
+* 1.4.x - development version with upgraded page, classification and news bundle
+
+**DEVELOPMENT VERSION**
 
