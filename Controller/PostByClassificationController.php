@@ -90,13 +90,12 @@ class PostByClassificationController extends AbstractNewsController
     public function postsByCategoryAjaxPagerAction(Request $request, $categoryId, $blockId, $page = 1) {
 
         if(!$category = $this->verifyCategory($categoryId)) {
-            throw new NotFoundHttpException('Unable to find the collection');
+            throw new NotFoundHttpException('Unable to find the category');
         }
 
         if(!$block = $this->verifyBlock($blockId)) {
             throw new NotFoundHttpException('Unable to find the block');
         }
-
 
         //redirect to normal controller if not ajax
         if (!$this->get('request_stack')->getCurrentRequest()->isXmlHttpRequest()) {

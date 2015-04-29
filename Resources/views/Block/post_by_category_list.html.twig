@@ -3,25 +3,26 @@
 {% block block %}
 <div id="posts">
     {% for post in pager.getCurrentPageResults() %}
-
         {% if enable_category_canonical_page is defined and enable_category_canonical_page == true %}
             {% set post_url = url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) %}
         {% else %}
             {% set post_url = url('rz_news_view', { 'permalink': post.slug, '_format': 'html' }) %}
         {% endif %}
-
-
         <div class="pad20"></div>
             {% if post.image %}
                 {% if post.image.providerName  == 'sonata.media.provider.image' %}
                     <div class="hover_img">
-                        <a href="{%  path post.image, 'reference' %}" data-rel="prettyPhoto"><img src="{%  path post.image, 'reference' %}" alt=""/></a>
+                        <a href="{{ post_url }}"><img src="{%  path post.image, 'reference' %}" alt=""/></a>
                     </div>
                 {% else %}
                     <div class="vendor">
                         {% media post.image, 'preview' %}
                     </div>
                 {% endif %}
+            {% else %}
+                <a href="{{ post_url }}">
+                    <img src="{{  asset('bundles/rznews/img/placeholder.jpg')}}" alt=""/>
+                </a>
             {% endif %}
             <h1 class="blog"><a href="{{ post_url }}">{{ post.title }}</a></h1>
             <h4><b>{{ post.publicationDateStart | format_date }}</b> |  <b>{{ 'archive_author'| trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>

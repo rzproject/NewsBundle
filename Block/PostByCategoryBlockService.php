@@ -12,6 +12,7 @@ use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
+use Sonata\BlockBundle\Exception\BlockNotFoundException;
 
 class PostByCategoryBlockService extends BaseBlockService
 {
@@ -152,6 +153,10 @@ class PostByCategoryBlockService extends BaseBlockService
      */
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
+        if(!$blockContext->getBlock()->getEnabled()) {
+            throw new BlockNotFoundException(sprintf('Block "%s" is disabled.', $blockContext->getBlock()->getId()));
+        }
+
         $settings = $blockContext->getBlock()->getSettings('category');
 
         $parameters = array(
