@@ -7,3 +7,4 @@ Uses a forked version of SonataNewsBundle
 
 **STABLE VERSION**
 
+Back to: [rzpeoject](http://rzproject.github.io)
