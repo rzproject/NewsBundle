@@ -3,8 +3,7 @@
 namespace Rz\NewsBundle\Controller;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class NewsController
@@ -22,7 +21,7 @@ class NewsDefaultController extends AbstractNewsController
      *
      * @return Response
      */
-    public function viewAction($permalink, $_format = 'html')
+    public function viewAction(Request $request, $permalink, $_format = 'html')
     {
         $post = $this->getPostManager()->findOneByPermalink($permalink, $this->container->get('sonata.news.blog'));
 

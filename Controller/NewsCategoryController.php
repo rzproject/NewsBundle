@@ -2,9 +2,9 @@
 
 namespace Rz\NewsBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class NewsController
@@ -50,7 +50,7 @@ class NewsCategoryController extends AbstractNewsController
             try {
 
                 if($category->getParent() != null && $category->getParent()->getSlug() == 'news') {
-                    die('rommel');
+                    die('TODO: Implementation!!!');
                 } else {
                     $response =  $this->renderPostByCategory($category, $permalink, $page);
                 }
@@ -63,7 +63,11 @@ class NewsCategoryController extends AbstractNewsController
         }
     }
 
-    public function categoryAjaxPagerAction($permalink, $page) {
+    public function categoryAjaxPagerAction(Request $request, $permalink, $page) {
+
+        if (!$request->isXmlHttpRequest()) {
+            throw new NotFoundHttpException('Unable to find page');
+        }
 
         if (!$category = $this->verifyCategoryPermalink($permalink)) {
             throw new NotFoundHttpException('Invalid URL');

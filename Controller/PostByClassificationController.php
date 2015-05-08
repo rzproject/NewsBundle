@@ -4,9 +4,7 @@ namespace Rz\NewsBundle\Controller;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Rz\NewsBundle\Controller\AbstractNewsController;
 use Symfony\Component\HttpFoundation\Request;
-
 
 /**
  * Class NewsController
@@ -88,6 +86,10 @@ class PostByClassificationController extends AbstractNewsController
      * @internal param $collection
      */
     public function postsByCategoryAjaxPagerAction(Request $request, $categoryId, $blockId, $page = 1) {
+
+        if (!$request->isXmlHttpRequest()) {
+            throw new NotFoundHttpException('Unable to find page');
+        }
 
         if(!$category = $this->verifyCategory($categoryId)) {
             throw new NotFoundHttpException('Unable to find the category');
