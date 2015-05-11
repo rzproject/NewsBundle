@@ -33,8 +33,11 @@ class PostManager extends ModelPostManager
                       ->createQueryBuilder('p')
                       ->select('count(t.id) as tagCount, t.name, t.slug')
                       ->leftJoin('p.tags', 't')
-                      ->groupBy('t.id');
-        return $query->getQuery()->getArrayResult();
+                      ->groupBy('t.id')
+                      ->getQuery()
+                      ->useResultCache(true, 3600);
+
+        return $query->getArrayResult();
     }
 
     public function getCollections($limit = 5)
@@ -44,8 +47,10 @@ class PostManager extends ModelPostManager
                       ->select('count(c.id) as collectionCount, c.name, c.slug')
                       ->leftJoin('p.collection', 'c')
                       ->groupBy('c.id')
-                      ->setMaxResults($limit);
-        return $query->getQuery()->getArrayResult();
+                      ->setMaxResults($limit)
+                      ->getQuery()
+                      ->useResultCache(true, 3600);
+        return $query->getArrayResult();
     }
 
     /**
@@ -74,6 +79,8 @@ class PostManager extends ModelPostManager
     public function getNewsPager(array $criteria, array $sort = array())
     {
         $query = $this->buildQuery($criteria, $sort);
+        $query->getQuery()
+              ->useResultCache(true, 3600);
         try {
             return new Pagerfanta(new DoctrineORMAdapter($query));
         } catch (NoResultException $e) {
@@ -231,7 +238,9 @@ class PostManager extends ModelPostManager
 
         $query->setParameters($parameters);
 
-        $results = $query->getQuery()->getResult();
+        $results = $query ->getQuery()
+                          ->useResultCache(true, 3600)
+                          ->getResult();
 
         if (count($results) > 0) {
             return $results[0];
@@ -250,8 +259,9 @@ class PostManager extends ModelPostManager
             $this->getClass(),
             $post->getId(),
             $post->getPublicationDateStart()->format('Y-m-d h:i:s')))
-            ->setMaxResults(2)
-            ->execute();
+                 ->setMaxResults(2)
+                 ->useResultCache(true, 3600)
+                 ->execute();
 
     }
 
@@ -259,7 +269,9 @@ class PostManager extends ModelPostManager
         $query = $this->getRepository()
             ->createQueryBuilder('p')
             ->select('p.slug')
-            ->orderBy('p.publicationDateStart', 'DESC');
-        return $query->getQuery()->getArrayResult();
+            ->orderBy('p.publicationDateStart', 'DESC')
+            ->getQuery()
+            ->useResultCache(true, 3600);
+        return $query->getArrayResult();
     }
 }

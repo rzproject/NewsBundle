@@ -43,9 +43,7 @@ class PostPageService extends BasePageService
     public function execute(PageInterface $page, Request $request, array $parameters = array(), Response $response = null)
     {
         $this->updateSeoPage($page);
-
         $response = $this->templateManager->renderResponse($page->getTemplateCode(), $parameters, $response);
-
         return $response;
     }
 

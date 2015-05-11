@@ -14,8 +14,10 @@ class PostHasCategoryManager extends BaseEntityManager
             ->createQueryBuilder('phc')
             ->select('c.id, c.name, c.slug')
             ->leftJoin('phc.category', 'c')
-            ->addGroupBy('c.name');
+            ->addGroupBy('c.name')
+            ->getQuery()
+            ->useResultCache(true, 3600);
 
-        return $query->getQuery()->getResult();
+        return $query->getResult();
     }
 }

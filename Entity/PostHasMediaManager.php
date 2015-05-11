@@ -16,7 +16,9 @@ class PostHasMediaManager extends BaseEntityManager
             ->addOrderBy('phm.position', 'ASC')
             ->addOrderBy('phm.id', 'ASC')
             ->setMaxResults(1)
-            ->setParameter('post', $post);
-        return $query->getQuery()->getSingleResult();
+            ->setParameter('post', $post)
+            ->getQuery()
+            ->useResultCache(true, 3600);
+        return $query->getSingleResult();
     }
 }
