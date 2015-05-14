@@ -3,7 +3,7 @@
 {% block block %}
 <div id="posts">
     {% for post in pager.getCurrentPageResults() %}
-        {% if enable_category_canonical_page is defined and enable_category_canonical_page == true %}
+        {% if category is defined and enable_category_canonical_page is defined and enable_category_canonical_page == true %}
             {% set post_url = url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) %}
         {% else %}
             {% set post_url = url('rz_news_view', { 'permalink': post.slug, '_format': 'html' }) %}
@@ -67,7 +67,7 @@
     {% endfor %}
 </div>
 
-{% if pager and pager.haveToPaginate %}
+{% if category is defined and pager and pager.haveToPaginate %}
     {% spaceless %}
         <div id="load_more_container" class="pagination">
             <ul class="span12">

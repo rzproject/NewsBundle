@@ -180,6 +180,21 @@ class PostManager extends ModelPostManager
                 }
                 $query->andWhere(sprintf('cat.slug IN (%s)', implode((array) $cat, ',')));
             }
+        } elseif(isset($criteria['category_id'])) {
+            if (!is_array($criteria['category_id'])) {
+                $query->andWhere('cat.id = :category');
+                if($criteria['category_id'] instanceof CategoryInterface) {
+                    $parameters['category'] = $criteria['category_id']->getId();
+                } else {
+                    $parameters['category'] = $criteria['category_id'];
+                }
+            } else {
+                $cat = null;
+                foreach($criteria['category_id'] as $id) {
+                    $cat[] = sprintf("'%s'", $id);
+                }
+                $query->andWhere(sprintf('cat.id IN (%s)', implode((array) $cat, ',')));
+            }
         }
 
         if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
@@ -188,6 +203,8 @@ class PostManager extends ModelPostManager
         }
 
         $query->setParameters($parameters);
+
+        dump($query);
 
         return $query;
     }
