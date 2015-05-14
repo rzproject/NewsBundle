@@ -8,11 +8,6 @@
     <class name="Rz\NewsBundle\Entity\BasePost">
 
         <property name="title">
-            <constraint name="NotBlank">
-                <option name="groups">
-                    <value>admin</value>
-                </option>
-            </constraint>
             <constraint name="NotNull">
                 <option name="groups">
                     <value>admin</value>
@@ -21,11 +16,6 @@
         </property>
 
         <property name="abstract">
-            <constraint name="NotBlank">
-                <option name="groups">
-                    <value>admin</value>
-                </option>
-            </constraint>
             <constraint name="NotNull">
                 <option name="groups">
                     <value>admin</value>
