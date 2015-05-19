@@ -204,8 +204,6 @@ class PostManager extends ModelPostManager
 
         $query->setParameters($parameters);
 
-        dump($query);
-
         return $query;
     }
 
