@@ -51,6 +51,7 @@ class RzNewsExtension extends Extension
         $this->configureTranslationDomain($config, $container);
         $this->configureController($config, $container);
         $this->configureRzTemplates($config, $container);
+	    $this->configureTemplates($config, $container);
         $this->registerService($config, $container);
 
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
@@ -188,12 +189,22 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz_news.configuration.post.templates', $config['admin']['post']['templates']);
         $container->setParameter('rz_news.configuration.comment.templates', $config['admin']['comment']['templates']);
-        $container->setParameter('rz_news.templates', $config['templates']);
 
         $container->setParameter('rz_news.admin.post_has_category.templates', $config['admin']['post_has_category']['templates']);
         $container->setParameter('rz_news.admin.post_has_media.templates', $config['admin']['post_has_media']['templates']);
 
     }
+
+	/**
+	 * @param array                                                   $config
+	 * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+	 *
+	 * @return void
+	 */
+	public function configureTemplates($config, ContainerBuilder $container)
+	{
+		$container->setParameter('rz_news.templates', $config['templates']);
+	}
 
     protected function registerService(array $config, ContainerBuilder $container)
     {

@@ -85,8 +85,6 @@ class NewsCategoryController extends AbstractNewsController
             } else {
                 $parameters = $this->getPostByCategoryDataForView($category, $permalink, $page);
             }
-
-
         } catch(\Exception $e) {
             throw $e;
         }
@@ -220,7 +218,8 @@ class NewsCategoryController extends AbstractNewsController
             $this->get('request_stack')->getCurrentRequest(),
             array('permalink' => $permalink,
                   'category'=>$category,
-                  'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+                  'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination'),
+                  'enable_category_canonical_page'=>$this->container->getParameter('rz_classification.settings.category.enable_category_canonical_page')));
     }
 
     protected function renderPostByCategory($category, $permalink, $page = null) {

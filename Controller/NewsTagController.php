@@ -227,7 +227,7 @@ class NewsTagController extends AbstractNewsController
             $parameters['page'] = $page;
         }
 
-        $pager = $this->fetchNewsNative($parameters);
+        $pager = $this->fetchNews($parameters);
 
         if ($pager->getNbResults() <= 0) {
             throw new NotFoundHttpException('Invalid URL');

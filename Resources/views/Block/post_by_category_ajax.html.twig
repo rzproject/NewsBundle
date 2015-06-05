@@ -20,7 +20,7 @@
                 <img src="{{  asset('bundles/rznews/img/placeholder.jpg')}}" alt=""/>
             </a>
         {% endif %}
-        <h1 class="blog"><a href="{{ url('rz_news_view', {'permalink': post.slug, '_format': 'html'}) }}">{{ post.title }}</a></h1>
+		<h1 class="blog"><a href="{{ post_url }}">{{ post.title }}</a></h1>
         <h4><b>{{ post.publicationDateStart | format_date }}</b> |  <b>{{ 'archive_author'| trans({'%author%': post.author }, 'SonataNewsBundle') }}</b> </h4>
         <p>{{ post.abstract }}</p>
         <div class="post-meta muted">
@@ -50,7 +50,7 @@
                 </li>
             </ul>
         </div>
-        <h4><a href="{{ url('rz_news_view', {'permalink': post.slug, '_format': 'html'}) }}"><b>READ &rarr;</b></a></h4>
+        <h4><a href="{{ post_url }}"><b>READ &rarr;</b></a></h4>
 
     <!--end post-->
     <div class="pad30"></div>

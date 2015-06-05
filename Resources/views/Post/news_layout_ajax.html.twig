@@ -35,14 +35,14 @@
                     <li>
                         {% for postHasCategory in post.postHasCategory %}
                             {% if postHasCategory.enabled %}
-                                {% if not is_controller_enabled and postHasCategory.category.page %}
+                                {% if is_controller_enabled is defined and not is_controller_enabled and postHasCategory.category.page %}
                                     {% set category_url = rz_render_page_alias_url(postHasCategory.category.page.getPageAlias()) %}
                                     {% if  category_url %}
                                         <a href="{{ url(category_url) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
                                     {% else %}
                                         <a href="#">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
                                     {% endif %}
-                                {% elseif is_controller_enabled %}
+                                {% elseif is_controller_enabled is defined and is_controller_enabled %}
                                     {% if postHasCategory.enabled %}
                                         <a href="{{ url('rz_news_category', { 'permalink': rz_classification_category_permalink(postHasCategory.category) } ) }}">{{ postHasCategory.category.name }}</a>{% if not loop.last %}, {% endif %}
                                     {% endif %}

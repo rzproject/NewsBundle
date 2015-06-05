@@ -36,7 +36,13 @@ class PostByClassificationController extends AbstractNewsController
             throw new NotFoundHttpException('Invalid URL');
         }
 
-        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('category' => $category, 'block'=>$block));
+        return $this->buildParameters($pager,
+	                                  $this->get('request_stack')->getCurrentRequest(),
+	                                  array('category' => $category,
+	                                        'block'=>$block,
+											'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination'),
+                                            'enable_category_canonical_page'=>$this->container->getParameter('rz_classification.settings.category.enable_category_canonical_page'))
+                                      );
     }
 
     protected function verifyCategory($categoryId) {
@@ -110,6 +116,7 @@ class PostByClassificationController extends AbstractNewsController
         } catch(\Exception $e) {
             throw $e;
         }
+
 
         return $this->getCategoryXhrResponse($category, $block, $parameters);
     }

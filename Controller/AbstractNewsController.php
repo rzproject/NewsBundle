@@ -124,11 +124,8 @@ abstract class AbstractNewsController extends Controller
     }
 
     protected function renderNewsList($parameters, $type) {
-
         $request = $this->get('request_stack')->getCurrentRequest();
-
-        $template = $this->container->get('rz_admin.template.loader')->getTemplates();
-        $response = $this->render($template[sprintf('rz_news.template.%s_%s', $type,  $request->getRequestFormat())], $parameters);
+        $response = $this->render($this->getTemplate($type,  $request->getRequestFormat()), $parameters);
         if ('rss' === $request->getRequestFormat()) {
             $response->headers->set('Content-Type', 'application/rss+xml');
         }
@@ -139,10 +136,21 @@ abstract class AbstractNewsController extends Controller
         return $this->container->get('templating');
     }
 
+	protected function getTemplate($type, $format = null) {
+		if(!$type) {
+			throw new\Exception('type required for RzNewsTemplate Loader');
+		}
+		$template = $this->container->get('rz_admin.template.loader')->getTemplates();
+		if($format) {
+			return $template[sprintf('rz_news.template.%s_%s', $type,  $format)];
+		} else {
+			return $template[sprintf('rz_news.template.%s', $type)];
+		}
+	}
+
 
     protected function getFallbackTemplate() {
-        $viewTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
-        return $viewTemplate['rz_news.template.view'];
+        return $this->getTemplate('view');
     }
 
     protected function getAjaxTemplate($template) {
@@ -168,11 +176,8 @@ abstract class AbstractNewsController extends Controller
             return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
 
         } else {
-            $defaultTemplate = $this->container->get('rz_admin.template.loader')->getTemplates();
-            $template = $defaultTemplate[sprintf('rz_news.template.%s_%s', $type,  'html')];
-            $templates = $this->getAjaxTemplates($template);
-            $templateAjax = $templates['ajax_template'];
-            $templatePagerAjax = $templates['ajax_pager'];
+            $templateAjax = $this->getTemplate($type, 'ajax');
+            $templatePagerAjax = $this->getTemplate($type, 'ajax_pager');
             $html = $this->container->get('templating')->render($templateAjax, $parameters);
             $html_pager = $this->container->get('templating')->render($templatePagerAjax, $parameters);
             return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
