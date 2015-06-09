@@ -23,6 +23,7 @@ class NewsDefaultController extends AbstractNewsController
      */
     public function viewAction(Request $request, $permalink, $_format = 'html')
     {
+
         $post = $this->getPostManager()->findOneByPermalink($permalink, $this->container->get('sonata.news.blog'));
 
         if (!$post || !$post->isPublic()) {
@@ -48,6 +49,8 @@ class NewsDefaultController extends AbstractNewsController
         //set default template
         $template = $this->getFallbackTemplate();
 
+	    $this->defaultViewPreRenderEvent($request, $post);
+
         $viewTemplate = $post->getSetting('template');
         if($viewTemplate) {
             if ($this->getTemplating()->exists($template)) {
@@ -71,4 +74,6 @@ class NewsDefaultController extends AbstractNewsController
             'blog' => $this->get('sonata.news.blog')
         ));
     }
+
+	protected function defaultViewPreRenderEvent(Request $request, $post) {}
 }

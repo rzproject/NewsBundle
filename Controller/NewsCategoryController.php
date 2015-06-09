@@ -151,6 +151,8 @@ class NewsCategoryController extends AbstractNewsController
         //set default template
         $template = $this->getFallbackTemplate();
 
+	    $this->categoryViewPreRenderEvent($request, $post, $category);
+
         $viewTemplate = $post->getSetting('template');
         if($viewTemplate) {
             if ($this->getTemplating()->exists($template)) {
@@ -362,4 +364,6 @@ class NewsCategoryController extends AbstractNewsController
         $pager->setCurrentPage($page, false, true);
         return $pager;
     }
+
+	protected function categoryViewPreRenderEvent(Request $request, $post, $category = null) {}
 }

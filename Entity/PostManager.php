@@ -287,8 +287,13 @@ class PostManager extends ModelPostManager
 		}
 
 		if (isset($criteria['tag'])) {
-			$query->andWhere('t.slug LIKE :tag');
-			$parameters['tag'] = (string) $criteria['tag'];
+			if($criteria['tag'] instanceof TagInterface) {
+				$parameters['tag'] = $criteria['tag']->getSlug();
+				$query->andWhere('t.slug = :tag');
+			} else {
+				$parameters['tag'] = (string) $criteria['tag'];
+				$query->andWhere('t.slug LIKE :tag');
+			}
 		} elseif(isset($criteria['tag_id'])) {
 			if (!is_array($criteria['tag_id'])) {
 				$query->andWhere('t.id = :tag');
