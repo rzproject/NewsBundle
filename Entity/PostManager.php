@@ -168,22 +168,22 @@ class PostManager extends ModelPostManager
         }
 
         if (isset($criteria['tag'])) {
-            $query->andWhere('t.slug LIKE :tag');
-            $parameters['tag'] = (string) $criteria['tag'];
-        } elseif(isset($criteria['tag_id'])) {
-	        if (!is_array($criteria['tag_id'])) {
-		        $query->andWhere('t.id = :tag');
-		        if($criteria['tag_id'] instanceof TagInterface) {
-			        $parameters['tag'] = $criteria['tag_id']->getId();
-		        } else {
-			        $parameters['tag'] = $criteria['tag_id'];
-		        }
-	        } else {
+	        if($criteria['tag'] instanceof TagInterface) {
+		        $parameters['tag'] = $criteria['tag']->getSlug();
+		        $query->andWhere('t.slug = :tag');
+	        }elseif (is_array($criteria['tag_id'])) {
 		        $tags = null;
-		        foreach($criteria['tag_id'] as $id) {
-			        $tags[] = sprintf("'%s'", $id);
+		        foreach($criteria['tag'] as $tag) {
+			        if($tag instanceof TagInterface) {
+				        $tags[] = $tag->getId();
+			        }else {
+				        $tags[] = $tag;
+			        }
 		        }
 		        $query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
+	        } else {
+		        $parameters['tag'] = (string) $criteria['tag'];
+		        $query->andWhere('t.slug LIKE :tag');
 	        }
         }
 
@@ -197,33 +197,18 @@ class PostManager extends ModelPostManager
 
         if (isset($criteria['category'])) {
             if (!is_array($criteria['category'])) {
-                $query->andWhere('cat.slug LIKE :category');
                 if($criteria['category'] instanceof CategoryInterface) {
                     $parameters['category'] = $criteria['category']->getSlug();
                 } else {
                     $parameters['category'] = $criteria['category'];
                 }
+	            $query->andWhere('cat.slug LIKE :category');
             } else {
                 $cat = null;
                 foreach($criteria['category'] as $slug) {
                     $cat[] = sprintf("'%s'", $slug);
                 }
                 $query->andWhere(sprintf('cat.slug IN (%s)', implode((array) $cat, ',')));
-            }
-        } elseif(isset($criteria['category_id'])) {
-            if (!is_array($criteria['category_id'])) {
-                $query->andWhere('cat.id = :category');
-                if($criteria['category_id'] instanceof CategoryInterface) {
-                    $parameters['category'] = $criteria['category_id']->getId();
-                } else {
-                    $parameters['category'] = $criteria['category_id'];
-                }
-            } else {
-                $cat = null;
-                foreach($criteria['category_id'] as $id) {
-                    $cat[] = sprintf("'%s'", $id);
-                }
-                $query->andWhere(sprintf('cat.id IN (%s)', implode((array) $cat, ',')));
             }
         }
 
@@ -291,6 +276,16 @@ class PostManager extends ModelPostManager
 			if($criteria['tag'] instanceof TagInterface) {
 				$parameters['tag'] = $criteria['tag']->getSlug();
 				$query->andWhere('t.slug = :tag');
+			}elseif (is_array($criteria['tag_id'])) {
+				$tags = null;
+				foreach($criteria['tag'] as $tag) {
+					if($tag instanceof TagInterface) {
+						$tags[] = $tag->getId();
+					}else {
+						$tags[] = $tag;
+					}
+				}
+				$query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
 			} else {
 				$parameters['tag'] = (string) $criteria['tag'];
 				$query->andWhere('t.slug LIKE :tag');
