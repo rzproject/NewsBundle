@@ -15,6 +15,7 @@ use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
 use Sonata\DatagridBundle\Pager\Doctrine\Pager;
+use Sonata\NewsBundle\Model\PostInterface;
 
 
 class PostManager extends ModelPostManager
@@ -296,7 +297,8 @@ class PostManager extends ModelPostManager
 			}
 		} elseif(isset($criteria['tag_id'])) {
 			if (!is_array($criteria['tag_id'])) {
-				$query->andWhere('t.id = :tag');
+				$query->andWhere('t.id = :tag_id');
+				$query->orderBy('FIELD(t.id,:tag_id)');
 				if($criteria['tag_id'] instanceof TagInterface) {
 					$parameters['tag'] = $criteria['tag_id']->getId();
 				} else {
@@ -340,12 +342,12 @@ class PostManager extends ModelPostManager
 			}
 		} elseif(isset($criteria['category_id'])) {
 			if (!is_array($criteria['category_id'])) {
-				$query->andWhere('cat.id = :category');
-				$query->orderBy('FIELD(cat.id,:category)');
+				$query->andWhere('cat.id = :category_id');
+				$query->orderBy('FIELD(cat.id,:category_id)');
 				if($criteria['category_id'] instanceof CategoryInterface) {
-					$parameters['category'] = $criteria['category_id']->getId();
+					$parameters['category_id'] = $criteria['category_id']->getId();
 				} else {
-					$parameters['category'] = $criteria['category_id'];
+					$parameters['category_id'] = $criteria['category_id'];
 				}
 			} else {
 				$cat = null;
@@ -355,6 +357,23 @@ class PostManager extends ModelPostManager
 				$query->andWhere(sprintf('cat.id IN (%s)', implode((array) $cat, ',')));
 				$query->addSelect(sprintf('FIELD(cat.id,%s) as HIDDEN category_field', implode((array) $cat, ',')));
 				$query->addOrderBy('category_field');
+			}
+		}
+
+		if(isset($criteria['post_id'])) {
+			if (!is_array($criteria['post_id'])) {
+				$query->andWhere('p.id = :post_id');
+				if($criteria['post_id'] instanceof PostInterface) {
+					$parameters['post_id'] = $criteria['post_id']->getId();
+				} else {
+					$parameters['post_id'] = $criteria['post_id'];
+				}
+			} else {
+				$post = null;
+				foreach($criteria['post_id'] as $id) {
+					$post[] = sprintf("'%s'", $id);
+				}
+				$query->andWhere(sprintf('p.id IN (%s)', implode((array) $post, ',')));
 			}
 		}
 
@@ -374,9 +393,6 @@ class PostManager extends ModelPostManager
 //		}
 
 		#custom order by category
-
-
-
 		$query->setParameters($parameters);
 
 		return $query;
