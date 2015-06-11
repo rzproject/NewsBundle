@@ -21,6 +21,8 @@ abstract class BasePost extends Post
 
     protected $settings;
 
+	protected $viewCount;
+
     const ROUTE_CLASSIFICATION_SEQ_COLLECTION = 'collection';
     const ROUTE_CLASSIFICATION_SEQ_CATEGORY = 'category';
     const ROUTE_CLASSIFICATION_SEQ_TAG = 'tag';
@@ -36,6 +38,7 @@ abstract class BasePost extends Post
 
         $this->postHasCategory = new ArrayCollection();
         $this->postHasMedia = new ArrayCollection();
+	    $this->viewCount = 0;
     }
 
 
@@ -163,4 +166,24 @@ abstract class BasePost extends Post
     {
         $this->settings = $settings;
     }
+
+	/**
+	 * @return int
+	 */
+	public function getViewCount()
+	{
+		return $this->viewCount;
+	}
+
+	/**
+	 * @param int $viewCount
+	 */
+	public function setViewCount($viewCount)
+	{
+		$this->viewCount = $viewCount;
+	}
+
+	public function incrementViewCount() {
+		$this->viewCount++;
+	}
 }

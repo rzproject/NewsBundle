@@ -5,12 +5,13 @@ namespace Rz\NewsBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sonata\NewsBundle\Model\PostInterface;
 
 /**
  * Class NewsController
  * @package Rz\NewsBundle\Controller
  */
-abstract class AbstractNewsController extends Controller
+abstract class AbstractNewsController extends Controller implements ViewCountableControllerInterface
 {
     /**
      * @return \Sonata\ClassificationBundle\Model\CategoryManagerInterface
@@ -222,4 +223,8 @@ abstract class AbstractNewsController extends Controller
     {
         return $this->get('rz_news.manager.post_has_media');
     }
+
+	public function incrementPostView(PostInterface $post) {
+		return $this->getPostManager()->incrementPostView($post);
+	}
 }

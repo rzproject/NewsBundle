@@ -78,6 +78,7 @@ class PostAdmin extends BaseAdmin
             ->add('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
             ->add('enabled', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet')), 'editable' => true))
             ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
+	        ->add('viewCount', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'Actions' => array('template' => 'RzNewsBundle:PostAdmin:manage_child_action_list.html.twig'),

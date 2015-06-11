@@ -475,4 +475,14 @@ class PostManager extends ModelPostManager
             ->useResultCache(true, 3600);
         return $query->getArrayResult();
     }
+
+	public function incrementPostView(PostInterface $post) {
+		try {
+			$post->incrementViewCount();
+			$this->save($post);
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
 }

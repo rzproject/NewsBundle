@@ -169,6 +169,8 @@ class NewsCategoryController extends AbstractNewsController
             }
         }
 
+	    $this->incrementPostView($post);
+
         return $this->render($template, array(
             'post' => $post,
             'category' => $category,
