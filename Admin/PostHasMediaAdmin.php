@@ -19,6 +19,11 @@ class PostHasMediaAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+        $formMapper
+            ->add('title', null)
+            ->add('abstract', null, array('attr' => array('rows' => 5)))
+        ;
+
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             $formMapper->add('media', 'sonata_type_model_list', array('btn_delete' => false), array(
                 'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),

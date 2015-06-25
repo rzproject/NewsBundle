@@ -11,6 +11,7 @@ abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInt
 {
     protected $media;
     protected $post;
+    protected $title;
     protected $abstract;
     protected $content;
     protected $rawContent;
@@ -60,6 +61,22 @@ abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInt
     public function setPost(PostInterface $post)
     {
         $this->post = $post;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     /**
