@@ -1,6 +1,14 @@
 {% extends sonata_block.templates.block_base %}
 
 {% block block %}
+<ul class="nav nav-tabs">
+	<li class='post-filter-tabs {% if settings.filter is defined and settings.filter == 'latest' %}active{% endif %}'>
+		<a id='post_filter_latest' href="{{ url('rz_news_post_by_classification_category_filter', {'filter': 'latest', 'categoryId': category.id, 'blockId': block.id }) }}">New Stories</a>
+	</li>
+	<li class='post-filter-tabs {% if settings.filter is defined and settings.filter == 'trending' %}active{% endif %}'>
+		<a id='post_filter_trending' href="{{ url('rz_news_post_by_classification_category_filter', {'filter': 'trending', 'categoryId': category.id, 'blockId': block.id }) }}">Trending</a>
+	</li>
+</ul>
 <div id="posts">
     {% for post in pager.getCurrentPageResults() %}
         {% if category is defined and enable_category_canonical_page is defined and enable_category_canonical_page == true %}
@@ -86,7 +94,10 @@
                         load_more_container: "load_more_container",
                         load_more_button: "load_more_button",
                         field_container: 'posts',
-                        load_more_data_auto_append: true
+                        load_more_data_auto_append: true,
+	                    filter_button_latest: "post_filter_latest",
+	                    filter_button_trending: "post_filter_trending",
+	                    filter_tabs: "post-filter-tabs"
                     });
                 });
             </script>

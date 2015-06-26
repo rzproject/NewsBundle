@@ -22,13 +22,14 @@ class PostByClassificationController extends AbstractNewsController
         return new JsonResponse(array('html' => $html, 'html_pager'=>$html_pager));
     }
 
-    protected function getCategoryDataForView($category, $block, $page = null) {
+    protected function getCategoryDataForView($category, $block, $page = null, $filter='latest') {
 
-        $parameters = array('category' => $category);
+        $parameters = array('category' => $category, 'filter'=>$filter);
 
         if($page) {
             $parameters['page'] = $page;
         }
+
 
         $pager = $this->fetchNews($parameters);
 
@@ -40,6 +41,7 @@ class PostByClassificationController extends AbstractNewsController
 	                                  $this->get('request_stack')->getCurrentRequest(),
 	                                  array('category' => $category,
 	                                        'block'=>$block,
+                                            'filter'=>$filter,
 											'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination'),
                                             'enable_category_canonical_page'=>$this->container->getParameter('rz_classification.settings.category.enable_category_canonical_page'))
                                       );
@@ -83,15 +85,15 @@ class PostByClassificationController extends AbstractNewsController
 
     /**
      * @param Request $request
-     * @param $categiryId
+     * @param $categoryId
      * @param $blockId
      * @param int $page
+     * @param string $filter
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
-     * @internal param $collectionId
-     * @internal param $collection
      */
-    public function postsByCategoryAjaxPagerAction(Request $request, $categoryId, $blockId, $page = 1) {
+    public function postsByCategoryAjaxPagerAction(Request $request, $categoryId, $blockId, $page = 1, $filter ='latest') {
 
         if (!$request->isXmlHttpRequest()) {
             throw new NotFoundHttpException('Unable to find page');
@@ -112,7 +114,7 @@ class PostByClassificationController extends AbstractNewsController
         }
 
         try {
-            $parameters = $this->getCategoryDataForView($category, $block, $page);
+            $parameters = $this->getCategoryDataForView($category, $block, $page, $filter);
         } catch(\Exception $e) {
             throw $e;
         }
@@ -121,4 +123,7 @@ class PostByClassificationController extends AbstractNewsController
         return $this->getCategoryXhrResponse($category, $block, $parameters);
     }
 
+    public function postsByCategoryAjaxFilterAction(Request $request, $categoryId, $blockId, $filter ='latest') {
+       return $this->postsByCategoryAjaxPagerAction($request, $categoryId, $blockId, 1, $filter);
+    }
 }

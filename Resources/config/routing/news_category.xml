@@ -4,10 +4,17 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="rz_news_news_category_load_more" pattern="/load-more/category/{permalink}/{page}">
+    <route id="rz_news_news_category_load_more" pattern="/load-more/category/{permalink}/{page}/{filter}">
         <default key="_controller">RzNewsBundle:NewsCategory:categoryAjaxPager</default>
+        <default key="filter">latest</default>
         <requirement key="permalink">.+</requirement>
         <requirement key="page">\d+</requirement>
+    </route>
+
+    <route id="rz_news_news_category_filter" pattern="/load-more/category/{permalink}/{filter}">
+        <default key="_controller">RzNewsBundle:NewsCategory:categoryAjaxFilter</default>
+        <requirement key="permalink">.+</requirement>
+        <requirement key="filter">latest|trending</requirement>
     </route>
 
     <route id="rz_news_category_pager" pattern="/{permalink}/page/{page}">

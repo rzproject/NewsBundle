@@ -80,6 +80,15 @@ class PostManager extends ModelPostManager
      */
     public function getNewsPager(array $criteria, array $sort = array())
     {
+        if(isset($criteria['filter'])) {
+            if($criteria['filter'] == 'latest') {
+                $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+            } else {
+                $sort = array_merge(array('viewCount'=>'DESC'), $sort);
+            }
+
+        }
+
         $query = $this->buildQuery($criteria, $sort);
 
         $query->getQuery()
@@ -93,6 +102,14 @@ class PostManager extends ModelPostManager
 
 	public function getCustomNewsPager(array $criteria, array $sort = array())
 	{
+        if(isset($criteria['filter'])) {
+            if($criteria['filter'] == 'latest') {
+                $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+            } else {
+                $sort = array_merge($sort, array('viewCount'=>'DESC','publicationDateStart'=>'DESC'));
+            }
+        }
+
 		$query = $this->buildCustomQuery($criteria, $sort);
 
 		$query->getQuery()
@@ -117,6 +134,16 @@ class PostManager extends ModelPostManager
      */
     public function getNewsNativePager(array $criteria, $page, $limit = 10, array $sort = array())
     {
+        if(isset($criteria['filter'])) {
+            if(isset($criteria['filter'])) {
+                if($criteria['filter'] == 'latest') {
+                    $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+                } else {
+                    $sort = array_merge($sort, array('viewCount'=>'DESC','publicationDateStart'=>'DESC'));
+                }
+            }
+        }
+
         $query = $this->buildQuery($criteria, $sort);
 
         $pager = new Pager();
@@ -217,15 +244,19 @@ class PostManager extends ModelPostManager
             $parameters['collectionid'] = $criteria['collection']->getId();
         }
 
-	    if($sort) {
-		    foreach($sort as $field=>$order) {
-			    if($field == 'publicationDateStart') {
-				    $query->orderBy('p.publicationDateStart', $order);
-			    }
-		    }
-	    } else {
-		    $query->orderBy('p.publicationDateStart', 'DESC');
-	    }
+        if($sort) {
+
+            $count = 0;
+            foreach($sort as $field=>$order) {
+                if($count == 0) {
+                    $query->orderBy(sprintf('p.%s', $field), $order);
+                } else {
+                    $query->addOrderBy(sprintf('p.%s', $field), $order);
+                }
+            }
+        } else {
+            $query->orderBy('p.publicationDateStart', 'DESC');
+        }
 
         $query->setParameters($parameters);
 
@@ -377,17 +408,19 @@ class PostManager extends ModelPostManager
 			$parameters['collectionid'] = $criteria['collection']->getId();
 		}
 
-//		if($sort) {
-//			foreach($sort as $field=>$order) {
-//				if($field == 'publicationDateStart') {
-//					$query->orderBy('p.publicationDateStart', $order);
-//				}
-//			}
-//		} else {
-//			$query->orderBy('p.publicationDateStart', 'DESC');
-//		}
+        if($sort) {
+            $count = 0;
+            foreach($sort as $field=>$order) {
+                if($count == 0) {
+                    $query->orderBy(sprintf('p.%s', $field), $order);
+                } else {
+                    $query->addOrderBy(sprintf('p.%s', $field), $order);
+                }
+            }
+        } else {
+            $query->orderBy('p.publicationDateStart', 'DESC');
+        }
 
-		#custom order by category
 		$query->setParameters($parameters);
 
 		return $query;

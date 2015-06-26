@@ -82,6 +82,12 @@ class PostByCategoryBlockService extends BaseBlockService
                         'admin'  => 'admin'
                     )
                 )),
+                array('filter', 'choice', array(
+                    'choices' => array(
+                        'latest'    => 'Latest',
+                        'trending'  => 'Trending'
+                    )
+                )),
                 array('template', 'choice', array('choices' => $this->templates)),
                 array('ajaxTemplate', 'choice', array('choices' => $this->ajaxTemplates)),
                 array('ajaxPagerTemplate', 'choice', array('choices' => $this->ajaxPagerTemplates)),
@@ -168,10 +174,10 @@ class PostByCategoryBlockService extends BaseBlockService
         );
 
         if(isset($settings['category']) && $settings['category'] instanceof CategoryInterface) {
-
             $criteria['mode'] = $settings['mode'];
             $criteria['enabled'] = true;
             $criteria['category'] = $settings['category'];
+            $criteria['filter'] = $settings['filter'];
 
             $pager = $this->postManager->getNewsPager($criteria);
             $pager->setMaxPerPage($this->maxPerPage ?: 5);
@@ -204,11 +210,12 @@ class PostByCategoryBlockService extends BaseBlockService
     public function setDefaultSettings(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'mode'       => 'public',
-            'template'   => 'RzNewsBundle:Block:post_by_category_list.html.twig',
-            'ajaxTemplate'   => 'RzNewsBundle:Block:post_by_category_ajax.html.twig',
+            'mode'                => 'public',
+            'filter'              => 'latest',
+            'template'            => 'RzNewsBundle:Block:post_by_category_list.html.twig',
+            'ajaxTemplate'        => 'RzNewsBundle:Block:post_by_category_ajax.html.twig',
             'ajaxPagerTemplate'   => 'RzNewsBundle:Block:post_by_category_ajax_pager.html.twig',
-            'category' => null,
+            'category'            => null,
         ));
     }
 }

@@ -17,8 +17,7 @@ class NewsTagController extends AbstractNewsController
      * @param string $tag
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \Exception
      */
     public function tagAction($tag)
     {
@@ -58,7 +57,7 @@ class NewsTagController extends AbstractNewsController
         return $response;
     }
 
-    public function tagAjaxPagerAction($tag, $page) {
+    public function tagAjaxPagerAction($tag, $page = 1, $filter ='latest') {
 
         if(!$tag = $this->verifyTag($tag)) {
             throw new NotFoundHttpException('Unable to find the tag');
@@ -70,13 +69,20 @@ class NewsTagController extends AbstractNewsController
         }
 
         try {
-            $parameters = $this->getTagDataForView($tag, $page);
+            $parameters = $this->getTagDataForView($tag, $page, $filter);
         } catch(\Exception $e) {
             throw $e;
         }
 
         return $this->getAjaxResponse($tag, $parameters, self::NEWS_LIST_TYPE_TAG);
     }
+
+
+    public function tagAjaxFilterAction($tag,  $filter ='latest') {
+        return $this->tagAjaxPagerAction($tag,  1, $filter);
+    }
+
+
 
     /**
      *
@@ -161,15 +167,6 @@ class NewsTagController extends AbstractNewsController
         ));
     }
 
-//    protected function renderNewsList($parameters, $type) {
-//
-//
-//        dump($parameters);
-//        die();
-//
-//        return parent::renderNewsList($parameters, $type);
-//    }
-
     protected function renderTagList($tag, $page = null) {
 
         try {
@@ -219,9 +216,9 @@ class NewsTagController extends AbstractNewsController
         }
     }
 
-    protected function getTagDataForView($tag, $page = null) {
+    protected function getTagDataForView($tag, $page = null, $filter = 'latest') {
 
-        $parameters = array('tag' => $tag);
+        $parameters = array('tag' => $tag, 'filter'=>$filter);
 
         if($page) {
             $parameters['page'] = $page;
@@ -233,7 +230,7 @@ class NewsTagController extends AbstractNewsController
             throw new NotFoundHttpException('Invalid URL');
         }
 
-        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
+        return $this->buildParameters($pager, $this->get('request_stack')->getCurrentRequest(), array('tag' => $tag, 'filter'=>$filter, 'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination')));
 
     }
 

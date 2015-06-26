@@ -12,6 +12,16 @@
     <h4><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
 {% endblock post_read_more %}
 
+{% block post_filter %}
+<ul class="nav nav-tabs" style="margin-top: 20px;">
+	<li class='post-filter-tabs {% if filter is defined and filter == 'latest' %}active{% endif %}'>
+		<a id='post_filter_latest' href="{{ url('rz_news_tag_filter', {'filter': 'latest', 'tag':  tag.slug }) }}">New Stories</a>
+	</li>
+	<li class='post-filter-tabs {% if filter is defined and filter == 'trending' %}active{% endif %}'>
+		<a id='post_filter_trending' href="{{ url('rz_news_tag_filter', {'filter': 'trending', 'tag':  tag.slug }) }}">Trending</a>
+	</li>
+</ul>
+{% endblock %}
 {% block post_paginator %}
     {% if pager.haveToPaginate %}
         {% spaceless %}
@@ -19,10 +29,15 @@
                 {% if is_ajax_pagination %}
                 <ul class="span12">
                     {% if pager.hasNextPage %}
+	                    {% if filter is defined %}
+		                    {% set load_more =url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug,  'filter': filter }) %}
+	                    {% else %}
+		                    {% set load_more = url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug, 'filter': 'latest' }) %}
+	                    {% endif %}
                         <li style="text-align: center;">
                             <a id="load_more_button"
                                class="btn btn-rzcms-theme"
-                               href="{{ url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug }) }}"
+                               href="{{ load_more }}"
                                title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
                         </li>
                     {% endif %}
@@ -33,7 +48,10 @@
                             load_more_container: "load_more_container",
                             load_more_button: "load_more_button",
                             field_container: 'posts',
-                            load_more_data_auto_append: true
+                            load_more_data_auto_append: true,
+	                        filter_button_latest: "post_filter_latest",
+	                        filter_button_trending: "post_filter_trending",
+	                        filter_tabs: "post-filter-tabs"
                         });
                     });
                 </script>

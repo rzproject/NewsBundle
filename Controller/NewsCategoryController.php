@@ -63,7 +63,7 @@ class NewsCategoryController extends AbstractNewsController
         }
     }
 
-    public function categoryAjaxPagerAction(Request $request, $permalink, $page) {
+    public function categoryAjaxPagerAction(Request $request, $permalink, $page, $filter = 'latest') {
 
         if (!$request->isXmlHttpRequest()) {
             throw new NotFoundHttpException('Unable to find page');
@@ -83,7 +83,7 @@ class NewsCategoryController extends AbstractNewsController
             if($category->getParent() != null && $category->getParent()->getSlug() == 'news') {
                 $parameters = $this->getSubCategoriesDataForView($category, $page);
             } else {
-                $parameters = $this->getPostByCategoryDataForView($category, $permalink, $page);
+                $parameters = $this->getPostByCategoryDataForView($category, $permalink, $page, $filter);
             }
         } catch(\Exception $e) {
             throw $e;
@@ -92,6 +92,9 @@ class NewsCategoryController extends AbstractNewsController
         return $this->getAjaxResponse($category, $parameters, self::NEWS_LIST_TYPE_CATEGORY);
     }
 
+    public function categoryAjaxFilterAction(Request $request, $permalink, $filter = 'latest') {
+        return $this->categoryAjaxPagerAction($request, $permalink, 1, $filter);
+    }
 
     /**
      *
@@ -116,6 +119,15 @@ class NewsCategoryController extends AbstractNewsController
         } else {
             throw new NotFoundHttpException('Invalid URL');
         }
+    }
+
+    public function getCmsManagerSelector() {
+
+        if ($this->has('sonata.page.cms_manager_selector')) {
+            return $this->get('sonata.page.cms_manager_selector');
+        }
+
+        return null;
     }
 
 
@@ -180,9 +192,9 @@ class NewsCategoryController extends AbstractNewsController
         ));
     }
 
-    protected function getPostByCategoryDataForView($category, $permalink, $page = null) {
+    protected function getPostByCategoryDataForView($category, $permalink, $page = null, $filter = 'latest') {
 
-        $parameters = array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink, true));
+        $parameters = array('category' => $this->getCategoryManager()->getPermalinkGenerator()->getSlugParameters($permalink, true), 'filter'=>$filter);
 
         if($page) {
             $parameters['page'] = $page;
@@ -198,6 +210,7 @@ class NewsCategoryController extends AbstractNewsController
                                       $this->get('request_stack')->getCurrentRequest(),
                                       array('permalink' => $permalink,
                                             'category'=>$category,
+                                            'filter'=>$filter,
                                             'is_ajax_pagination'=>$this->container->getParameter('rz_news.settings.ajax_pagination'),
                                             'enable_category_canonical_page'=>$this->container->getParameter('rz_classification.settings.category.enable_category_canonical_page')));
     }
@@ -342,15 +355,6 @@ class NewsCategoryController extends AbstractNewsController
         }
 
         return $category;
-    }
-
-    public function getCmsManagerSelector() {
-
-        if ($this->has('sonata.page.cms_manager_selector')) {
-            return $this->get('sonata.page.cms_manager_selector');
-        }
-
-        return null;
     }
 
     protected function fetchSubCategories(array $criteria = array()) {
