@@ -79,11 +79,16 @@
         <div id="load_more_container" class="pagination">
             <ul class="span12">
                 {% if pager.hasNextPage %}
+	                {% if filter is defined %}
+		                {% set load_more =  url('rz_news_post_by_classification_category_load_more', {'page': pager.nextPage, 'categoryId': category.id, 'blockId': block.id,  'filter': filter }) %}
+	                {% else %}
+		                {% set load_more =url('rz_news_post_by_classification_category_load_more', {'page': pager.nextPage, 'categoryId': category.id, 'blockId': block.id, 'filter': 'latest' }) %}
+	                {% endif %}
                     <li style="text-align: center;">
                         <a id="load_more_button"
                            class="btn btn-rzcms-theme"
                            rel="nofollow"
-                           href="{{ url('rz_news_post_by_classification_category_load_more', {'page': pager.nextPage, 'categoryId': category.id, 'blockId': block.id }) }}"
+                           href="{{ load_more }}"
                            title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
                     </li>
                 {% endif %}
