@@ -177,7 +177,7 @@ class PostByCategoryBlockService extends BaseBlockService
             $criteria['mode'] = $settings['mode'];
             $criteria['enabled'] = true;
             $criteria['category'] = $settings['category'];
-            $criteria['filter'] = $settings['filter'];
+            $criteria['filter'] = isset($settings['filter']) ? $settings['filter']: 'latest' ;
 
             $pager = $this->postManager->getNewsPager($criteria);
             $pager->setMaxPerPage($this->maxPerPage ?: 5);
