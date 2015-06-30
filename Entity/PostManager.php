@@ -271,8 +271,7 @@ class PostManager extends ModelPostManager
 		$parameters = array();
 		$query = $this->getRepository()
 			->createQueryBuilder('p')
-			->select('p, t')
-			->orderBy('p.publicationDateStart', 'DESC');
+			->select('p, t');
 
 		if ($criteria['mode'] == 'admin') {
 			$query
