@@ -93,21 +93,21 @@
                     </li>
                 {% endif %}
             </ul>
-            <script type="text/javascript">
-                jQuery(document).ready(function () {
-                    var rz_news_post_loadmore_js = new rz_news_post_loadmore({
-                        load_more_container: "load_more_container",
-                        load_more_button: "load_more_button",
-                        field_container: 'posts',
-                        load_more_data_auto_append: true,
-	                    filter_button_latest: "post_filter_latest",
-	                    filter_button_trending: "post_filter_trending",
-	                    filter_tabs: "post-filter-tabs"
-                    });
-                });
-            </script>
         </div>
     {% endspaceless %}
 {% endif %}
 <div class="clearfix"></div>
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+		var rz_news_post_loadmore_js = new rz_news_post_loadmore({
+			load_more_container: "load_more_container",
+			load_more_button: "load_more_button",
+			field_container: 'posts',
+			load_more_data_auto_append: true,
+			filter_button_latest: "post_filter_latest",
+			filter_button_trending: "post_filter_trending",
+			filter_tabs: "post-filter-tabs"
+		});
+	});
+</script>
 {% endblock %}
