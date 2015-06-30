@@ -288,6 +288,16 @@ class RzNewsExtension extends Extension
             $templates[$template['path']] = $template['name'];
         }
         $container->setParameter('rz_news.block.tags.templates', $templates);
+
+
+        #related post
+        $container->setParameter('rz_news.block.featured_post', $config['related_post']['class']);
+        $temp = $config['related_post']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.related_post.templates', $templates);
     }
 
     /**

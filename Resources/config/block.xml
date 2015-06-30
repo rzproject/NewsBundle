@@ -8,6 +8,7 @@
         <parameter key="rz_news.block.post_by_category.class">Rz\NewsBundle\Block\PostByCategoryBlockService</parameter>
         <parameter key="rz_news.block.featured_post.class">Rz\NewsBundle\Block\FeaturedPostBlockService</parameter>
         <parameter key="rz_news.block.tags.class">Rz\NewsBundle\Block\TagsBlockService</parameter>
+        <parameter key="rz_news.block.related_post.class">Rz\NewsBundle\Block\RelatedPostBlockService</parameter>
     </parameters>
 
     <services>
@@ -40,6 +41,18 @@
             <argument>%rz_news.settings.news_pager_max_per_page%</argument>
             <argument>%rz_classification.enable_controllers%</argument>
             <argument>%rz_classification.settings.category.enable_category_canonical_page%</argument>
+        </service>
+
+        <service id="rz_news.block.related_post" class="%rz_news.block.related_post.class%" scope="prototype">
+            <tag name="sonata.block"/>
+            <argument>rz_news.block.related_post</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="sonata.news.admin.post" />
+            <argument type="service" id="sonata.news.manager.post" />
+            <argument type="service" id="sonata.classification.admin.category" />
+            <argument type="service" id="sonata.classification.manager.category" />
+            <argument>%rz_news.block.related_post.templates%</argument>
+            <argument>%rz_classification.enable_controllers%</argument>
         </service>
     </services>
 </container>

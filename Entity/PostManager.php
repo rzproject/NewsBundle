@@ -254,8 +254,6 @@ class PostManager extends ModelPostManager
                     $query->addOrderBy(sprintf('p.%s', $field), $order);
                 }
             }
-        } else {
-            $query->orderBy('p.publicationDateStart', 'DESC');
         }
 
         $query->setParameters($parameters);
@@ -402,6 +400,23 @@ class PostManager extends ModelPostManager
 			}
 		}
 
+        if(isset($criteria['exclude_post_id'])) {
+            if (!is_array($criteria['exclude_post_id'])) {
+                $query->andWhere('p.id != :exclude_post_id');
+                if($criteria['exclude_post_id'] instanceof PostInterface) {
+                    $parameters['exclude_post_id'] = $criteria['exclude_post_id']->getId();
+                } else {
+                    $parameters['exclude_post_id'] = $criteria['exclude_post_id'];
+                }
+            } else {
+                $post = null;
+                foreach($criteria['exclude_post_id'] as $id) {
+                    $post[] = sprintf("'%s'", $id);
+                }
+                $query->andWhere($query->expr()->notIn('p.id', implode(",",$post)));
+            }
+        }
+
 		if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
 			$query->andWhere('p.collection = :collectionid');
 			$parameters['collectionid'] = $criteria['collection']->getId();
@@ -416,8 +431,6 @@ class PostManager extends ModelPostManager
                     $query->addOrderBy(sprintf('p.%s', $field), $order);
                 }
             }
-        } else {
-            $query->orderBy('p.publicationDateStart', 'DESC');
         }
 
 		$query->setParameters($parameters);
