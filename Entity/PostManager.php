@@ -530,4 +530,10 @@ class PostManager extends ModelPostManager
 			return false;
 		}
 	}
+
+    public function getAllNews(array $criteria, array $sort = array())
+    {
+        $query = $this->buildQuery($criteria, $sort);
+        return $query->getQuery()->getResult();
+    }
 }
