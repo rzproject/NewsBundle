@@ -57,7 +57,7 @@ class AllTimePopularPostBlockService extends BaseRecentPostsBlockService
             'mode' => $blockContext->getSetting('mode'),
         );
 
-        $pager = $this->manager->getNewsNativePager($criteria, 1, $blockContext->getSetting('number'), array('p.viewCount'=>'DESC'));
+        $pager = $this->manager->getNewsNativePager($criteria, 1, $blockContext->getSetting('number'), array('viewCount'=>'DESC'));
 
         $parameters = array(
             'context'    => $blockContext,
