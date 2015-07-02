@@ -561,10 +561,13 @@ Quick moderation links :
                 <source>filter.label_media_name</source>
                 <target>Media Name</target>
             </trans-unit>
-
             <trans-unit id="list.label_view_count">
                 <source>list.label_view_count</source>
                 <target>All Time View Count</target>
+            </trans-unit>
+            <trans-unit id="no_comment_found">
+                <source>no_comment_found</source>
+                <target>No Comments Found</target>
             </trans-unit>
         </body>
     </file>

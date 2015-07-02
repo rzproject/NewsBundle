@@ -260,7 +260,7 @@ class RzNewsExtension extends Extension
         $container->setParameter('rz_news.block.recent_posts.templates', $templates);
 
 
-        #fetured post
+        #featured post
         $container->setParameter('rz_news.block.featured_post', $config['featured_post']['class']);
         $temp = $config['featured_post']['templates'];
         $templates = array();
@@ -298,6 +298,15 @@ class RzNewsExtension extends Extension
             $templates[$template['path']] = $template['name'];
         }
         $container->setParameter('rz_news.block.related_post.templates', $templates);
+
+        #all time popular post
+        $container->setParameter('rz_news.block.all_time_popular_posts', $config['all_time_popular_posts']['class']);
+        $temp = $config['all_time_popular_posts']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.all_time_popular_posts.templates', $templates);	        
     }
 
     /**

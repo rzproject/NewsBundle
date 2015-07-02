@@ -244,8 +244,13 @@ class PostManager extends ModelPostManager
             $parameters['collectionid'] = $criteria['collection']->getId();
         }
 
-        if($sort) {
+        if (isset($criteria['published'])) {
+            $now = date("Y-m-d H:i:s");
+            $query->andWhere('p.publicationDateStart <= :current_date');
+            $parameters['current_date'] = $now;
+        }
 
+        if($sort) {
             $count = 0;
             foreach($sort as $field=>$order) {
                 if($count == 0) {
@@ -421,6 +426,12 @@ class PostManager extends ModelPostManager
 			$query->andWhere('p.collection = :collectionid');
 			$parameters['collectionid'] = $criteria['collection']->getId();
 		}
+
+        if (isset($criteria['published'])) {
+            $now = date("Y-m-d H:i:s");
+            $query->andWhere('p.publicationDateStart <= :current_date');
+            $parameters['current_date'] = $now;
+        }		
 
         if($sort) {
             $count = 0;

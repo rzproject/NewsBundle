@@ -9,6 +9,7 @@
         <parameter key="rz_news.block.featured_post.class">Rz\NewsBundle\Block\FeaturedPostBlockService</parameter>
         <parameter key="rz_news.block.tags.class">Rz\NewsBundle\Block\TagsBlockService</parameter>
         <parameter key="rz_news.block.related_post.class">Rz\NewsBundle\Block\RelatedPostBlockService</parameter>
+        <parameter key="rz_news.block.all_time_popular_posts.class">Rz\NewsBundle\Block\AllTimePopularPostBlockService</parameter>
     </parameters>
 
     <services>
@@ -54,5 +55,13 @@
             <argument>%rz_news.block.related_post.templates%</argument>
             <argument>%rz_classification.enable_controllers%</argument>
         </service>
+
+		<service id="rz_news.block.all_time_popular_posts" class="%rz_news.block.all_time_popular_posts.class%" scope="prototype">
+            <tag name="sonata.block"/>
+            <argument>rz_news.block.all_time_popular_posts</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="sonata.news.manager.post" />
+            <argument type="service" id="sonata.admin.pool" on-invalid="ignore" />
+        </service>        
     </services>
 </container>
