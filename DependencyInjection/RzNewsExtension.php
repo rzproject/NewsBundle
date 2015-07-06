@@ -349,6 +349,7 @@ class RzNewsExtension extends Extension
     public function configureSearchProcessor($config, ContainerBuilder $container)
     {
         $container->setParameter('rz_news.field_processor.image.class', $config['search']['processors']['image']['class']);
+        $container->setParameter('rz_news.field_processor.post_has_category.class', $config['search']['processors']['post_has_category']['class']);
     }
 
     public function configureSearchIndexListener($config, ContainerBuilder $container)
