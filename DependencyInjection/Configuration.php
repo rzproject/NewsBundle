@@ -35,6 +35,15 @@ class Configuration implements ConfigurationInterface
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $this->addBlockSettings($node);
         }
+
+        if (interface_exists('Rz\SearchBundle\FieldProcessor\FieldProcessorInterface')) {
+            $this->addSearchProcessorSettings($node);
+        }
+
+        if (interface_exists('Rz\SearchBundle\Listener\SearchIndexListenerInterface')) {
+            $this->addSearchListenerSettings($node);
+        }
+
         return $treeBuilder;
     }
 
@@ -332,7 +341,6 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-
     /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
@@ -466,6 +474,50 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()                        
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addSearchProcessorSettings(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('search')
+                ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('processors')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->arrayNode('image')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\FieldProcessor\\MediaFieldProcessor')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addSearchListenerSettings(ArrayNodeDefinition $node) {
+        $node
+            ->children()
+                ->arrayNode('search_index_listener')
+                ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('post')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Listener\\PostSearchIndexListener')->end()
+                            ->end()
+                        ->end()
+
                     ->end()
                 ->end()
             ->end();

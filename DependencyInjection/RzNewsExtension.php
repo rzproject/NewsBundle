@@ -62,6 +62,17 @@ class RzNewsExtension extends Extension
 
         $this->configureSettings($config, $container);
         $this->configureProviders($container, $config);
+
+        if (interface_exists('Rz\SearchBundle\FieldProcessor\FieldProcessorInterface')) {
+            $this->configureSearchProcessor($config, $container);
+            $loader->load('processors.xml');
+        }
+
+        if (interface_exists('Rz\SearchBundle\Listener\SearchIndexListenerInterface')) {
+            $this->configureSearchIndexListener($config, $container);
+            $loader->load('post_search_index_listener.xml');
+
+        }
     }
 
     /**
@@ -333,6 +344,16 @@ class RzNewsExtension extends Extension
         $container->setParameter('rz_news.settings.force_html_extension_on_url', $config['settings']['force_html_extension_on_url']);
         $container->setParameter('rz_news.settings.ajax_pagination', $config['settings']['ajax_pagination']);
 
+    }
+
+    public function configureSearchProcessor($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.field_processor.image.class', $config['search']['processors']['image']['class']);
+    }
+
+    public function configureSearchIndexListener($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.field_processor.image.class', $config['search']['processors']['image']['class']);
     }
 
     /**

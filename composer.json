@@ -19,7 +19,8 @@
         "rz/user-bundle":  "1.1.*",
         "rz/media-bundle": "1.2.*",
         "rz/doctrine-orm-admin-bundle": "1.1.*",
-        "rz/classification-bundle": "1.4.*"
+        "rz/classification-bundle": "1.4.*",
+        "rz/search-bundle": "1.1.*"
     },
     "require-dev": {
         "rz/block-bundle": "1.2.*"
