@@ -155,6 +155,28 @@ class PostManager extends ModelPostManager
         return $pager;
     }
 
+
+    public function getRecoNewsPager(array $criteria, array $sort = array(), $exclude = array())
+    {
+        if(isset($criteria['filter'])) {
+            if($criteria['filter'] == 'latest') {
+                $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+            } else {
+                $sort = array_merge($sort, array('viewCount'=>'DESC','publicationDateStart'=>'DESC'));
+            }
+        }
+
+        $query = $this->buildRecoQuery($criteria, $sort, $exclude);
+
+        $query->getQuery()
+            ->useResultCache(true, 3600);
+        try {
+            return new Pagerfanta(new DoctrineORMAdapter($query));
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
+
     protected function buildQuery(array $criteria, array $sort = array()) {
         if (!isset($criteria['mode'])) {
             $criteria['mode'] = 'public';
@@ -448,6 +470,142 @@ class PostManager extends ModelPostManager
 
 		return $query;
 	}
+
+    protected function buildRecoQuery(array $criteria, array $sort = array(), $exclude = array()) {
+
+        if (!isset($criteria['mode'])) {
+            $criteria['mode'] = 'public';
+        }
+
+        $parameters = array();
+        $query = $this->getRepository()
+            ->createQueryBuilder('p')
+            ->select('p, t')
+            ->orderBy('p.publicationDateStart', 'DESC');
+
+        if ($criteria['mode'] == 'admin') {
+            $query
+                ->leftJoin('p.tags', 't')
+                ->leftJoin('p.author', 'a')
+                ->leftJoin('p.postHasCategory', 'phc')
+                ->leftJoin('phc.category', 'cat')
+            ;
+        } else {
+            $query
+                ->leftJoin('p.tags', 't', Join::WITH, 't.enabled = true')
+                ->leftJoin('p.author', 'a', Join::WITH, 'a.enabled = true')
+                ->leftJoin('p.postHasCategory', 'phc',  Join::WITH, 'phc.enabled = true')
+                ->leftJoin('phc.category', 'cat',  Join::WITH, 'cat.enabled = true')
+            ;
+        }
+
+        if (!isset($criteria['enabled']) && $criteria['mode'] == 'public') {
+            $criteria['enabled'] = true;
+        }
+        if (isset($criteria['enabled'])) {
+            $query->andWhere('p.enabled = :enabled');
+            $parameters['enabled'] = $criteria['enabled'];
+        }
+
+        if (isset($criteria['date']) && isset($criteria['date']['query']) && isset($criteria['date']['params'])) {
+            $query->andWhere($criteria['date']['query']);
+            $parameters = array_merge($parameters, $criteria['date']['params']);
+        }
+
+        if (isset($criteria['tag'])) {
+            if($criteria['tag'] instanceof TagInterface) {
+                $parameters['tag'] = $criteria['tag']->getSlug();
+                $query->andWhere('t.slug = :tag');
+            }elseif (is_array($criteria['tag_id'])) {
+                $tags = null;
+                foreach($criteria['tag'] as $tag) {
+                    if($tag instanceof TagInterface) {
+                        $tags[] = $tag->getId();
+                    }else {
+                        $tags[] = $tag;
+                    }
+                }
+                $query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
+            } else {
+                $parameters['tag'] = (string) $criteria['tag'];
+                $query->andWhere('t.slug LIKE :tag');
+            }
+        }
+
+        if (isset($criteria['author'])) {
+            if (!is_array($criteria['author']) && stristr($criteria['author'], 'NULL')) {
+                $query->andWhere('p.author IS ' . $criteria['author']);
+            } else {
+                $query->andWhere(sprintf('p.author IN (%s)', implode((array) $criteria['author'], ',')));
+            }
+        }
+
+        if (isset($criteria['category'])) {
+            if (!is_array($criteria['category'])) {
+                $query->andWhere('cat.slug LIKE :category');
+                if($criteria['category'] instanceof CategoryInterface) {
+                    $parameters['category'] = $criteria['category']->getSlug();
+                } else {
+                    $parameters['category'] = $criteria['category'];
+                }
+            } else {
+                $cat = null;
+                foreach($criteria['category'] as $slug) {
+                    $cat[] = sprintf("'%s'", $slug);
+                }
+                $query->andWhere(sprintf('cat.slug IN (%s)', implode((array) $cat, ',')));
+            }
+        }
+
+        if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
+            $query->andWhere('p.collection = :collectionid');
+            $parameters['collectionid'] = $criteria['collection']->getId();
+        }
+
+
+
+        if(isset($exclude) && count($exclude) > 0) {
+            $query->andWhere($query->expr()->notIn('p.id', implode(",",$exclude)));
+        }
+
+        if($sort) {
+            $count = 0;
+            foreach($sort as $field=>$order) {
+                if($count == 0) {
+                    $query->orderBy(sprintf('p.%s', $field), $order);
+                } else {
+                    $query->addOrderBy(sprintf('p.%s', $field), $order);
+                }
+            }
+        } else {
+            $query->orderBy('p.publicationDateStart', 'DESC');
+        }
+
+        $query->setParameters($parameters);
+
+        return $query;
+    }
+
+    public function getRelatedNewsPager(array $criteria, array $sort = array())
+    {
+        $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+        $query = $this->buildCustomQuery($criteria, $sort);
+
+
+        if(isset($criteria['excludePostId'])) {
+            //custom query
+            $query->andWhere('p.id != :exclude_post_id')
+                ->setParameter('exclude_post_id', $criteria['excludePostId']);
+        }
+
+        $query->getQuery()
+            ->useResultCache(true, 3600);
+        try {
+            return new Pagerfanta(new DoctrineORMAdapter($query));
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
 
     /**
      * @param string        $permalink
