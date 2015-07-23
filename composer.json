@@ -14,23 +14,23 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "rmzamora/news-bundle": "2.4.2.*",
-        "rz/admin-bundle": "1.1.2.*",
-        "rz/user-bundle":  "1.1.2.*",
-        "rz/media-bundle": "1.2.2.*",
-        "rz/doctrine-orm-admin-bundle": "1.1.1.*",
-        "rz/classification-bundle": "1.4.2.*",
-        "rz/search-bundle": "1.1.1.*"
+        "rmzamora/news-bundle": "2.4.*",
+        "rz/admin-bundle": "1.1.*",
+        "rz/user-bundle":  "1.1.*",
+        "rz/media-bundle": "1.2.*",
+        "rz/doctrine-orm-admin-bundle": "1.1.*",
+        "rz/classification-bundle": "1.4.*",
+        "rz/search-bundle": "1.1.*"
     },
     "require-dev": {
-        "rz/block-bundle": "1.2.2.*"
+        "rz/block-bundle": "1.2.*"
     },
     "autoload": {
         "psr-4": { "Rz\\NewsBundle\\": "" }
     },
     "extra": {
         "branch-alias": {
-            "dev-1.4": "1.4.2.x-dev"
+            "dev-1.4": "1.4.x-dev"
         }
     }
 }
