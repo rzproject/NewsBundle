@@ -108,7 +108,7 @@ class DefaultProvider extends BaseProvider
     public function postPersist(PostInterface $post)
     {
         $post->setSetting('ogImage', is_object($post->getSetting('ogImage')) ? $post->getSetting('ogImage')->getId() : null);
-        parent::prePersist($post);
+        parent::postPersist($post);
     }
 
     /**
@@ -117,7 +117,7 @@ class DefaultProvider extends BaseProvider
     public function postUpdate(PostInterface $post)
     {
         $post->setSetting('ogImage', is_object($post->getSetting('ogImage')) ? $post->getSetting('ogImage')->getId() : null);
-        parent::prePersist($post);
+        parent::postUpdate($post);
     }
 
     /**
