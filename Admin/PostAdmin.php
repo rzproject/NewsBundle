@@ -97,17 +97,6 @@ class PostAdmin extends BaseAdmin
     {
 
         $post = $this->getSubject();
-        $em = $this->modelManager->getEntityManager('Application\Sonata\ClassificationBundle\Entity\Tag');
-
-        $context = $this->contextManager->find('news');
-
-        $query = $em->createQueryBuilder('t')
-            ->select('t')
-            ->from('ApplicationSonataClassificationBundle:Tag', 't')
-            ->where('t.context = :context')
-            ->andWhere('t.enabled = :enabled')
-            ->orderBy('t.name', 'ASC')
-            ->setParameters(array('context'=>$context, 'enabled'=>true));
 
         $formMapper
             ->with('Post')
@@ -141,15 +130,27 @@ class PostAdmin extends BaseAdmin
             $provider->buildCreateForm($formMapper);
         }
 
+        $context = $this->contextManager->find('news');
+
         $formMapper
             ->with('Tags')
-                ->add('tags', 'sonata_type_model', array(
+            ->add('tags', 'sonata_type_model_autocomplete',
+                array(
                     'required' => false,
                     'multiple' => true,
-                    'select2'=>true,
-                    'query' => $query
-                    ),
-                    array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
+                    'property'=>'name',
+                    'callback' => function ($admin, $property, $value) use ($context) {
+                        $datagrid = $admin->getDatagrid();
+                        $queryBuilder = $datagrid->getQuery();
+                        $queryBuilder
+                            ->andWhere($queryBuilder->getRootAlias() . '.context=:contextValue')
+                            ->setParameter('contextValue', $context)
+                        ;
+                        $datagrid->setValue($property, null, $value);
+                    },
+
+                ),
+                array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
             ->end()
             ->with('Status')
                 ->add('enabled', null, array('required' => false))
