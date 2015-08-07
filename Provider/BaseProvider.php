@@ -118,6 +118,20 @@ abstract class BaseProvider implements PostProviderInterface
     /**
      * {@inheritdoc}
      */
+    public function postPersist(PostInterface $post)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate(PostInterface $post)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function validate(ErrorElement $errorElement, PostInterface $post)
     {
 
