@@ -6,6 +6,7 @@
     <parameters>
         <parameter key="rz_news.provider.default.class">Rz\NewsBundle\Provider\DefaultProvider</parameter>
         <parameter key="rz_news.provider.event.class">Rz\NewsBundle\Provider\EventProvider</parameter>
+        <parameter key="rz_news.provider.ads.class">Rz\NewsBundle\Provider\AdsProvider</parameter>
         <parameter key="rz_news.pool.class">Rz\NewsBundle\Provider\Pool</parameter>
     </parameters>
 
@@ -22,6 +23,11 @@
         <service id="rz_news.provider.event" class="%rz_news.provider.event.class%" scope="prototype">
             <tag name="rz_news.provider" />
             <argument>rz_news.provider.event</argument>
+        </service>
+
+        <service id="rz_news.provider.ads" class="%rz_news.provider.ads.class%" scope="prototype">
+            <tag name="rz_news.provider" />
+            <argument>rz_news.provider.ads</argument>
         </service>
     </services>
 </container>
