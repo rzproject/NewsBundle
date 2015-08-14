@@ -266,6 +266,27 @@ class PostManager extends ModelPostManager
             $parameters['collectionid'] = $criteria['collection']->getId();
         }
 
+        if (isset($criteria['exclude_collection'])) {
+            if (!is_array($criteria['exclude_collection'])) {
+                if($criteria['exclude_collection'] instanceof CollectionInterface) {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection']->getId();
+                } else {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection'];
+                }
+                $query->andWhere('p.collection = :exclude_collection');
+            } else {
+                $coll = null;
+                foreach($criteria['exclude_collection'] as $collection) {
+                    if($collection instanceof CollectionInterface) {
+                        $coll[] = (int) $collection->getId();
+                    } else {
+                        $coll[] = (int) $collection;
+                    }
+                }
+                $query->andWhere(sprintf('p.collection  IN (%s)', implode((array) $coll, ',')));
+            }
+        }
+
         if (isset($criteria['published'])) {
             $now = date("Y-m-d H:i:s");
             $query->andWhere('p.publicationDateStart <= :current_date');
@@ -449,6 +470,27 @@ class PostManager extends ModelPostManager
 			$parameters['collectionid'] = $criteria['collection']->getId();
 		}
 
+        if (isset($criteria['exclude_collection'])) {
+            if (!is_array($criteria['exclude_collection'])) {
+                if($criteria['exclude_collection'] instanceof CollectionInterface) {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection']->getId();
+                } else {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection'];
+                }
+                $query->andWhere('p.collection != :exclude_collection');
+            } else {
+                $coll = null;
+                foreach($criteria['exclude_collection'] as $collection) {
+                    if($collection instanceof CollectionInterface) {
+                        $coll[] = (int) $collection->getId();
+                    } else {
+                        $coll[] = (int) $collection;
+                    }
+                }
+                $query->andWhere(sprintf('p.collection  NOT IN (%s)', implode((array) $coll, ',')));
+            }
+        }
+
         if (isset($criteria['published'])) {
             $now = date("Y-m-d H:i:s");
             $query->andWhere('p.publicationDateStart <= :current_date');
@@ -560,6 +602,27 @@ class PostManager extends ModelPostManager
         if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
             $query->andWhere('p.collection = :collectionid');
             $parameters['collectionid'] = $criteria['collection']->getId();
+        }
+
+        if (isset($criteria['exclude_collection'])) {
+            if (!is_array($criteria['exclude_collection'])) {
+                if($criteria['exclude_collection'] instanceof CollectionInterface) {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection']->getId();
+                } else {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection'];
+                }
+                $query->andWhere('p.collection != :exclude_collection');
+            } else {
+                $coll = null;
+                foreach($criteria['exclude_collection'] as $collection) {
+                    if($collection instanceof CollectionInterface) {
+                        $coll[] = (int) $collection->getId();
+                    } else {
+                        $coll[] = (int) $collection;
+                    }
+                }
+                $query->andWhere(sprintf('p.collection  NOT IN (%s)', implode((array) $coll, ',')));
+            }
         }
 
 
