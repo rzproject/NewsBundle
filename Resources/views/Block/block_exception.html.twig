@@ -1,0 +1,8 @@
+{% extends sonata_block.templates.block_base %}
+
+{% block block %}
+    <div class="cms-block-exception">
+        <h2>{{ block.name }}</h2>
+        <h3>{{ exception.message }}</h3>
+    </div>
+{% endblock %}

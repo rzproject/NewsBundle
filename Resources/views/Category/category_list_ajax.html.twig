@@ -1,0 +1,39 @@
+{% for category in pager.getCurrentPageResults() %}
+	{% if category.page %}
+		{% set url = rz_render_page_alias_url(category.page.getPageAlias()) %}
+	{% else %}
+		{% set url = url('rz_news_category', { 'permalink':  rz_classification_category_permalink(category) }) %}
+	{% endif %}
+	<div class="category-item">
+		<div class="category">
+			{% if category.media %}
+				{% if category.media.providerName  == 'sonata.media.provider.image' %}
+					<a href="{% if  url %}{{ url }}{% else %}#{% endif %}">
+						{% media category.media, 'reference' with {'style':'width:380px;', 'height': 'auto'} %}
+					</a>
+				{% else %}
+					<div class="vendor">
+						{% media category.media, 'reference' %}
+					</div>
+				{% endif %}
+			{% else %}
+				<a href="{% if  url %}{{ url }}{% else %}#{% endif %}">
+					<img src="{{  asset('bundles/rzclassification/img/placeholder.jpg')}}" alt="" style="width:380px;height:auto"/>
+				</a>
+			{% endif %}
+			<div class="item-description">
+				<h1 class="blog"><a href="{% if  url %}{{ url }}{% else %}#{% endif %}">{{ category.name }}</a></h1>
+				<p>{{ category.description }}</p>
+				{#<p>{{ category.content|raw }}</p>#}
+				<h4><a href="{% if  url %}{{ url }}{% else %}#{% endif %}"><b>READ &rarr;</b></a></h4>
+			</div>
+			<!--end post-->
+		</div>
+	</div>
+{% else %}
+	<div class="row-fluid sonata-blog-post-list">
+		<div class="span12">
+			{{ 'no_post_found'|trans({}, 'RzClassificationBundle') }}
+		</div>
+	</div>
+{% endfor %}

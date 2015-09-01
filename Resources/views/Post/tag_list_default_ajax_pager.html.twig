@@ -1,0 +1,23 @@
+{% block post_paginator %}
+    {% spaceless %}
+        {% if pager.haveToPaginate() %}
+            <ul class="span12">
+                {% if pager.hasNextPage %}
+
+	                {% if filter is defined %}
+		                {% set load_more =url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug,  'filter': filter }) %}
+	                {% else %}
+		                {% set load_more = url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug, 'filter': 'latest' }) %}
+	                {% endif %}
+
+                    <li style="text-align: center;">
+                        <a id="load_more_button"
+                           class="btn btn-rzcms-theme"
+                           href="{{ load_more }}"
+                           title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% endspaceless %}
+{% endblock post_paginator %}

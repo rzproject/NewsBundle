@@ -4,12 +4,18 @@ namespace Rz\NewsBundle\Entity;
 
 use Sonata\NewsBundle\Entity\PostManager as ModelPostManager;
 use Sonata\ClassificationBundle\Model\CollectionInterface;
+use Sonata\ClassificationBundle\Model\CategoryInterface;
+use Sonata\ClassificationBundle\Model\TagInterface;
+use Sonata\NewsBundle\Model\BlogInterface;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
+use Sonata\DatagridBundle\Pager\Doctrine\Pager;
+use Sonata\NewsBundle\Model\PostInterface;
 
 
 class PostManager extends ModelPostManager
@@ -29,8 +35,11 @@ class PostManager extends ModelPostManager
                       ->createQueryBuilder('p')
                       ->select('count(t.id) as tagCount, t.name, t.slug')
                       ->leftJoin('p.tags', 't')
-                      ->groupBy('t.id');
-        return $query->getQuery()->getArrayResult();
+                      ->groupBy('t.id')
+                      ->getQuery()
+                      ->useResultCache(true, 3600);
+
+        return $query->getArrayResult();
     }
 
     public function getCollections($limit = 5)
@@ -40,8 +49,10 @@ class PostManager extends ModelPostManager
                       ->select('count(c.id) as collectionCount, c.name, c.slug')
                       ->leftJoin('p.collection', 'c')
                       ->groupBy('c.id')
-                      ->setMaxResults($limit);
-        return $query->getQuery()->getArrayResult();
+                      ->setMaxResults($limit)
+                      ->getQuery()
+                      ->useResultCache(true, 3600);
+        return $query->getArrayResult();
     }
 
     /**
@@ -69,7 +80,104 @@ class PostManager extends ModelPostManager
      */
     public function getNewsPager(array $criteria, array $sort = array())
     {
+        if(isset($criteria['filter'])) {
+            if($criteria['filter'] == 'latest') {
+                $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+            } else {
+                $sort = array_merge(array('viewCount'=>'DESC'), $sort);
+            }
 
+        }
+
+        $query = $this->buildQuery($criteria, $sort);
+
+        $query->getQuery()
+              ->useResultCache(true, 3600);
+        try {
+            return new Pagerfanta(new DoctrineORMAdapter($query));
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
+
+	public function getCustomNewsPager(array $criteria, array $sort = array())
+	{
+        if(isset($criteria['filter'])) {
+            if($criteria['filter'] == 'latest') {
+                $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+            } else {
+                $sort = array_merge($sort, array('viewCount'=>'DESC','publicationDateStart'=>'DESC'));
+            }
+        }
+
+		$query = $this->buildCustomQuery($criteria, $sort);
+
+		$query->getQuery()
+			->useResultCache(true, 3600);
+		try {
+			return new Pagerfanta(new DoctrineORMAdapter($query));
+		} catch (NoResultException $e) {
+			return null;
+		}
+	}
+
+    /**
+     * {@inheritdoc}
+     *
+     * Valid criteria are:
+     *    enabled - boolean
+     *    date - query
+     *    tag - string
+     *    author - 'NULL', 'NOT NULL', id, array of ids
+     *    collections - CollectionInterface
+     *    mode - string public|admin
+     */
+    public function getNewsNativePager(array $criteria, $page, $limit = 10, array $sort = array())
+    {
+        if(isset($criteria['filter'])) {
+            if(isset($criteria['filter'])) {
+                if($criteria['filter'] == 'latest') {
+                    $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+                } else {
+                    $sort = array_merge($sort, array('viewCount'=>'DESC','publicationDateStart'=>'DESC'));
+                }
+            }
+        }
+
+        $query = $this->buildQuery($criteria, $sort);
+
+        $pager = new Pager();
+        $pager->setMaxPerPage($limit);
+        $pager->setQuery(new ProxyQuery($query));
+        $pager->setPage($page);
+        $pager->init();
+
+        return $pager;
+    }
+
+
+    public function getRecoNewsPager(array $criteria, array $sort = array(), $exclude = array())
+    {
+        if(isset($criteria['filter'])) {
+            if($criteria['filter'] == 'latest') {
+                $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+            } else {
+                $sort = array_merge($sort, array('viewCount'=>'DESC','publicationDateStart'=>'DESC'));
+            }
+        }
+
+        $query = $this->buildRecoQuery($criteria, $sort, $exclude);
+
+        $query->getQuery()
+            ->useResultCache(true, 3600);
+        try {
+            return new Pagerfanta(new DoctrineORMAdapter($query));
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
+
+    protected function buildQuery(array $criteria, array $sort = array()) {
         if (!isset($criteria['mode'])) {
             $criteria['mode'] = 'public';
         }
@@ -77,18 +185,21 @@ class PostManager extends ModelPostManager
         $parameters = array();
         $query = $this->getRepository()
             ->createQueryBuilder('p')
-            ->select('p, t')
-            ->orderBy('p.publicationDateStart', 'DESC');
+            ->select('p, t');
 
         if ($criteria['mode'] == 'admin') {
             $query
                 ->leftJoin('p.tags', 't')
                 ->leftJoin('p.author', 'a')
+                ->leftJoin('p.postHasCategory', 'phc')
+                ->leftJoin('phc.category', 'cat')
             ;
         } else {
             $query
                 ->leftJoin('p.tags', 't', Join::WITH, 't.enabled = true')
                 ->leftJoin('p.author', 'a', Join::WITH, 'a.enabled = true')
+                ->leftJoin('p.postHasCategory', 'phc',  Join::WITH, 'phc.enabled = true')
+                ->leftJoin('phc.category', 'cat',  Join::WITH, 'cat.enabled = true')
             ;
         }
 
@@ -106,8 +217,23 @@ class PostManager extends ModelPostManager
         }
 
         if (isset($criteria['tag'])) {
-            $query->andWhere('t.slug LIKE :tag');
-            $parameters['tag'] = (string) $criteria['tag'];
+	        if($criteria['tag'] instanceof TagInterface) {
+		        $parameters['tag'] = $criteria['tag']->getSlug();
+		        $query->andWhere('t.slug = :tag');
+	        }elseif (is_array($criteria['tag_id'])) {
+		        $tags = null;
+		        foreach($criteria['tag'] as $tag) {
+			        if($tag instanceof TagInterface) {
+				        $tags[] = $tag->getId();
+			        }else {
+				        $tags[] = $tag;
+			        }
+		        }
+		        $query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
+	        } else {
+		        $parameters['tag'] = (string) $criteria['tag'];
+		        $query->andWhere('t.slug LIKE :tag');
+	        }
         }
 
         if (isset($criteria['author'])) {
@@ -118,18 +244,528 @@ class PostManager extends ModelPostManager
             }
         }
 
+        if (isset($criteria['category'])) {
+            if (!is_array($criteria['category'])) {
+                if($criteria['category'] instanceof CategoryInterface) {
+                    $parameters['category'] = $criteria['category']->getSlug();
+                } else {
+                    $parameters['category'] = $criteria['category'];
+                }
+	            $query->andWhere('cat.slug LIKE :category');
+            } else {
+                $cat = null;
+                foreach($criteria['category'] as $slug) {
+                    $cat[] = sprintf("'%s'", $slug);
+                }
+                $query->andWhere(sprintf('cat.slug IN (%s)', implode((array) $cat, ',')));
+            }
+        }
+
         if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
             $query->andWhere('p.collection = :collectionid');
             $parameters['collectionid'] = $criteria['collection']->getId();
         }
 
+        if (isset($criteria['exclude_collection'])) {
+            if (!is_array($criteria['exclude_collection'])) {
+                if($criteria['exclude_collection'] instanceof CollectionInterface) {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection']->getId();
+                } else {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection'];
+                }
+                $query->andWhere('p.collection = :exclude_collection');
+            } else {
+                $coll = null;
+                foreach($criteria['exclude_collection'] as $collection) {
+                    if($collection instanceof CollectionInterface) {
+                        $coll[] = (int) $collection->getId();
+                    } else {
+                        $coll[] = (int) $collection;
+                    }
+                }
+                $query->andWhere(sprintf('p.collection  IN (%s)', implode((array) $coll, ',')));
+            }
+        }
+
+        if (isset($criteria['published'])) {
+            $now = date("Y-m-d H:i:s");
+            $query->andWhere('p.publicationDateStart <= :current_date');
+            $parameters['current_date'] = $now;
+        }
+
+        if($sort) {
+            $count = 0;
+            foreach($sort as $field=>$order) {
+                if($count == 0) {
+                    $query->orderBy(sprintf('p.%s', $field), $order);
+                } else {
+                    $query->addOrderBy(sprintf('p.%s', $field), $order);
+                }
+            }
+        }
+
         $query->setParameters($parameters);
 
+        return $query;
+    }
 
+	protected function buildCustomQuery(array $criteria, array $sort = array()) {
+		if (!isset($criteria['mode'])) {
+			$criteria['mode'] = 'public';
+		}
+
+		$parameters = array();
+		$query = $this->getRepository()
+			->createQueryBuilder('p')
+			->select('p, t');
+
+		if ($criteria['mode'] == 'admin') {
+			$query
+				->leftJoin('p.tags', 't')
+				->leftJoin('p.author', 'a')
+				->leftJoin('p.postHasCategory', 'phc')
+				->leftJoin('phc.category', 'cat')
+			;
+		} else {
+			$query
+				->leftJoin('p.tags', 't', Join::WITH, 't.enabled = true')
+				->leftJoin('p.author', 'a', Join::WITH, 'a.enabled = true')
+				->leftJoin('p.postHasCategory', 'phc',  Join::WITH, 'phc.enabled = true')
+				->leftJoin('phc.category', 'cat',  Join::WITH, 'cat.enabled = true')
+			;
+		}
+
+		if (!isset($criteria['enabled']) && $criteria['mode'] == 'public') {
+			$criteria['enabled'] = true;
+		}
+		if (isset($criteria['enabled'])) {
+			$query->andWhere('p.enabled = :enabled');
+			$parameters['enabled'] = $criteria['enabled'];
+		}
+
+		if (isset($criteria['date']) && isset($criteria['date']['query']) && isset($criteria['date']['params'])) {
+			$query->andWhere($criteria['date']['query']);
+			$parameters = array_merge($parameters, $criteria['date']['params']);
+		}
+
+		if (isset($criteria['tag'])) {
+			if($criteria['tag'] instanceof TagInterface) {
+				$parameters['tag'] = $criteria['tag']->getSlug();
+				$query->andWhere('t.slug = :tag');
+			}elseif (is_array($criteria['tag_id'])) {
+				$tags = null;
+				foreach($criteria['tag'] as $tag) {
+					if($tag instanceof TagInterface) {
+						$tags[] = $tag->getId();
+					}else {
+						$tags[] = $tag;
+					}
+				}
+				$query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
+			} else {
+				$parameters['tag'] = (string) $criteria['tag'];
+				$query->andWhere('t.slug LIKE :tag');
+			}
+		} elseif(isset($criteria['tag_id'])) {
+			if (!is_array($criteria['tag_id'])) {
+				$query->andWhere('t.id = :tag_id');
+				$query->orderBy('FIELD(t.id,:tag_id)');
+				if($criteria['tag_id'] instanceof TagInterface) {
+					$parameters['tag'] = $criteria['tag_id']->getId();
+				} else {
+					$parameters['tag'] = $criteria['tag_id'];
+				}
+			} else {
+				$tags = null;
+				foreach($criteria['tag_id'] as $id) {
+					$tags[] = sprintf("'%s'", $id);
+				}
+				$query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
+
+				$query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
+				$query->addSelect(sprintf('FIELD(t.id,%s) as HIDDEN tag_field', implode((array) $tags, ',')));
+				$query->addOrderBy('tag_field');
+			}
+		}
+
+		if (isset($criteria['author'])) {
+			if (!is_array($criteria['author']) && stristr($criteria['author'], 'NULL')) {
+				$query->andWhere('p.author IS ' . $criteria['author']);
+			} else {
+				$query->andWhere(sprintf('p.author IN (%s)', implode((array) $criteria['author'], ',')));
+			}
+		}
+
+		if (isset($criteria['category'])) {
+			if (!is_array($criteria['category'])) {
+				$query->andWhere('cat.slug LIKE :category');
+				if($criteria['category'] instanceof CategoryInterface) {
+					$parameters['category'] = $criteria['category']->getSlug();
+				} else {
+					$parameters['category'] = $criteria['category'];
+				}
+			} else {
+				$cat = null;
+				foreach($criteria['category'] as $slug) {
+					$cat[] = sprintf("'%s'", $slug);
+				}
+				$query->andWhere(sprintf('cat.slug IN (%s)', implode((array) $cat, ',')));
+			}
+		} elseif(isset($criteria['category_id'])) {
+			if (!is_array($criteria['category_id'])) {
+				$query->andWhere('cat.id = :category_id');
+				$query->orderBy('FIELD(cat.id,:category_id)');
+				if($criteria['category_id'] instanceof CategoryInterface) {
+					$parameters['category_id'] = $criteria['category_id']->getId();
+				} else {
+					$parameters['category_id'] = $criteria['category_id'];
+				}
+			} else {
+				$cat = null;
+				foreach($criteria['category_id'] as $id) {
+					$cat[] = sprintf("'%s'", $id);
+				}
+				$query->andWhere(sprintf('cat.id IN (%s)', implode((array) $cat, ',')));
+				$query->addSelect(sprintf('FIELD(cat.id,%s) as HIDDEN category_field', implode((array) $cat, ',')));
+				$query->addOrderBy('category_field');
+			}
+		}
+
+		if(isset($criteria['post_id'])) {
+			if (!is_array($criteria['post_id'])) {
+				$query->andWhere('p.id = :post_id');
+				if($criteria['post_id'] instanceof PostInterface) {
+					$parameters['post_id'] = $criteria['post_id']->getId();
+				} else {
+					$parameters['post_id'] = $criteria['post_id'];
+				}
+			} else {
+				$post = null;
+				foreach($criteria['post_id'] as $id) {
+					$post[] = sprintf("'%s'", $id);
+				}
+				$query->andWhere(sprintf('p.id IN (%s)', implode((array) $post, ',')));
+			}
+		}
+
+        if(isset($criteria['exclude_post_id'])) {
+            if (!is_array($criteria['exclude_post_id'])) {
+                $query->andWhere('p.id != :exclude_post_id');
+                if($criteria['exclude_post_id'] instanceof PostInterface) {
+                    $parameters['exclude_post_id'] = $criteria['exclude_post_id']->getId();
+                } else {
+                    $parameters['exclude_post_id'] = $criteria['exclude_post_id'];
+                }
+            } else {
+                $post = null;
+                foreach($criteria['exclude_post_id'] as $id) {
+                    $post[] = sprintf("'%s'", $id);
+                }
+                $query->andWhere($query->expr()->notIn('p.id', implode(",",$post)));
+            }
+        }
+
+		if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
+			$query->andWhere('p.collection = :collectionid');
+			$parameters['collectionid'] = $criteria['collection']->getId();
+		}
+
+        if (isset($criteria['exclude_collection'])) {
+            if (!is_array($criteria['exclude_collection'])) {
+                if($criteria['exclude_collection'] instanceof CollectionInterface) {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection']->getId();
+                } else {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection'];
+                }
+                $query->andWhere('p.collection != :exclude_collection');
+            } else {
+                $coll = null;
+                foreach($criteria['exclude_collection'] as $collection) {
+                    if($collection instanceof CollectionInterface) {
+                        $coll[] = (int) $collection->getId();
+                    } else {
+                        $coll[] = (int) $collection;
+                    }
+                }
+                $query->andWhere(sprintf('p.collection  NOT IN (%s)', implode((array) $coll, ',')));
+            }
+        }
+
+        if (isset($criteria['published'])) {
+            $now = date("Y-m-d H:i:s");
+            $query->andWhere('p.publicationDateStart <= :current_date');
+            $parameters['current_date'] = $now;
+        }		
+
+        if($sort) {
+            $count = 0;
+            foreach($sort as $field=>$order) {
+                if($count == 0) {
+                    $query->orderBy(sprintf('p.%s', $field), $order);
+                } else {
+                    $query->addOrderBy(sprintf('p.%s', $field), $order);
+                }
+            }
+        }
+
+		$query->setParameters($parameters);
+
+		return $query;
+	}
+
+    protected function buildRecoQuery(array $criteria, array $sort = array(), $exclude = array()) {
+
+        if (!isset($criteria['mode'])) {
+            $criteria['mode'] = 'public';
+        }
+
+        $parameters = array();
+        $query = $this->getRepository()
+            ->createQueryBuilder('p')
+            ->select('p, t')
+            ->orderBy('p.publicationDateStart', 'DESC');
+
+        if ($criteria['mode'] == 'admin') {
+            $query
+                ->leftJoin('p.tags', 't')
+                ->leftJoin('p.author', 'a')
+                ->leftJoin('p.postHasCategory', 'phc')
+                ->leftJoin('phc.category', 'cat')
+            ;
+        } else {
+            $query
+                ->leftJoin('p.tags', 't', Join::WITH, 't.enabled = true')
+                ->leftJoin('p.author', 'a', Join::WITH, 'a.enabled = true')
+                ->leftJoin('p.postHasCategory', 'phc',  Join::WITH, 'phc.enabled = true')
+                ->leftJoin('phc.category', 'cat',  Join::WITH, 'cat.enabled = true')
+            ;
+        }
+
+        if (!isset($criteria['enabled']) && $criteria['mode'] == 'public') {
+            $criteria['enabled'] = true;
+        }
+        if (isset($criteria['enabled'])) {
+            $query->andWhere('p.enabled = :enabled');
+            $parameters['enabled'] = $criteria['enabled'];
+        }
+
+        if (isset($criteria['date']) && isset($criteria['date']['query']) && isset($criteria['date']['params'])) {
+            $query->andWhere($criteria['date']['query']);
+            $parameters = array_merge($parameters, $criteria['date']['params']);
+        }
+
+        if (isset($criteria['tag'])) {
+            if($criteria['tag'] instanceof TagInterface) {
+                $parameters['tag'] = $criteria['tag']->getSlug();
+                $query->andWhere('t.slug = :tag');
+            }elseif (is_array($criteria['tag_id'])) {
+                $tags = null;
+                foreach($criteria['tag'] as $tag) {
+                    if($tag instanceof TagInterface) {
+                        $tags[] = $tag->getId();
+                    }else {
+                        $tags[] = $tag;
+                    }
+                }
+                $query->andWhere(sprintf('t.id IN (%s)', implode((array) $tags, ',')));
+            } else {
+                $parameters['tag'] = (string) $criteria['tag'];
+                $query->andWhere('t.slug LIKE :tag');
+            }
+        }
+
+        if (isset($criteria['author'])) {
+            if (!is_array($criteria['author']) && stristr($criteria['author'], 'NULL')) {
+                $query->andWhere('p.author IS ' . $criteria['author']);
+            } else {
+                $query->andWhere(sprintf('p.author IN (%s)', implode((array) $criteria['author'], ',')));
+            }
+        }
+
+        if (isset($criteria['category'])) {
+            if (!is_array($criteria['category'])) {
+                $query->andWhere('cat.slug LIKE :category');
+                if($criteria['category'] instanceof CategoryInterface) {
+                    $parameters['category'] = $criteria['category']->getSlug();
+                } else {
+                    $parameters['category'] = $criteria['category'];
+                }
+            } else {
+                $cat = null;
+                foreach($criteria['category'] as $slug) {
+                    $cat[] = sprintf("'%s'", $slug);
+                }
+                $query->andWhere(sprintf('cat.slug IN (%s)', implode((array) $cat, ',')));
+            }
+        }
+
+        if (isset($criteria['collection']) && $criteria['collection'] instanceof CollectionInterface) {
+            $query->andWhere('p.collection = :collectionid');
+            $parameters['collectionid'] = $criteria['collection']->getId();
+        }
+
+        if (isset($criteria['exclude_collection'])) {
+            if (!is_array($criteria['exclude_collection'])) {
+                if($criteria['exclude_collection'] instanceof CollectionInterface) {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection']->getId();
+                } else {
+                    $parameters['exclude_collection'] = $criteria['exclude_collection'];
+                }
+                $query->andWhere('p.collection != :exclude_collection');
+            } else {
+                $coll = null;
+                foreach($criteria['exclude_collection'] as $collection) {
+                    if($collection instanceof CollectionInterface) {
+                        $coll[] = (int) $collection->getId();
+                    } else {
+                        $coll[] = (int) $collection;
+                    }
+                }
+                $query->andWhere(sprintf('p.collection  NOT IN (%s)', implode((array) $coll, ',')));
+            }
+        }
+
+
+
+        if(isset($exclude) && count($exclude) > 0) {
+            $query->andWhere($query->expr()->notIn('p.id', implode(",",$exclude)));
+        }
+
+        if($sort) {
+            $count = 0;
+            foreach($sort as $field=>$order) {
+                if($count == 0) {
+                    $query->orderBy(sprintf('p.%s', $field), $order);
+                } else {
+                    $query->addOrderBy(sprintf('p.%s', $field), $order);
+                }
+            }
+        } else {
+            $query->orderBy('p.publicationDateStart', 'DESC');
+        }
+
+        $query->setParameters($parameters);
+
+        return $query;
+    }
+
+    public function getRelatedNewsPager(array $criteria, array $sort = array())
+    {
+        $sort = array_merge(array('publicationDateStart'=>'DESC'), $sort);
+        $query = $this->buildCustomQuery($criteria, $sort);
+
+
+        if(isset($criteria['excludePostId'])) {
+            //custom query
+            $query->andWhere('p.id != :exclude_post_id')
+                ->setParameter('exclude_post_id', $criteria['excludePostId']);
+        }
+
+        $query->getQuery()
+            ->useResultCache(true, 3600);
         try {
             return new Pagerfanta(new DoctrineORMAdapter($query));
         } catch (NoResultException $e) {
             return null;
         }
+    }
+
+    /**
+     * @param string        $permalink
+     * @param BlogInterface $blog
+     *
+     * @return PostInterface
+     */
+    public function findOneByCategoryPermalink($permalink, BlogInterface $blog)
+    {
+        $repository = $this->getRepository();
+
+        $query = $repository->createQueryBuilder('p');
+
+        $urlParameters = $blog->getPermalinkGenerator()->getParametersWithCategory($permalink);
+
+        $parameters = array();
+
+        if (isset($urlParameters['year']) && isset($urlParameters['month']) && isset($urlParameters['day'])) {
+            $pdqp = $this->getPublicationDateQueryParts(sprintf('%d-%d-%d', $urlParameters['year'], $urlParameters['month'], $urlParameters['day']), 'day');
+
+            $parameters = array_merge($parameters, $pdqp['params']);
+
+            $query->andWhere($pdqp['query']);
+        }
+
+        if (isset($urlParameters['slug'])) {
+            $query->andWhere('p.slug = :slug');
+            $parameters['slug'] = $urlParameters['slug'];
+        }
+
+        if (isset($urlParameters['collection'])) {
+            $pcqp = $this->getPublicationCollectionQueryParts($urlParameters['collection']);
+
+            $parameters = array_merge($parameters, $pcqp['params']);
+
+            $query
+                ->leftJoin('p.collection', 'c')
+                ->andWhere($pcqp['query'])
+            ;
+        }
+
+        if (count($parameters) == 0) {
+            return null;
+        }
+
+        $query->setParameters($parameters);
+
+        $results = $query ->getQuery()
+                          ->useResultCache(true, 3600)
+                          ->getResult();
+
+        if (count($results) > 0) {
+            return $results[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $post
+     *
+     */
+    public function getNearestPost($post)
+    {
+        return $this->getObjectManager()->createQuery(sprintf("SELECT p FROM %s p WHERE p.id != %s and p.enabled = true ORDER BY DATE_DIFF( p.publicationDateStart, '%s' )",
+            $this->getClass(),
+            $post->getId(),
+            $post->getPublicationDateStart()->format('Y-m-d h:i:s')))
+                 ->setMaxResults(2)
+                 ->useResultCache(true, 3600)
+                 ->execute();
+
+    }
+
+    public function getAllPostForSingleNavi() {
+        $query = $this->getRepository()
+            ->createQueryBuilder('p')
+            ->select('p.slug')
+            ->orderBy('p.publicationDateStart', 'DESC')
+            ->getQuery()
+            ->useResultCache(true, 3600);
+        return $query->getArrayResult();
+    }
+
+	public function incrementPostView(PostInterface $post) {
+		try {
+			$post->incrementViewCount();
+			$this->save($post);
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+    public function getAllNews(array $criteria, array $sort = array())
+    {
+        $query = $this->buildQuery($criteria, $sort);
+        return $query->getQuery()->getResult();
     }
 }

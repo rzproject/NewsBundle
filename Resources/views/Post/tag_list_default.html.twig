@@ -1,0 +1,82 @@
+{% extends rz_admin_get_template('rz_news.template.news_layout_html') %}
+
+{% block sonata_page_breadcrumb %}
+    {{ sonata_block_render_event('breadcrumb', { 'context': 'tag_list_breadcrumb', 'tag': tag, 'current_uri': app.request.requestUri, 'container_attr': {'class': 'breadcrumb'}, 'separator': '<i class="icon-angle-right"></i>', 'current_class': 'active' }) }}
+{% endblock %}
+
+{% block post_title %}
+    <h1 class="blog"><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
+{% endblock post_title %}
+
+{% block post_read_more %}
+    <h4><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
+{% endblock post_read_more %}
+
+{% block post_filter %}
+<ul class="nav nav-tabs" style="margin-top: 20px;">
+	<li class='post-filter-tabs {% if filter is defined and filter == 'latest' %}active{% endif %}'>
+		<a id='post_filter_latest' href="{{ url('rz_news_tag_filter', {'filter': 'latest', 'tag':  tag.slug }) }}">New Stories</a>
+	</li>
+	<li class='post-filter-tabs {% if filter is defined and filter == 'trending' %}active{% endif %}'>
+		<a id='post_filter_trending' href="{{ url('rz_news_tag_filter', {'filter': 'trending', 'tag':  tag.slug }) }}">Trending</a>
+	</li>
+</ul>
+{% endblock %}
+{% block post_paginator %}
+    {% if pager.haveToPaginate %}
+        {% spaceless %}
+            <div id="load_more_container" class="pagination">
+                {% if is_ajax_pagination %}
+                <ul class="span12">
+                    {% if pager.hasNextPage %}
+	                    {% if filter is defined %}
+		                    {% set load_more =url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug,  'filter': filter }) %}
+	                    {% else %}
+		                    {% set load_more = url('rz_news_tag_loadmore', {'page': pager.hasNextPage, 'tag': tag.slug, 'filter': 'latest' }) %}
+	                    {% endif %}
+                        <li style="text-align: center;">
+                            <a id="load_more_button"
+                               class="btn btn-rzcms-theme"
+                               href="{{ load_more }}"
+                               title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">Load More</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <script type="text/javascript">
+                    jQuery(document).ready(function () {
+                        var rz_news_post_loadmore_js = new rz_news_post_loadmore({
+                            load_more_container: "load_more_container",
+                            load_more_button: "load_more_button",
+                            field_container: 'posts',
+                            load_more_data_auto_append: true,
+	                        filter_button_latest: "post_filter_latest",
+	                        filter_button_trending: "post_filter_trending",
+	                        filter_tabs: "post-filter-tabs"
+                        });
+                    });
+                </script>
+                {% else %}
+                <ul class="span12">
+                    {% if pager.hasPreviousPage %}
+                        <li class="pull-left">
+                            <a class="btn btn-rzcms-theme"
+                               href="{{ url('rz_news_tag_pager',{'page': pager.previousPage, 'tag': tag.slug }) }}"
+                               title="{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_previous_page'|trans({}, 'SonataNewsBundle') }}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if pager.hasNextPage %}
+                        <li class="pull-right">
+                            <a class="btn btn-rzcms-theme"
+                               href="{{ url('rz_news_tag_pager', {'page': pager.nextPage, 'tag': tag.slug }) }}"
+                               title="{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}">{{ 'link_next_page'|trans({}, 'SonataNewsBundle') }}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+        {% endspaceless %}
+    {% endif %}
+    <div class="clearfix"></div>
+{% endblock post_paginator %}

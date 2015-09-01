@@ -1,0 +1,165 @@
+<?xml version="1.0" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
+
+
+    <class name="Rz\NewsBundle\Entity\BasePost">
+
+        <property name="title">
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="abstract">
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="author">
+            <constraint name="Valid"/>
+        </property>
+
+        <property name="rawContent">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="tags">
+            <constraint name="Valid"/>
+        </property>
+
+        <property name="postHasCategory">
+            <constraint name="Valid" />
+        </property>
+
+        <property name="postHasMedia">
+            <constraint name="Valid" />
+        </property>
+
+
+        <property name="contentFormatter">
+            <constraint name="Sonata\FormatterBundle\Validator\Constraints\Formatter">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+
+        <constraint name="Rz\NewsBundle\Validator\Constraints\PrePersistRelation">
+            <option name="groups">
+                <value>admin</value>
+            </option>
+        </constraint>
+    </class>
+
+    <class name="Rz\NewsBundle\Entity\BasePostHasCategory">
+        <property name="category">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
+            <option name="fields">
+                <value>post</value>
+                <value>category</value>
+            </option>
+            <option name="message">Category already exist.</option>
+            <option name="groups">
+                <value>admin</value>
+            </option>
+        </constraint>
+    </class>
+
+    <class name="Rz\NewsBundle\Entity\BasePostHasMedia">
+        <property name="media">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+        <property name="contentFormatter">
+            <constraint name="Sonata\FormatterBundle\Validator\Constraints\Formatter">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
+            <option name="fields">
+                <value>media</value>
+                <value>post</value>
+            </option>
+            <option name="message">Media already exist.</option>
+            <option name="groups">
+                <value>admin</value>
+            </option>
+        </constraint>
+    </class>
+
+    <class name="Sonata\NewsBundle\Model\Comment">
+        <property name="name">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="email">
+            <constraint name="Email">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="url">
+            <constraint name="Url">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="message">
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="post">
+            <constraint name="NotNull">
+                <option name="groups">
+                    <value>admin</value>
+                </option>
+            </constraint>
+        </property>
+    </class>
+</constraint-mapping>

@@ -25,7 +25,6 @@ class CommentAdmin extends BaseCommentAdmin
     {
         if (!$this->isChild()) {
             $formMapper->add('post', 'sonata_type_model_list');
-//            $formMapper->add('post', 'sonata_type_admin', array(), array('edit' => 'inline'));
         }
 
         $commentClass = $this->commentManager->getClass();

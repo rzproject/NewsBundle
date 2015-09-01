@@ -1,0 +1,21 @@
+{% extends rz_admin_get_template('rz_news.template.news_layout_ajax') %}
+
+{% block post_title %}
+    <h1 class="blog"><a href="{{ url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
+{% endblock post_title %}
+
+{% block post_read_more %}
+    <h4><a href="{{ url('rz_news_category_view', { 'category':  rz_classification_category_permalink(category), 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
+{% endblock post_read_more %}
+
+{% block post_categories %}
+    <div class="post-meta muted">
+        <ul>
+            <li>Category: </li>
+            <li>
+                {{ category.name }}
+            </li>
+        </ul>
+    </div>
+{% endblock post_categories %}
+

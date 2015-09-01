@@ -16,7 +16,6 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
-
 use Sonata\EasyExtendsBundle\Mapper\DoctrineCollector;
 
 /**
@@ -33,14 +32,18 @@ class RzNewsExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $bundles = $container->getParameter('kernel.bundles');
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('admin_orm.xml');
         $loader->load('twig.xml');
-        $loader->load('block.xml');
+        $loader->load('validators.xml');
+        $loader->load('permalink.xml');
+        $loader->load('provider.xml');
+        $loader->load('orm.xml');
+        $loader->load('seo_block.xml');
 
         $config = $this->addDefaults($config);
+        $this->registerDoctrineMapping($config, $container);
         $this->configureAdminClass($config, $container);
         $this->configureClass($config, $container);
         $this->configureClassManager($config, $container);
@@ -48,14 +51,42 @@ class RzNewsExtension extends Extension
         $this->configureTranslationDomain($config, $container);
         $this->configureController($config, $container);
         $this->configureRzTemplates($config, $container);
+	    $this->configureTemplates($config, $container);
         $this->registerService($config, $container);
-        $this->configureBlocks($config, $container);
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $loader->load('block.xml');
+            $loader->load('page.xml');
+            $this->configureBlocks($config['blocks'], $container);
+        }
 
         $this->configureSettings($config, $container);
+        $this->configureProviders($container, $config);
 
-        if (isset($bundles['IvoryLuceneSearchBundle'])) {
-            $loader->load('lucene.xml');
+        if (interface_exists('Rz\SearchBundle\FieldProcessor\FieldProcessorInterface')) {
+            $this->configureSearchProcessor($config, $container);
+            $loader->load('processors.xml');
         }
+
+        if (interface_exists('Rz\SearchBundle\Listener\SearchIndexListenerInterface')) {
+            $this->configureSearchIndexListener($config, $container);
+            $loader->load('post_search_index_listener.xml');
+
+        }
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureProviders(ContainerBuilder $container, $config)
+    {
+        $pool = $container->getDefinition('rz_news.pool');
+        $pool->replaceArgument(0, $config['default_collection']);
+
+        //set default collection
+        $container->setParameter('rz_news.default_collection', $config['default_collection']);
+        $container->setParameter('rz_news.provider.collections', $config['collections']);
     }
 
     /**
@@ -73,6 +104,8 @@ class RzNewsExtension extends Extension
 
         $defaultConfig['class']['post']  = sprintf('Application\\Sonata\\NewsBundle\\%s\\Post', $modelType);
         $defaultConfig['class']['comment'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\Comment', $modelType);
+        $defaultConfig['class']['post_has_category'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\PostHasCategory', $modelType);
+        $defaultConfig['class']['post_has_media'] = sprintf('Application\\Sonata\\NewsBundle\\%s\\PostHasMedia', $modelType);
 
         return array_replace_recursive($defaultConfig, $config);
     }
@@ -93,6 +126,11 @@ class RzNewsExtension extends Extension
 
         $container->setParameter(sprintf('sonata.news.admin.post.%s', $modelType), $config['class']['post']);
         $container->setParameter(sprintf('sonata.news.admin.comment.%s', $modelType), $config['class']['comment']);
+        $container->setParameter(sprintf('rz_news.admin.post_has_category.%s', $modelType), $config['class']['post_has_category']);
+        $container->setParameter(sprintf('rz_news.admin.post_has_media.%s', $modelType), $config['class']['post_has_media']);
+
+        $container->setParameter(sprintf('rz_news.post_has_category.%s', $modelType), $config['class']['post_has_category']);
+        $container->setParameter(sprintf('rz_news.post_has_media.%s', $modelType), $config['class']['post_has_media']);
     }
 
     /**
@@ -105,6 +143,8 @@ class RzNewsExtension extends Extension
     {
         // manager configuration
         $container->setParameter('sonata.news.manager.post.class',     $config['class_manager']['post']);
+        $container->setParameter('rz_news.manager.post_has_category.class',     $config['class_manager']['post_has_category']);
+        $container->setParameter('rz_news.manager.post_has_media.class',     $config['class_manager']['post_has_media']);
         $container->setParameter('sonata.news.manager.comment.class',  $config['class_manager']['comment']);
     }
 
@@ -117,6 +157,8 @@ class RzNewsExtension extends Extension
     public function configureAdminClass($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.class', $config['admin']['post']['class']);
+        $container->setParameter('rz_news.admin.post_has_category.class', $config['admin']['post_has_category']['class']);
+        $container->setParameter('rz_news.admin.post_has_media.class', $config['admin']['post_has_media']['class']);
         $container->setParameter('sonata.news.admin.comment.class', $config['admin']['comment']['class']);
     }
 
@@ -129,6 +171,8 @@ class RzNewsExtension extends Extension
     public function configureTranslationDomain($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.translation_domain', $config['admin']['post']['translation']);
+        $container->setParameter('rz_news.admin.post_has_category.translation_domain', $config['admin']['post_has_category']['translation']);
+        $container->setParameter('rz_news.admin.post_has_media.translation_domain', $config['admin']['post_has_media']['translation']);
         $container->setParameter('sonata.news.admin.comment.translation_domain', $config['admin']['comment']['translation']);
     }
 
@@ -141,6 +185,8 @@ class RzNewsExtension extends Extension
     public function configureController($config, ContainerBuilder $container)
     {
         $container->setParameter('sonata.news.admin.post.controller', $config['admin']['post']['controller']);
+        $container->setParameter('rz_news.admin.post_has_category.controller', $config['admin']['post_has_category']['controller']);
+        $container->setParameter('rz_news.admin.post_has_media.controller', $config['admin']['post_has_media']['controller']);
         $container->setParameter('sonata.news.admin.comment.controller', $config['admin']['comment']['controller']);
     }
 
@@ -154,7 +200,22 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz_news.configuration.post.templates', $config['admin']['post']['templates']);
         $container->setParameter('rz_news.configuration.comment.templates', $config['admin']['comment']['templates']);
+
+        $container->setParameter('rz_news.admin.post_has_category.templates', $config['admin']['post_has_category']['templates']);
+        $container->setParameter('rz_news.admin.post_has_media.templates', $config['admin']['post_has_media']['templates']);
+
     }
+
+	/**
+	 * @param array                                                   $config
+	 * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+	 *
+	 * @return void
+	 */
+	public function configureTemplates($config, ContainerBuilder $container)
+	{
+		$container->setParameter('rz_news.templates', $config['templates']);
+	}
 
     protected function registerService(array $config, ContainerBuilder $container)
     {
@@ -173,8 +234,102 @@ class RzNewsExtension extends Extension
      */
     public function configureBlocks($config, ContainerBuilder $container)
     {
-        $container->setParameter('rz_news.block.recent_posts', $config['blocks']['class']['recent_posts']);
-        $container->setParameter('rz_news.block.recent_comments', $config['blocks']['class']['recent_comments']);
+        $container->setParameter('rz_news.block.post_by_category.class', $config['post_by_category_list']['class']);
+
+        # template
+        $temp = $config['post_by_category_list']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.post_by_category.templates', $templates);
+
+        # ajax template
+        $ajaxTemp = $config['post_by_category_list']['ajax_templates'];
+        $ajaxTemplates = array();
+        foreach ($ajaxTemp as $ajaxTemplate) {
+            $ajaxTemplates[$ajaxTemplate['path']] = $ajaxTemplate['name'];
+        }
+        $container->setParameter('rz_news.block.post_by_category.ajax_templates', $ajaxTemplates);
+
+        # ajax pager template
+        $ajaxPagerTemp = $config['post_by_category_list']['ajax_pager_templates'];
+        $ajaxPagerTemplates = array();
+        foreach ($ajaxPagerTemp as $ajaxPagerTemplate) {
+            $ajaxPagerTemplates[$ajaxPagerTemplate['path']] = $ajaxPagerTemplate['name'];
+        }
+        $container->setParameter('rz_news.block.post_by_category.ajax_pager_templates', $ajaxPagerTemplates);
+
+
+        #recent post
+        $container->setParameter('rz_news.block.recent_posts', $config['recent_posts']['class']);
+        $temp = $config['recent_posts']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.recent_posts.templates', $templates);
+
+
+        #featured post
+        $container->setParameter('rz_news.block.featured_post', $config['featured_post']['class']);
+        $temp = $config['featured_post']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.featured_post.templates', $templates);
+
+
+        #recent comments
+        $container->setParameter('rz_news.block.recent_comments', $config['recent_comments']['class']);
+        $temp = $config['recent_comments']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.recent_comments.templates', $templates);
+
+
+        #tags
+        $container->setParameter('rz_news.block.tags', $config['tags']['class']);
+        $temp = $config['tags']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.tags.templates', $templates);
+
+
+        #related post
+        $container->setParameter('rz_news.block.featured_post', $config['related_post']['class']);
+        $temp = $config['related_post']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.related_post.templates', $templates);
+
+        #all time popular post
+        $container->setParameter('rz_news.block.all_time_popular_posts', $config['all_time_popular_posts']['class']);
+        $temp = $config['all_time_popular_posts']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_news.block.all_time_popular_posts.templates', $templates);	        
+    }
+
+    /**
+     * @param array                                                   $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     *
+     * @return void
+     */
+    public function configurePageAliasGenerator($config, ContainerBuilder $container)
+    {
+        //alias generator
+        $container->setParameter('rz_news.page_alias_generator.classification.class', $config['classification']);
     }
 
     public function configureIndex($config, ContainerBuilder $container)
@@ -186,5 +341,136 @@ class RzNewsExtension extends Extension
     public function configureSettings($config, ContainerBuilder $container)
     {
         $container->setParameter('rz_news.settings.news_pager_max_per_page', $config['settings']['news_pager_max_per_page']);
+        $container->setParameter('rz_news.settings.force_html_extension_on_url', $config['settings']['force_html_extension_on_url']);
+        $container->setParameter('rz_news.settings.ajax_pagination', $config['settings']['ajax_pagination']);
+
+    }
+
+    public function configureSearchProcessor($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.field_processor.image.class', $config['search']['processors']['image']['class']);
+        $container->setParameter('rz_news.field_processor.post_has_category.class', $config['search']['processors']['post_has_category']['class']);
+    }
+
+    public function configureSearchIndexListener($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_news.field_processor.image.class', $config['search']['processors']['image']['class']);
+    }
+
+    /**
+     * @param array $config
+     */
+    public function registerDoctrineMapping(array $config)
+    {
+        foreach ($config['class'] as $type => $class) {
+            if (!class_exists($class)) {
+                return;
+            }
+        }
+
+        $collector = DoctrineCollector::getInstance();
+
+        if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
+
+            $collector->addAssociation($config['class']['post_has_category'], 'mapManyToOne', array(
+                'fieldName' => 'post',
+                'targetEntity' => $config['class']['post'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => 'postHasCategory',
+                'joinColumns' => array(
+                    array(
+                        'name' => 'post_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post_has_category'], 'mapManyToOne', array(
+                'fieldName' => 'category',
+                'targetEntity' => $config['class']['category'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'joinColumns' => array(
+                    array(
+                        'name' => 'category_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
+                'fieldName' => 'postHasCategory',
+                'targetEntity' => $config['class']['post_has_category'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => 'post',
+                'orphanRemoval' => true,
+                'orderBy' => array(
+                    'position' => 'ASC',
+                ),
+            ));
+
+
+
+        }
+
+        if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
+
+            $collector->addAssociation($config['class']['post_has_media'], 'mapManyToOne', array(
+                'fieldName' => 'post',
+                'targetEntity' => $config['class']['post'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => 'postHasMedia',
+                'joinColumns' => array(
+                    array(
+                        'name' => 'post_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post_has_media'], 'mapManyToOne', array(
+                'fieldName' => 'media',
+                'targetEntity' => $config['class']['media'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'joinColumns' => array(
+                    array(
+                        'name' => 'media_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
+                'fieldName' => 'postHasMedia',
+                'targetEntity' => $config['class']['post_has_media'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => 'post',
+                'orphanRemoval' => true,
+                'orderBy' => array(
+                    'position' => 'ASC',
+                ),
+            ));
+        }
     }
 }

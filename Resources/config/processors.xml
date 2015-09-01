@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz_news.field_processor.image.class">Rz\NewsBundle\FieldProcessor\MediaFieldProcessor</parameter>
+        <parameter key="rz_news.field_processor.post_has_category.class">Rz\NewsBundle\FieldProcessor\PostHasCategoryFieldProcessor</parameter>
+    </parameters>
+
+    <services>
+        <service id="rz_news.field_processor.image" class="%rz_news.field_processor.image.class%">
+            <tag name="rz_search.field_processor"/>
+            <argument type="service" id="sonata.media.pool" />
+        </service>
+
+        <service id="rz_news.field_processor.post_has_category" class="%rz_news.field_processor.post_has_category.class%">
+            <tag name="rz_search.field_processor"/>
+        </service>
+    </services>
+</container>

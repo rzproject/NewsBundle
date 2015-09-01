@@ -7,7 +7,35 @@
 
     <parameters>
         <parameter key="rz_news.admin.post.class">Rz\NewsBundle\Admin\PostAdmin</parameter>
+        <parameter key="rz_news.admin.post_has_category.class">Rz\NewsBundle\Admin\PostHasCategoryAdmin</parameter>
+        <parameter key="rz_news.admin.post_has_media.class">Rz\NewsBundle\Admin\PostHasMediaAdmin</parameter>
         <parameter key="rz_news.admin.comment.class">Rz\NewsBundle\Admin\CommentAdmin</parameter>
     </parameters>
+
+    <services>
+
+        <service id="rz_news.admin.post_has_category" class="%rz_news.admin.post_has_category.class%">
+            <tag name="sonata.admin" manager_type="orm" group="sonata_blog" label="label_post_has_category"  show_in_dashboard="false" label_catalogue="%sonata.news.admin.post.translation_domain%" label_translator_strategy="sonata.admin.label.strategy.underscore" />
+            <argument />
+            <argument>%rz_news.admin.post_has_category.entity%</argument>
+            <argument>%rz_news.admin.post_has_category.controller%</argument>
+
+            <call method="setTranslationDomain">
+                <argument>%rz_news.admin.post_has_category.translation_domain%</argument>
+            </call>
+        </service>
+
+        <service id="rz_news.admin.post_has_media" class="%rz_news.admin.post_has_media.class%">
+            <tag name="sonata.admin" manager_type="orm" group="sonata_blog" label="label_post_has_media"  show_in_dashboard="false" label_catalogue="%sonata.news.admin.post.translation_domain%" label_translator_strategy="sonata.admin.label.strategy.underscore" />
+            <argument />
+            <argument>%rz_news.admin.post_has_media.entity%</argument>
+            <argument>%rz_news.admin.post_has_media.controller%</argument>
+
+            <call method="setTranslationDomain">
+                <argument>%rz_news.admin.post_has_media.translation_domain%</argument>
+            </call>
+        </service>
+
+    </services>
 
 </container>

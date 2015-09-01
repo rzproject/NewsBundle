@@ -8,4 +8,10 @@
 <li>
     <a class="sonata-action-element" href="{{ path('admin_sonata_news_post_show', {'id':object.id}) }}"><i class="icon-magic"></i> {{ 'sidemenu.link_view_post'|trans({}, 'RzNewsBundle') }}</a>
 </li>
+<li>
+    <a class="sonata-action-element" href="{{ path('admin_sonata_news_post_posthascategory_list', {'id':object.id}) }}"><i class="icon-sitemap"></i> {{ 'button.label.post_posthascategory_list'|trans({}, 'RzNewsBundle') }}</a>
+</li>
+<li>
+    <a class="sonata-action-element" href="{{ path('admin_sonata_news_post_posthasmedia_list', {'id':object.id}) }}"><i class="icon-picture"></i> {{ 'button.label.post_posthasmedia_list'|trans({}, 'RzNewsBundle') }}</a>
+</li>
 {% endif %}

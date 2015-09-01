@@ -9,24 +9,56 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class OverrideServiceCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container) {
 
+        #####################
+        # override news admin post
+        #####################
 
-    {
-        //override news admin post
         $definition = $container->getDefinition('sonata.news.admin.post');
+        $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
+        $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
+        $definition->addMethodCall('setPool', array(new Reference('rz_news.pool')));
+        $definition->addMethodCall('addChild', array(new Reference('rz_news.admin.post_has_category')));
+        $definition->addMethodCall('addChild', array(new Reference('rz_news.admin.post_has_media')));
         $this->fixTemplates($container, $definition, 'rz_news.configuration.post.templates');
 
-        //override news admin comments
+        #####################
+        # override news admin comments
+        #####################
+
         $definition = $container->getDefinition('sonata.news.admin.comment');
         $this->fixTemplates($container, $definition, 'rz_news.configuration.comment.templates');
 
-        //override blocks
+        #####################
+        # override blocks
+        #####################
+
+        # Recent Post
         $definition = $container->getDefinition('sonata.news.block.recent_posts');
         $definition->setClass($container->getParameter('rz_news.block.recent_posts'));
+        $definition->addMethodCall('setTemplates', array($container->getParameter('rz_news.block.recent_posts.templates')));
 
+        # Recent Comments
         $definition = $container->getDefinition('sonata.news.block.recent_comments');
         $definition->setClass($container->getParameter('rz_news.block.recent_comments'));
+        $definition->addMethodCall('setTemplates', array($container->getParameter('rz_news.block.recent_comments.templates')));
+
+        //replace permalink class
+        $container->getDefinition('sonata.news.blog')
+            ->replaceArgument(3, new Reference('rz_news.permalink.post'));
+
+
+        $definition = $container->getDefinition('rz_news.admin.post_has_category');
+        $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
+                                        $container->getParameter('rz_news.admin.post_has_category.templates'));
+        $definition->addMethodCall('setTemplates', array($definedTemplates));
+
+
+        $definition = $container->getDefinition('rz_news.admin.post_has_media');
+        $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
+                                        $container->getParameter('rz_news.admin.post_has_media.templates'));
+        $definition->addMethodCall('setTemplates', array($definedTemplates));
     }
 
     /**

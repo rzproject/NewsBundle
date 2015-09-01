@@ -4,20 +4,15 @@ namespace Rz\NewsBundle\Block;
 
 use Sonata\NewsBundle\Block\RecentPostsBlockService as BaseRecentPostsBlockService;
 
-use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\NewsBundle\Model\PostManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\HttpFoundation\Response;
-
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
-
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class RecentPostsBlockService extends BaseRecentPostsBlockService
 {
+    protected $templates;
 
     /**
      * {@inheritdoc}
@@ -28,6 +23,7 @@ class RecentPostsBlockService extends BaseRecentPostsBlockService
             'keys' => array(
                 array('number', 'integer', array('required' => true)),
                 array('title', 'text', array('required' => false)),
+                array('template', 'choice', array('choices' => $this->templates)),
                 array('mode', 'choice', array(
                     'choices' => array(
                         'public' => 'public',
@@ -39,26 +35,9 @@ class RecentPostsBlockService extends BaseRecentPostsBlockService
                         'true' => 'True',
                         'false'  => 'False'
                     ))),
-                array('block_type', 'choice', array(
-                    'choices' => array(
-                        'sidebar'  => 'sidebar',
-                        'content' => 'content'
-                    )
-                ))
             )
         ));
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStylesheets($media)
-    {
-        return array(
-            '/bundles/rznews/css/news_block.css'
-        );
-    }
-
 
     /**
      * {@inheritdoc}
@@ -69,10 +48,24 @@ class RecentPostsBlockService extends BaseRecentPostsBlockService
             'number'     => 5,
             'mode'       => 'public',
             'title'      => 'Recent Posts',
-            'block_type' => 'sidebar',
             'show_view_all_button' => true,
-//            'tags'      => 'Recent Posts',
             'template'   => 'RzNewsBundle:Block:recent_posts.html.twig'
         ));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTemplates()
+    {
+        return $this->templates;
+    }
+
+    /**
+     * @param mixed $templates
+     */
+    public function setTemplates($templates)
+    {
+        $this->templates = $templates;
     }
 }

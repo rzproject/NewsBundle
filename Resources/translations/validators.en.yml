@@ -1,0 +1,3 @@
+rz_news:
+    message:
+      unique: Duplicate {{ entity_name }} {{ value }}.

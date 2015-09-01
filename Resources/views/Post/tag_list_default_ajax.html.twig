@@ -1,0 +1,9 @@
+{% extends rz_admin_get_template('rz_news.template.news_layout_ajax') %}
+
+{% block post_title %}
+    <h1 class="blog"><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}">{{ post.title }}</a></h1>
+{% endblock post_title %}
+
+{% block post_read_more %}
+    <h4><a href="{{ url('rz_news_tag_view', { 'tag':  tag.slug, 'permalink': post.slug, '_format': 'html' }) }}"><b>READ &rarr;</b></a></h4>
+{% endblock post_read_more %}

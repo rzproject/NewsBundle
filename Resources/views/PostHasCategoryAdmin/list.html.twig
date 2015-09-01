@@ -1,0 +1,81 @@
+{% extends 'RzAdminBundle:CRUD:base_list.html.twig' %}
+{% block actions %}{% endblock %}
+
+{% block list_table_standard %}
+    {% if admin.isChild %}
+        <div class="box box-color green box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-film"></i>
+                    {{ 'list.label_post_has_category'|trans({}, 'RzNewsBundle') }}
+                </h3>
+                <div class="actions">
+                    <a href="{{ path('admin_sonata_news_post_show', {'id':app.request.get('id')}) }}" class="btn btn-mini"><i class="icon-eye-open"></i></a>
+                    <a href="{{ path('admin_sonata_news_post_edit', {'id':app.request.get('id')}) }}" class="btn btn-mini"><i class="icon-pencil"></i></a>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+            </div>
+        </div>
+
+        {% set post = admin.parent.subject %}
+        {% if post %}
+            <div class="row-fluid">
+                <div class="span12">
+                    <table class="table table-bordered rz-admin-show-table">
+                        <tr class="sonata-ba-view-container">
+                            <td style="width:40%">{{ 'form.label_collection'|trans({}, 'RzNewsBundle') }}</td>
+                            <td style="width:60%">{{ post.collection.name }}</td>
+                        </tr>
+                        <tr class="sonata-ba-view-container">
+                            <td style="width:40%">{{ 'form.label_title'|trans({}, 'RzNewsBundle') }}</td>
+                            <td style="width:60%">{{ post.title }}</td>
+                        </tr>
+                        <tr class="sonata-ba-view-container">
+                            <td style="width:40%">{{ 'form.label_slug'|trans({}, 'RzNewsBundle') }}</td>
+                            <td style="width:60%">{{ post.slug }}</td>
+                        </tr>
+
+                        <tr class="sonata-ba-view-container">
+                            <td style="width:40%">{{ 'form.label_enabled'|trans({}, 'RzNewsBundle') }}</td>
+                            <td style="width:60%">{% if post.enabled %}<i class="icon-ok-sign icon-large"></i>{% else %}<i class="icon-remove-sign icon-large"></i>{% endif %}</td>
+                        </tr>
+
+                        {% if post.image %}
+                        <tr class="sonata-ba-view-container">
+                            <td style="width:40%">{{ 'form.label_image'|trans({}, 'RzNewsBundle') }}</td>
+                            <td style="width:60%">{% media post.image, 'admin' %}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if admin.isChild %}
+        <div class="row-fluid admin-action-buttons">
+            <div class="span12">
+                <div class="sonata-actions btn-group hidden-phone hidden-tablet visible-desktop pull-right">
+                    <a class="btn btn-primary sonata-action-element" href="{{ path('admin_sonata_news_post_list') }}">
+                        <i class="icon-list"></i>
+                        {{ 'list.post_list'|trans({}, 'RzNewsBundle') }}
+                    </a>
+                    {% include 'SonataAdminBundle:Button:create_button.html.twig' %}
+                </div>
+                <div class="btn-group visible-phone visible-tablet hidden-desktop">
+                    <button class="btn btn-primary admin-actions admin-actions-group">Select an action to perform</button>
+                    <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle admin-actions"><i class=" icon-chevron-down"></i></button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="sonata-action-element" href="{{ path('admin_sonata_news_post_list') }}">
+                                <i class="icon-list"></i>
+                                {{ 'list.post_list'|trans({}, 'RzNewsBundle') }}</a>
+                        </li>
+                        {% include 'SonataAdminBundle:Button:create_button_mobile.html.twig' %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
