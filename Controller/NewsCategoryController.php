@@ -300,7 +300,7 @@ class NewsCategoryController extends AbstractNewsController
         }
 
         $manager = $this->getCmsManagerSelector()->retrieve();
-        $manager->getCurrentPage()->setTemplateCode($this->container->getParameter('rz_classification.settings.category.parent_category_page_template'));
+        #$manager->getCurrentPage()->setTemplateCode($this->container->getParameter('rz_classification.settings.category.parent_category_page_template'));
 
         $template = $category->getSetting('template');
 
