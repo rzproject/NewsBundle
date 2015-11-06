@@ -1,7 +1,0 @@
-{% if admin.hasRoute('edit') and admin.id(object) and admin.isGranted('EDIT', object)%}
-<a class="btn btn-primary sonata-action-element" href="{{ path('admin_sonata_news_post_edit', {'id':object.id}) }}"><i class="icon-reorder"></i> {{ 'sidemenu.link_edit_post'|trans({}, 'RzNewsBundle') }}</a>
-    <a class="btn btn-primary sonata-action-element" href="{{ path('admin_sonata_news_post_show', {'id':object.id}) }}"><i class="icon-magic"></i> {{ 'sidemenu.link_view_post'|trans({}, 'RzNewsBundle') }}</a>
-<a class="btn btn-primary sonata-action-element" href="{{ path('admin_sonata_news_post_comment_list', {'id':object.id}) }}"><i class="icon-rss"></i> {{ 'sidemenu.link_view_comments'|trans({}, 'RzNewsBundle') }}</a>
-<a class="btn btn-primary sonata-action-element" href="{{ path('admin_sonata_news_post_posthascategory_list', {'id':object.id}) }}"><i class="icon-sitemap"></i> {{ 'button.label.post_posthascategory_list'|trans({}, 'RzNewsBundle') }}</a>
-<a class="btn btn-primary sonata-action-element" href="{{ path('admin_sonata_news_post_posthasmedia_list', {'id':object.id}) }}"><i class="icon-picture"></i> {{ 'button.label.post_posthasmedia_list'|trans({}, 'RzNewsBundle') }}</a>
-{% endif %}
