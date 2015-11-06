@@ -1,71 +1,79 @@
 <?php
 
-/*
- * This file is part of the RzNewsBundle package.
- *
- * (c) mell m. zamora <mell@rzproject.org>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Rz\NewsBundle\Admin;
 
-use Sonata\NewsBundle\Admin\PostAdmin as BaseAdmin;
-use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\NewsBundle\Admin\PostAdmin as Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
-use Sonata\AdminBundle\Show\ShowMapper;
-use Sonata\ClassificationBundle\Model\ContextManagerInterface;
-use Sonata\ClassificationBundle\Model\CollectionManagerInterface;
-use Rz\NewsBundle\Provider\Pool;
+use Sonata\AdminBundle\Form\FormMapper;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 
-
-class PostAdmin extends BaseAdmin
+class PostAdmin extends Admin
 {
-    const POST_DEFAULT_CONTEXT = 'news';
-
-    const POST_DEFAULT_COLLECTION = 'blog';
-
-    protected $contextManager;
-
-    protected $collectionManager;
-
-    protected $formOptions = array('validation_groups'=>array('admin'), 'cascade_validation'=>true);
-
-    protected $pool;
-
-    /**
-     * Predefined per page options
-     *
-     * @var array
-     */
-    protected $perPageOptions = array(5, 10, 15);
-
     protected $datagridValues = array(
-        '_per_page' => 5,
+        '_page' => 1,
+        '_sort_order' => 'DESC',
+        '_sort_by' => 'publicationDateStart',
     );
-
-    protected $maxPerPage = 5;
-
 
     /**
      * {@inheritdoc}
      */
-    protected function configureShowFields(ShowMapper $showMapper)
+    protected function configureFormFields(FormMapper $formMapper)
     {
-        $showMapper
-            ->add('author')
-            ->add('collection')
-            ->add('enabled')
-            ->add('title')
-            ->add('abstract','text')
-            ->add('content', 'text', array('safe' => true))
-            ->add('tags')
-            ->add('postHasCategory')
-            ->add('postHasMedia')
+        $formMapper
+            ->with('group_post', array(
+                    'class' => 'col-md-8',
+                ))
+                ->add('author', 'sonata_type_model_list')
+                ->add('title')
+                ->add('abstract', null, array('attr' => array('rows' => 5)))
+                ->add('content', 'sonata_formatter_type', array(
+                    'event_dispatcher'          => $formMapper->getFormBuilder()->getEventDispatcher(),
+                    'format_field'              => 'contentFormatter',
+                    'source_field'              => 'rawContent',
+                    'source_field_options'      => array(
+                        'horizontal_input_wrapper_class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'col-lg-12' : '',
+                        'attr'                           => array('class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'span10 col-sm-10 col-md-10' : '', 'rows' => 20),
+                    ),
+                    'ckeditor_context'     => 'news',
+                    'target_field'         => 'content',
+                    'listener'             => true,
+                ))
+            ->end()
+            ->with('group_status', array(
+                    'class' => 'col-md-4',
+                ))
+                ->add('enabled', null, array('required' => false))
+                ->add('image', 'sonata_type_model_list', array('required' => false), array(
+                    'link_parameters' => array(
+                        'context'      => 'news',
+                        'hide_context' => true,
+                    ),
+                ))
+                ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
+            ->end()
+
+            ->with('group_classification', array(
+                'class' => 'col-md-4',
+                ))
+                ->add('tags', 'sonata_type_model_autocomplete', array(
+                    'property' => 'name',
+                    'multiple' => 'true',
+                    'required' => false,
+                    'callback' => function ($admin, $property, $value) {
+                        $datagrid = $admin->getDatagrid();
+                        $queryBuilder = $datagrid->getQuery();
+                        $queryBuilder
+                            ->andWhere($queryBuilder->getRootAlias() . '.context=:context')
+                            ->setParameter('context', 'news')
+                        ;
+                        $datagrid->setValue($property, null, $value);
+                    },
+                ))
+                ->add('collection', 'sonata_type_model_list', array('required' => false), array('link_parameters'=>array('context'=>'news', 'hide_context'=>true)))
+            ->end()
         ;
     }
 
@@ -75,91 +83,36 @@ class PostAdmin extends BaseAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('title', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('enabled', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet')), 'editable' => true))
-            ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
-	        ->add('viewCount', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'Actions' => array('template' => 'RzNewsBundle:PostAdmin:manage_child_action_list.html.twig'),
-                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
-                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
-                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
-                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
-            ))
+            ->add('custom', 'string', array('template' => 'RzNewsBundle:PostAdmin:list_post_custom.html.twig', 'label' => 'Post'))
+            ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
+            ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
         ;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function configureFormFields(FormMapper $formMapper)
+    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
     {
-
-        $post = $this->getSubject();
-
-        $formMapper
-            ->with('Post')
-                ->add('enabled', null, array('required' => false))
-                ->add('author', 'sonata_type_model_list', array('validation_groups' => 'Default'))
-                ->add('title', null)
-                ->add('abstract', null, array('attr' => array('rows' => 5)))
-                ->add('image', 'sonata_type_model_list',array('required' => false, 'attr'=>array('class'=>'span8')), array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
-                ->add('content', 'sonata_formatter_type', array(
-                        'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
-                        'error_bubbling' => false,
-                        'format_field'   => 'contentFormatter',
-                        'source_field'   => 'rawContent',
-                        'ckeditor_context' => 'news',
-                        'source_field_options'      => array(
-                            'error_bubbling'=>false,
-                            'attr' => array('rows' => 20)
-                        ),
-                        'target_field'   => 'content',
-                        'listener'       => true,
-                ))
-            ->end();
-
-
-       $provider = $this->getPoolProvider();
-
-        if ($post && $post->getId()) {
-            $provider->load($post);
-            $provider->buildEditForm($formMapper);
-        } else {
-            $provider->buildCreateForm($formMapper);
+        if (!$childAdmin && !in_array($action, array('edit'))) {
+            return;
         }
 
-        $context = $this->contextManager->find('news');
+        $admin = $this->isChild() ? $this->getParent() : $this;
 
-        $formMapper
-            ->with('Tags')
-            ->add('tags', 'sonata_type_model_autocomplete',
-                array(
-                    'required' => false,
-                    'multiple' => true,
-                    'property'=>'name',
-                    'callback' => function ($admin, $property, $value) use ($context) {
-                        $datagrid = $admin->getDatagrid();
-                        $queryBuilder = $datagrid->getQuery();
-                        $queryBuilder
-                            ->andWhere($queryBuilder->getRootAlias() . '.context=:contextValue')
-                            ->setParameter('contextValue', $context)
-                        ;
-                        $datagrid->setValue($property, null, $value);
-                    },
+        $id = $admin->getRequest()->get('id');
 
-                ),
-                array('link_parameters' => array('context' => 'news', 'hide_context' => true)))
-            ->end()
-            ->with('Status')
-                ->add('enabled', null, array('required' => false))
-                ->add('commentsCloseAt')
-                ->add('commentsEnabled', null, array('required' => false))
-                ->add('commentsEnabled', null, array('required' => false))
-                ->add('commentsDefaultStatus', 'sonata_news_comment_status', array('expanded' => true))
-            ->end()
-        ;
+        $menu->addChild(
+            $this->trans('sidemenu.link_edit_post'),
+            array('uri' => $admin->generateUrl('edit', array('id' => $id)))
+        );
+
+        if ($this->hasSubject() && $this->getSubject()->getId() !== null) {
+            $menu->addChild(
+                $this->trans('sidemenu.link_view_post'),
+                array('uri' => $admin->getRouteGenerator()->generate('sonata_news_view', array('permalink' => $this->permalinkGenerator->generate($this->getSubject()))))
+            );
+        }
     }
 
     /**
@@ -170,185 +123,9 @@ class PostAdmin extends BaseAdmin
         $datagridMapper
             ->add('title')
             ->add('enabled')
-            ->add('collection')
-            ->add('author', null, array('field_options' => array('selectpicker_enabled'=>true)))
-            ->add('tags', null, array('field_options' => array('expanded' => false, 'multiple' => true, 'selectpicker_enabled'=>true)))
-            ->add('with_open_comments', 'doctrine_orm_callback', array(
-                                          'callback' => function ($queryBuilder, $alias, $field, $data) {
-                                              if (!is_array($data) || !$data['value']) {
-                                                  return;
-                                              }
-
-                                              $commentClass = $this->commentManager->getClass();
-
-                                              $queryBuilder->leftJoin(sprintf('%s.comments', $alias), 'c');
-                                              $queryBuilder->andWhere('c.status = :status');
-                                              $queryBuilder->setParameter('status', $commentClass::STATUS_MODERATE);
-                                          },
-                                          'field_type' => 'checkbox'
-                                      ))
+            ->add('tags', null, array('field_options' => array('expanded' => true, 'multiple' => true)))
+            ->add('author')
+            ->add('publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
         ;
-    }
-
-    public function setContextManager(ContextManagerInterface $contextManager) {
-        $this->contextManager = $contextManager;
-    }
-
-    public function setCollectionManager(CollectionManagerInterface $collectionManager) {
-        $this->collectionManager = $collectionManager;
-    }
-
-    public function setPostManager(CollectionManagerInterface $collectionManager) {
-        $this->collectionManager = $collectionManager;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPersistentParameters()
-    {
-        $parameters = array(
-            'collectionId' => $this->getDefaultCollection(),
-            'hide_collection' => $this->hasRequest() ? ((int)$this->getRequest()->get('hide_context', 0)) : 0
-        );
-
-        if ($this->getSubject()) {
-            $parameters['collectionId'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getId() : '';
-            return $parameters;
-        }
-
-        if($this->hasRequest()) {
-            $parameters['collectionId'] = $this->getRequest()->get('collectionId');
-        }
-
-        return $parameters;
-
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getNewInstance()
-    {
-        $instance = parent::getNewInstance();
-
-        if ($collectionId = $this->getPersistentParameter('collectionId') ?: $this->getDefaultCollection()) {
-            $collection =  $this->collectionManager->find($collectionId);
-
-            if (!$collection) {
-
-                $context = $this->contextManager->find(self::POST_DEFAULT_CONTEXT);
-
-                if (!$context) {
-                    $context = $this->contextManager->create();
-                    $context->setEnabled(true);
-                    $context->setId(self::POST_DEFAULT_CONTEXT);
-                    $context->setName(ucwords(self::POST_DEFAULT_CONTEXT));
-
-                    $this->contextManager->save($context);
-                }
-
-                $collection = $this->collectionManager->create();
-                $collection->setEnabled(true);
-                $collection->setName(self::POST_DEFAULT_COLLECTION);
-                $collection->setContext($context);
-                $this->collectionManager->save($collection);
-            }
-
-            $instance->setCollection($collection);
-        }
-
-        return $instance;
-    }
-
-    public function setPool(Pool $pool) {
-        $this->pool = $pool;
-    }
-
-    protected function fetchCurrentCollection() {
-
-        $collectionId = $this->getPersistentParameter('collectionId');
-        $collection = null;
-        if($collectionId) {
-            $collection = $this->collectionManager->find($collectionId);
-        } else {
-            $collection = $this->collectionManager->findOneBy(array('slug'=>self::POST_DEFAULT_COLLECTION));
-        }
-
-        if($collection) {
-            return $collection;
-        } else {
-            return;
-        }
-    }
-
-    protected function getPoolProvider() {
-        $currentCollection = $this->fetchCurrentCollection();
-        if ($this->pool->hasCollection($currentCollection->getSlug())) {
-            $providerName = $this->pool->getProviderNameByCollection($currentCollection->getSlug());
-            return $this->pool->getProvider($providerName);
-        } else {
-            $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
-            return $this->pool->getProvider($providerName);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prePersist($object)
-    {
-        parent::prePersist($object);
-        $parameters = $this->getPersistentParameters();
-        if(isset($parameters['collectionId'])) {
-            $collection = $this->collectionManager->find($parameters['collectionId']);
-            $object->setCollection($collection);
-        }
-        $object->setPostHasCategory($object->getPostHasCategory());
-        $object->setPostHasMedia($object->getPostHasMedia());
-        $this->getPoolProvider()->prePersist($object);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function preUpdate($object)
-    {
-        parent::preUpdate($object);
-        $object->setPostHasCategory($object->getPostHasCategory());
-        $object->setPostHasMedia($object->getPostHasMedia());
-        $this->getPoolProvider()->preUpdate($object);
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function postUpdate($object)
-    {
-        parent::postUpdate($object);
-        $this->getPoolProvider()->postUpdate($object);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function postPersist($object)
-    {
-        parent::postPersist($object);
-        $this->getPoolProvider()->postPersist($object);
-    }
-
-    public function getDefaultCollection() {
-
-        return $this->collectionManager->findOneBy(array('slug'=>$this->pool->getDefaultCollection())) ?: null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-    {
-
     }
 }

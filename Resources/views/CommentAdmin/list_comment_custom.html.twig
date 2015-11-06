@@ -1,0 +1,25 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field %}
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-10">
+        {% if admin.isGranted('EDIT', object) and admin.hasRoute('edit') %}
+            <a href="{{ admin.generateUrl('edit', {'id' : object|sonata_urlsafeid }) }}"><strong><i class="fa fa-user"></i> {{ object.name }}</strong></a>
+        {% else %}
+            <strong><i class="fa fa-user"></i> {{ object.name }}</strong>
+        {% endif %}
+
+        {% if object.email %}
+            ~ <span class="badge bg-light-blue"><i class="fa fa-envelope"></i> {{ object.email }}</span>
+        {% endif %}
+        <br />
+
+	    <i class="fa fa-file-text"></i> {{ object.message|truncate(150) }}
+
+        <br />
+        {% if object.url %}
+	        <i class="fa fa-globe"></i> {{ object.url }}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
