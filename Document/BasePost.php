@@ -11,7 +11,7 @@
 
 namespace Rz\NewsBundle\Document;
 
-use Sonata\NewsBundle\Document\Post;
+use Sonata\NewsBundle\Document\BasePost as Post;
 
 abstract class BasePost extends Post
 {
