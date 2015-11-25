@@ -6,6 +6,10 @@
                 <source>filter.label_publication_date_start</source>
                 <target>Publication Start Date</target>
             </trans-unit>
+            <trans-unit id="filter.label_collection">
+                <source>filter.label_collection</source>
+                <target>Collection</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

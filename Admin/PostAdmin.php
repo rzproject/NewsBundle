@@ -8,9 +8,14 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\CoreBundle\Model\ManagerInterface;
 
 class PostAdmin extends Admin
 {
+    protected $collectionManager;
+
+    protected $contextManager;
+
     protected $datagridValues = array(
         '_page' => 1,
         '_sort_order' => 'DESC',
@@ -72,7 +77,7 @@ class PostAdmin extends Admin
                         $datagrid->setValue($property, null, $value);
                     },
                 ))
-                ->add('collection', 'sonata_type_model_list', array('required' => false), array('link_parameters'=>array('context'=>'news', 'hide_context'=>true)))
+                //->add('collection', 'sonata_type_model_list', array('required' => false), array('link_parameters'=>array('context'=>'news', 'hide_context'=>true)))
             ->end()
         ;
     }
@@ -121,11 +126,105 @@ class PostAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
+            ->add('collection')
             ->add('title')
             ->add('enabled')
             ->add('tags', null, array('field_options' => array('expanded' => true, 'multiple' => true)))
             ->add('author')
             ->add('publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
         ;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCollectionManager()
+    {
+        return $this->collectionManager;
+    }
+
+    /**
+     * @param \Sonata\CoreBundle\Model\ManagerInterface $collectionManager
+     */
+    public function setCollectionManager(ManagerInterface $collectionManager)
+    {
+        $this->collectionManager = $collectionManager;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getContextManager()
+    {
+        return $this->contextManager;
+    }
+
+    /**
+     * @param \Sonata\CoreBundle\Model\ManagerInterface $contextManager
+     */
+    public function setContextManager(ManagerInterface $contextManager)
+    {
+        $this->contextManager = $contextManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPersistentParameters()
+    {
+        $parameters = array(
+            'collection'      => '',
+            'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0,
+        );
+
+        if ($this->getSubject()) {
+            $parameters['collection'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getSlug() : '';
+
+            return $parameters;
+        }
+
+        if ($this->hasRequest()) {
+            $parameters['collection'] = $this->getRequest()->get('collection');
+
+            return $parameters;
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNewInstance()
+    {
+        $instance = parent::getNewInstance();
+
+        if ($collectionSlug = $this->getPersistentParameter('collection')) {
+            $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
+
+            if (!$collection) {
+                //find 'news' context
+                $context = $this->contextManager->find('news');
+                if(!$context) {
+                    $context = $this->contextManager->create();
+                    $context->setEnabled(true);
+                    $context->setId($context);
+                    $context->setName($context);
+                    $this->contextManager->save($context);
+                }
+                //create collection
+                $collection = $this->collectionManager->create();
+                $collection->setContext($context);
+                $name = ucwords(str_replace('-', ' ',$collectionSlug));
+                $collection->setName($name);
+                $collection->setDescription($name);
+                $this->collectionManager->save($collection);
+            }
+
+            $instance->setCollection($collection);
+        }
+
+        return $instance;
     }
 }
