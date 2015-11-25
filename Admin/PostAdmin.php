@@ -77,7 +77,6 @@ class PostAdmin extends Admin
                         $datagrid->setValue($property, null, $value);
                     },
                 ))
-                //->add('collection', 'sonata_type_model_list', array('required' => false), array('link_parameters'=>array('context'=>'news', 'hide_context'=>true)))
             ->end()
         ;
     }
