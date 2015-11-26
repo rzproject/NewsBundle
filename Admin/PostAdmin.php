@@ -125,7 +125,16 @@ class PostAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('collection')
+            ->add('collection', 'doctrine_orm_model_autocomplete', array(), null, array(
+                'property' => 'name',
+                'callback' => function ($admin, $property, $value) {
+                    $datagrid = $admin->getDatagrid();
+                    $queryBuilder = $datagrid->getQuery();
+                    $queryBuilder->andWhere(sprintf('%s.context = :context', $queryBuilder->getRootAlias()));
+                    $queryBuilder->setParameter('context', 'news');
+                }
+
+            ))
             ->add('title')
             ->add('enabled')
             ->add('tags', null, array('field_options' => array('expanded' => true, 'multiple' => true)))
