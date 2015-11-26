@@ -173,7 +173,7 @@ class PostAdmin extends Admin
     public function getPersistentParameters()
     {
         $parameters = array(
-            'collection'      => '',
+            'collection'      => 'article',
             'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0,
         );
 
@@ -199,7 +199,7 @@ class PostAdmin extends Admin
     {
         $instance = parent::getNewInstance();
 
-        if ($collectionSlug = $this->getPersistentParameter('collection')) {
+        if ($collectionSlug = $this->getPersistentParameter('collection')?: 'article') {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
 
             if (!$collection) {
