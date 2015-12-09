@@ -23,7 +23,9 @@ class RzNewsExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $this->configureManagerClass($config, $container);
-        //$loader->load('services.xml');
+
+        $loader->load('provider.xml');
+        $this->configureProviders($container, $config);
     }
 
     /**
@@ -34,5 +36,19 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz.news.entity.manager.post.class',        $config['manager_class']['orm']['post']);
         $container->setParameter('rz.news.document.manager.post.class',        $config['manager_class']['mongodb']['post']);
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureProviders(ContainerBuilder $container, $config)
+    {
+        $pool = $container->getDefinition('rz.news.pool');
+        $pool->replaceArgument(0, $config['default_collection']);
+
+        //set default collection
+        $container->setParameter('rz.news.default_collection', $config['default_collection']);
+        $container->setParameter('rz.news.provider.collections', $config['collections']);
     }
 }

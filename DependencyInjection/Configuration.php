@@ -21,6 +21,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $node = $treeBuilder->root('rz_news');
         $this->addManagerSection($node);
+        $this->addProviderSection($node);
         return $treeBuilder;
     }
 
@@ -45,6 +46,27 @@ class Configuration implements ConfigurationInterface
                             ->children()
                                 ->scalarNode('post')->defaultValue('Rz\\NewsBundle\\Document\\PostManager')->end()
                             ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addProviderSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->scalarNode('default_collection')->isRequired()->end()
+                ->arrayNode('collections')
+                    ->useAttributeAsKey('id')
+                    ->isRequired()
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('provider')->isRequired()->end()
                         ->end()
                     ->end()
                 ->end()

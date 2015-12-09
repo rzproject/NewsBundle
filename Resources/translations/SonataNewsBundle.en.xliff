@@ -10,6 +10,14 @@
                 <source>filter.label_collection</source>
                 <target>Collection</target>
             </trans-unit>
+            <trans-unit id="rz_news_settings">
+                <source>rz_news_settings</source>
+                <target>News Settings</target>
+            </trans-unit>
+            <trans-unit id="form.label_settings">
+                <source>form.label_settings</source>
+                <target>News Provider Settings</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

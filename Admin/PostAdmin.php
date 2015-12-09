@@ -16,6 +16,10 @@ class PostAdmin extends Admin
 
     protected $contextManager;
 
+    protected $pool;
+
+    const NEWS_DEFAULT_COLLECTION = 'article';
+
     protected $datagridValues = array(
         '_page' => 1,
         '_sort_order' => 'DESC',
@@ -27,58 +31,83 @@ class PostAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+         // define group zoning
         $formMapper
-            ->with('group_post', array(
-                    'class' => 'col-md-8',
-                ))
-                ->add('author', 'sonata_type_model_list')
-                ->add('title')
-                ->add('abstract', null, array('attr' => array('rows' => 5)))
-                ->add('content', 'sonata_formatter_type', array(
-                    'event_dispatcher'          => $formMapper->getFormBuilder()->getEventDispatcher(),
-                    'format_field'              => 'contentFormatter',
-                    'source_field'              => 'rawContent',
-                    'source_field_options'      => array(
-                        'horizontal_input_wrapper_class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'col-lg-12' : '',
-                        'attr'                           => array('class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'span10 col-sm-10 col-md-10' : '', 'rows' => 20),
-                    ),
-                    'ckeditor_context'     => 'news',
-                    'target_field'         => 'content',
-                    'listener'             => true,
-                ))
+            ->tab('News')
+                ->with('group_post', array('class' => 'col-md-8'))->end()
+                ->with('group_status', array('class' => 'col-md-4'))->end()
+                ->with('group_classification', array('class' => 'col-md-4'))->end()
             ->end()
-            ->with('group_status', array(
-                    'class' => 'col-md-4',
-                ))
-                ->add('enabled', null, array('required' => false))
-                ->add('image', 'sonata_type_model_list', array('required' => false), array(
-                    'link_parameters' => array(
-                        'context'      => 'news',
-                        'hide_context' => true,
-                    ),
-                ))
-                ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
-            ->end()
-
-            ->with('group_classification', array(
-                'class' => 'col-md-4',
-                ))
-                ->add('tags', 'sonata_type_model_autocomplete', array(
-                    'property' => 'name',
-                    'multiple' => 'true',
-                    'required' => false,
-                    'callback' => function ($admin, $property, $value) {
-                        $datagrid = $admin->getDatagrid();
-                        $queryBuilder = $datagrid->getQuery();
-                        $queryBuilder
-                            ->andWhere($queryBuilder->getRootAlias() . '.context=:context')
-                            ->setParameter('context', 'news')
-                        ;
-                        $datagrid->setValue($property, null, $value);
-                    },
-                ))
+            ->tab('Settings')
+                ->with('rz_news_settings', array('class' => 'col-md-12'))->end()
             ->end()
         ;
+
+
+        $formMapper
+            ->tab('News')
+                ->with('group_post', array(
+                        'class' => 'col-md-8',
+                    ))
+                    ->add('author', 'sonata_type_model_list')
+                    ->add('title')
+                    ->add('abstract', null, array('attr' => array('rows' => 5)))
+                    ->add('content', 'sonata_formatter_type', array(
+                        'event_dispatcher'          => $formMapper->getFormBuilder()->getEventDispatcher(),
+                        'format_field'              => 'contentFormatter',
+                        'source_field'              => 'rawContent',
+                        'source_field_options'      => array(
+                            'horizontal_input_wrapper_class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'col-lg-12' : '',
+                            'attr'                           => array('class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'span10 col-sm-10 col-md-10' : '', 'rows' => 20),
+                        ),
+                        'ckeditor_context'     => 'news',
+                        'target_field'         => 'content',
+                        'listener'             => true,
+                    ))
+                ->end()
+                ->with('group_status', array(
+                        'class' => 'col-md-4',
+                    ))
+                    ->add('enabled', null, array('required' => false))
+                    ->add('image', 'sonata_type_model_list', array('required' => false), array(
+                        'link_parameters' => array(
+                            'context'      => 'news',
+                            'hide_context' => true,
+                        ),
+                    ))
+                    ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
+                ->end()
+
+                ->with('group_classification', array(
+                    'class' => 'col-md-4',
+                    ))
+                    ->add('tags', 'sonata_type_model_autocomplete', array(
+                        'property' => 'name',
+                        'multiple' => 'true',
+                        'required' => false,
+                        'callback' => function ($admin, $property, $value) {
+                            $datagrid = $admin->getDatagrid();
+                            $queryBuilder = $datagrid->getQuery();
+                            $queryBuilder
+                                ->andWhere($queryBuilder->getRootAlias() . '.context=:context')
+                                ->setParameter('context', 'news')
+                            ;
+                            $datagrid->setValue($property, null, $value);
+                        },
+                    ))
+                ->end()
+            ->end()
+        ;
+
+        $provider = $this->getPoolProvider();
+        $instance = $this->getSubject();
+
+        if ($instance && $instance->getId()) {
+            $provider->load($instance);
+            $provider->buildEditForm($formMapper);
+        } else {
+            $provider->buildCreateForm($formMapper);
+        }
     }
 
     /**
@@ -177,6 +206,22 @@ class PostAdmin extends Admin
     }
 
     /**
+     * @return mixed
+     */
+    public function getPool()
+    {
+        return $this->pool;
+    }
+
+    /**
+     * @param mixed $pool
+     */
+    public function setPool($pool)
+    {
+        $this->pool = $pool;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getPersistentParameters()
@@ -235,4 +280,70 @@ class PostAdmin extends Admin
 
         return $instance;
     }
+
+    protected function fetchCurrentCollection() {
+
+        $collectionSlug = $this->getPersistentParameter('collection');
+        $collection = null;
+        if($collectionSlug) {
+            $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
+        } else {
+            $collection = $this->collectionManager->findOneBy(array('slug'=>self::NEWS_DEFAULT_COLLECTION));
+        }
+
+        if($collection) {
+            return $collection;
+        } else {
+            return;
+        }
+    }
+
+    protected function getPoolProvider() {
+        $currentCollection = $this->fetchCurrentCollection();
+        if ($this->pool->hasCollection($currentCollection->getSlug())) {
+            $providerName = $this->pool->getProviderNameByCollection($currentCollection->getSlug());
+        } else {
+            $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
+        }
+
+        return $this->pool->getProvider($providerName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prePersist($object)
+    {
+        parent::prePersist($object);
+        $this->getPoolProvider()->prePersist($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preUpdate($object)
+    {
+        parent::preUpdate($object);
+        $this->getPoolProvider()->preUpdate($object);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($object)
+    {
+        parent::postUpdate($object);
+        $this->getPoolProvider()->postUpdate($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postPersist($object)
+    {
+        parent::postPersist($object);
+        $this->getPoolProvider()->postPersist($object);
+    }
+
 }
