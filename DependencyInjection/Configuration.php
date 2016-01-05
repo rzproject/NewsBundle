@@ -21,7 +21,9 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $node = $treeBuilder->root('rz_news');
         $this->addManagerSection($node);
+        $this->addModelSection($node);
         $this->addProviderSection($node);
+        $this->addAdminSection($node);
         return $treeBuilder;
     }
 
@@ -39,6 +41,8 @@ class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('post')->defaultValue('Rz\\NewsBundle\\Entity\\PostManager')->end()
+                                ->scalarNode('post_has_category')->defaultValue('Rz\\NewsBundle\\Entity\\PostHasCategoryManager')->end()
+                                ->scalarNode('post_has_media')->defaultValue('Rz\\NewsBundle\\Entity\\PostHasMediaManager')->end()
                             ->end()
                         ->end()
                         ->arrayNode('mongodb')
@@ -68,6 +72,59 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('provider')->isRequired()->end()
                         ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+        /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addAdminSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('admin')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                       ->arrayNode('post_has_category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Admin\\PostHasCategoryAdmin')->end()
+                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('SonataAdminBundle:CRUD')->end()
+                                ->scalarNode('translation')->cannotBeEmpty()->defaultValue('SonataNewsBundle')->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('post_has_media')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Admin\\PostHasMediaAdmin')->end()
+                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('SonataAdminBundle:CRUD')->end()
+                                ->scalarNode('translation')->cannotBeEmpty()->defaultValue('SonataNewsBundle')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+         /**
+     * @param ArrayNodeDefinition $node
+     */
+    private function addModelSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('class')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('post')->defaultValue('AppBundle\\Entity\\News\\Post')->end()
+                        ->scalarNode('post_has_category')->defaultValue('AppBundle\\Entity\\News\\PostHasCategory')->end()
+                        ->scalarNode('post_has_media')->defaultValue('AppBundle\\Entity\\News\\PostHasMedia')->end()
+                        ->scalarNode('category')->defaultValue('AppBundle\\Entity\\Classification\\Category')->end()
+                        ->scalarNode('media')->defaultValue('AppBundle\\Entity\\Media\\Media')->end()
                     ->end()
                 ->end()
             ->end()

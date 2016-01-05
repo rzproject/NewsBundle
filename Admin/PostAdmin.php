@@ -41,6 +41,12 @@ class PostAdmin extends Admin
             ->tab('Settings')
                 ->with('rz_news_settings', array('class' => 'col-md-12'))->end()
             ->end()
+            ->tab('Category')
+                ->with('rz_news_category', array('class' => 'col-md-12'))->end()
+            ->end()
+            ->tab('Media')
+                ->with('rz_news_media', array('class' => 'col-md-12'))->end()
+            ->end()
         ;
 
 
@@ -95,6 +101,42 @@ class PostAdmin extends Admin
                             $datagrid->setValue($property, null, $value);
                         },
                     ))
+                ->end()
+            ->end()
+        ;
+
+        $formMapper
+            ->tab('Category')
+                ->with('rz_news_category', array('class' => 'col-md-8'))
+                    ->add('postHasCategory', 'sonata_type_collection', array(
+                        'cascade_validation' => true,
+                        'required' => false,
+                    ), array(
+                            'edit'              => 'inline',
+                            'inline'            => 'standard',
+                            'sortable'          => 'position',
+                            'link_parameters'   => array('context' => 'news'),
+                            'admin_code'        => 'rz.news.admin.post_has_category',
+                        )
+                    )
+                ->end()
+            ->end()
+        ;
+
+        $formMapper
+            ->tab('Media')
+                ->with('rz_news_media', array('class' => 'col-md-8'))
+                    ->add('postHasMedia', 'sonata_type_collection', array(
+                        'cascade_validation' => true,
+                        'required' => false,
+                    ), array(
+                            'edit'              => 'inline',
+                            'inline'            => 'standard',
+                            'sortable'          => 'position',
+                            'link_parameters'   => array('context' => 'news'),
+                            'admin_code'        => 'rz.news.admin.post_has_media',
+                        )
+                    )
                 ->end()
             ->end()
         ;
