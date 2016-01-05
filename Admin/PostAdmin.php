@@ -357,6 +357,8 @@ class PostAdmin extends Admin
     public function prePersist($object)
     {
         parent::prePersist($object);
+        $object->setPostHasCategory($object->getPostHasCategory());
+        $object->setPostHasMedia($object->getPostHasMedia());
         $this->getPoolProvider()->prePersist($object);
     }
 
@@ -366,6 +368,8 @@ class PostAdmin extends Admin
     public function preUpdate($object)
     {
         parent::preUpdate($object);
+        $object->setPostHasCategory($object->getPostHasCategory());
+        $object->setPostHasMedia($object->getPostHasMedia());
         $this->getPoolProvider()->preUpdate($object);
     }
 
