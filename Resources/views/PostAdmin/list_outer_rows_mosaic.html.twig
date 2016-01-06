@@ -3,7 +3,9 @@
 {% block sonata_mosaic_background %}
 	{% if object.image and admin.isGranted('VIEW', object.image) %}
 		{% if admin.isGranted('EDIT', object) and admin.hasRoute('edit') %}
-			<a href="{{ admin.generateUrl('edit', {'id' : object|sonata_urlsafeid }) }}">{% thumbnail object.image, 'admin' %}</a>
+			<div class="embed-responsive embed-responsive-16by9">
+				<a href="{{ admin.generateUrl('edit', {'id' : object|sonata_urlsafeid }) }}">{% media object.image, 'admin' %}</a>
+			</div>
 		{% else %}
 			{% thumbnail object.image, 'admin' with {'width': 90} %}
 		{% endif %}
