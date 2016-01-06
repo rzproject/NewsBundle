@@ -19,33 +19,75 @@ class PostHasMediaAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+
         $formMapper
-            ->add('title', null)
-            ->add('abstract', null, array('attr' => array('rows' => 5)))
+            ->tab('tab.rz_news_post_has_media_media')
+                ->with('rz_news_post_has_media_media', array('class' => 'col-md-8'))->end()
+            ->end()
+            ->tab('tab.rz_news_post_has_media_content')
+                ->with('rz_news_post_has_media_content', array('class' => 'col-md-12'))->end()
+            ->end()
+        ;
+
+        $formMapper
+            ->tab('tab.rz_news_post_has_media_media')
+                ->with('rz_news_post_has_media_media', array('class' => 'col-md-8'))
+                    ->add('title', null)
+                    ->add('abstract', null, array('attr' => array('rows' => 5)))
+                ->end()
+            ->end()
+        ;
+
+        $formMapper
+
         ;
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
-            $formMapper->add('media', 'sonata_type_model_list', array('btn_delete' => false), array(
-                'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
-            ));
+           $formMapper
+                ->tab('tab.rz_news_post_has_media_media')
+                    ->with('rz_news_post_has_media_media', array('class' => 'col-md-8'))
+                       ->add('media', 'sonata_type_model_list', array('btn_delete' => false), array(
+                           'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
+                       ))
+                    ->end()
+                ->end()
+            ;
         }
 
+
+
+
         $formMapper
-            ->add('content', 'sonata_formatter_type', array(
-                'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
-                'error_bubbling' => false,
-                'format_field'   => 'contentFormatter',
-                'source_field'   => 'rawContent',
-                'ckeditor_context' => 'news',
-                'source_field_options'      => array(
-                    'error_bubbling'=>false,
-                    'attr' => array('rows' => 20)
-                ),
-                'target_field'   => 'content',
-                'listener'       => true,
-            ))
-            ->add('enabled', null, array('required' => false))
-            ->add('position', 'hidden')
+            ->tab('tab.rz_news_post_has_media_media')
+                ->with('rz_news_post_has_media_media', array('class' => 'col-md-8'))
+                    ->add('enabled', null, array('required' => false))
+                    ->add('position', 'hidden')
+                ->end()
+            ->end()
+        ;
+
+        $formMapper
+            ->tab('tab.rz_news_post_has_media_content')
+                ->with('rz_news_post_has_media_content', array('class' => 'col-md-8'))
+                    ->add('content', 'sonata_formatter_type', array(
+                        'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                        'error_bubbling' => false,
+                        'format_field'   => 'contentFormatter',
+                        'source_field'   => 'rawContent',
+                        'ckeditor_context' => 'news',
+                        'source_field_options'      => array(
+                            'error_bubbling'=>false,
+                            'attr' => array('rows' => 20)
+                        ),
+                        'target_field'   => 'content',
+                        'listener'       => true,
+                    ))
+                ->end()
+            ->end()
+        ;
+
+        $formMapper
+
         ;
     }
 

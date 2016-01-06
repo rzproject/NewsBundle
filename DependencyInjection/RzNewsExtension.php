@@ -45,9 +45,13 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz.news.admin.post_has_category.entity', $config['class']['post_has_category']);
         $container->setParameter('rz.news.admin.post_has_media.entity', $config['class']['post_has_media']);
+        $container->setParameter('rz.news.admin.related_articles.entity', $config['class']['related_articles']);
+        $container->setParameter('rz.news.admin.suggested_articles.entity', $config['class']['suggested_articles']);
 
         $container->setParameter('rz.news.post_has_category.entity', $config['class']['post_has_category']);
         $container->setParameter('rz.news.post_has_media.entity', $config['class']['post_has_media']);
+        $container->setParameter('rz.news.related_articles.entity', $config['class']['related_articles']);
+        $container->setParameter('rz.news.suggested_articles.entity', $config['class']['suggested_articles']);
     }
 
     /**
@@ -56,9 +60,11 @@ class RzNewsExtension extends Extension
      */
     public function configureManagerClass($config, ContainerBuilder $container)
     {
-        $container->setParameter('rz.news.entity.manager.post.class',        $config['manager_class']['orm']['post']);
-        $container->setParameter('rz.news.manager.post_has_category.class',     $config['manager_class']['orm']['post_has_category']);
-        $container->setParameter('rz.news.manager.post_has_media.class',     $config['manager_class']['orm']['post_has_media']);
+        $container->setParameter('rz.news.entity.manager.post.class',                   $config['manager_class']['orm']['post']);
+        $container->setParameter('rz.news.entity.manager.post_has_category.class',      $config['manager_class']['orm']['post_has_category']);
+        $container->setParameter('rz.news.entity.manager.post_has_media.class',         $config['manager_class']['orm']['post_has_media']);
+        $container->setParameter('rz.news.entity.manager.related_articles.class',       $config['manager_class']['orm']['related_articles']);
+        $container->setParameter('rz.news.entity.manager.suggested_articles.class',     $config['manager_class']['orm']['suggested_articles']);
 
         $container->setParameter('rz.news.document.manager.post.class',        $config['manager_class']['mongodb']['post']);
     }
@@ -73,6 +79,8 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz.news.admin.post_has_category.class', $config['admin']['post_has_category']['class']);
         $container->setParameter('rz.news.admin.post_has_media.class', $config['admin']['post_has_media']['class']);
+        $container->setParameter('rz.news.admin.related_articles.class', $config['admin']['related_articles']['class']);
+        $container->setParameter('rz.news.admin.suggested_articles.class', $config['admin']['suggested_articles']['class']);
     }
 
     /**
@@ -85,6 +93,8 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz.news.admin.post_has_category.translation_domain', $config['admin']['post_has_category']['translation']);
         $container->setParameter('rz.news.admin.post_has_media.translation_domain', $config['admin']['post_has_media']['translation']);
+        $container->setParameter('rz.news.admin.related_articles.translation_domain', $config['admin']['related_articles']['translation']);
+        $container->setParameter('rz.news.admin.suggested_articles.translation_domain', $config['admin']['suggested_articles']['translation']);
     }
 
     /**
@@ -97,6 +107,8 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz.news.admin.post_has_category.controller', $config['admin']['post_has_category']['controller']);
         $container->setParameter('rz.news.admin.post_has_media.controller', $config['admin']['post_has_media']['controller']);
+        $container->setParameter('rz.news.admin.related_articles.controller', $config['admin']['related_articles']['controller']);
+        $container->setParameter('rz.news.admin.suggested_articles.controller', $config['admin']['suggested_articles']['controller']);
     }
 
 
@@ -229,5 +241,107 @@ class RzNewsExtension extends Extension
                 ),
             ));
         }
+
+        ######################
+        # Related Articles
+        ######################
+
+        $collector->addAssociation($config['class']['related_articles'], 'mapManyToOne', array(
+            'fieldName' => 'post',
+            'targetEntity' => $config['class']['post'],
+            'cascade' => array(
+                'persist',
+            ),
+            'mappedBy' => NULL,
+            'inversedBy' => 'relatedArticles',
+            'joinColumns' => array(
+                array(
+                    'name' => 'post_id',
+                    'referencedColumnName' => 'id',
+                ),
+            ),
+            'orphanRemoval' => false,
+        ));
+
+        $collector->addAssociation($config['class']['related_articles'], 'mapManyToOne', array(
+            'fieldName' => 'relatedArticle',
+            'targetEntity' => $config['class']['post'],
+            'cascade' => array(
+                'persist',
+            ),
+            'mappedBy' => NULL,
+            'inversedBy' => NULL,
+            'joinColumns' => array(
+                array(
+                    'name' => 'related_article_id',
+                    'referencedColumnName' => 'id',
+                ),
+            ),
+            'orphanRemoval' => false,
+        ));
+
+        $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
+            'fieldName' => 'relatedArticles',
+            'targetEntity' => $config['class']['related_articles'],
+            'cascade' => array(
+                'persist',
+            ),
+            'mappedBy' => 'post',
+            'orphanRemoval' => true,
+            'orderBy' => array(
+                'position' => 'ASC',
+            ),
+        ));
+
+        ######################
+        # Suggested Articles
+        ######################
+
+        $collector->addAssociation($config['class']['suggested_articles'], 'mapManyToOne', array(
+            'fieldName' => 'post',
+            'targetEntity' => $config['class']['post'],
+            'cascade' => array(
+                'persist',
+            ),
+            'mappedBy' => NULL,
+            'inversedBy' => 'suggestedArticles',
+            'joinColumns' => array(
+                array(
+                    'name' => 'post_id',
+                    'referencedColumnName' => 'id',
+                ),
+            ),
+            'orphanRemoval' => false,
+        ));
+
+        $collector->addAssociation($config['class']['suggested_articles'], 'mapManyToOne', array(
+            'fieldName' => 'suggestedArticle',
+            'targetEntity' => $config['class']['post'],
+            'cascade' => array(
+                'persist',
+            ),
+            'mappedBy' => NULL,
+            'inversedBy' => NULL,
+            'joinColumns' => array(
+                array(
+                    'name' => 'suggested_article_id',
+                    'referencedColumnName' => 'id',
+                ),
+            ),
+            'orphanRemoval' => false,
+        ));
+
+        $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
+            'fieldName' => 'suggestedArticles',
+            'targetEntity' => $config['class']['suggested_articles'],
+            'cascade' => array(
+                'persist',
+            ),
+            'mappedBy' => 'post',
+            'orphanRemoval' => true,
+            'orderBy' => array(
+                'position' => 'ASC',
+            ),
+        ));
     }
 }

@@ -6,6 +6,9 @@ use Sonata\NewsBundle\Entity\BasePost as Post;
 use Doctrine\Common\Collections\ArrayCollection;
 use Rz\NewsBundle\Model\PostHasCategoryInterface;
 use Rz\NewsBundle\Model\PostHasMediaInterface;
+use Rz\NewsBundle\Model\RelatedArticlesInterface;
+use Rz\NewsBundle\Model\SuggestedArticlesInterface;
+
 
 abstract class BasePost extends Post
 {
@@ -13,6 +16,8 @@ abstract class BasePost extends Post
     protected $settings;
     protected $postHasCategory;
     protected $postHasMedia;
+    protected $relatedArticles;
+    protected $suggestedArticles;
 
     /**
      * {@inheritdoc}
@@ -23,6 +28,8 @@ abstract class BasePost extends Post
 
         $this->postHasCategory = new ArrayCollection();
         $this->postHasMedia = new ArrayCollection();
+        $this->relatedArticles = new ArrayCollection();
+        $this->suggestedArticles = new ArrayCollection();
     }
 
     /**
@@ -147,6 +154,97 @@ abstract class BasePost extends Post
 
             if (!$childToDelete->getId() && $child === $childToDelete) {
                 unset($this->postHasMedia[$pos]);
+
+                return;
+            }
+        }
+    }
+
+    public function setRelatedArticles($relatedArticles)
+    {
+        $this->relatedArticles = new ArrayCollection();
+        foreach ($relatedArticles as $child) {
+            $this->addRelatedArticle($child);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addRelatedArticle(RelatedArticlesInterface $relatedArticle)
+    {
+        $relatedArticle->setPost($this);
+        $this->relatedArticles[] = $relatedArticle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRelatedArticles()
+    {
+        return $this->relatedArticles;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeRelatedArticle(RelatedArticlesInterface $childToDelete)
+    {
+        foreach ($this->getRelatedArticles() as $pos => $child) {
+            if ($childToDelete->getId() && $child->getId() === $childToDelete->getId()) {
+                unset($this->relatedArticles[$pos]);
+
+                return;
+            }
+
+            if (!$childToDelete->getId() && $child === $childToDelete) {
+                unset($this->relatedArticles[$pos]);
+
+                return;
+            }
+        }
+    }
+
+
+    public function setSuggestedArticles($suggestedArticles)
+    {
+        $this->suggestedArticles = new ArrayCollection();
+        foreach ($suggestedArticles as $child) {
+            $this->addSuggestedArticle($child);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addSuggestedArticle(SuggestedArticlesInterface $suggestedArticle)
+    {
+        $suggestedArticle->setPost($this);
+        $this->suggestedArticles[] = $suggestedArticle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSuggestedArticles()
+    {
+        return $this->suggestedArticles;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeSuggestedArticle(SuggestedArticlesInterface $childToDelete)
+    {
+        foreach ($this->getSuggestedArticles() as $pos => $child) {
+            if ($childToDelete->getId() && $child->getId() === $childToDelete->getId()) {
+                unset($this->suggestedArticles[$pos]);
+
+                return;
+            }
+
+            if (!$childToDelete->getId() && $child === $childToDelete) {
+                unset($this->suggestedArticles[$pos]);
 
                 return;
             }

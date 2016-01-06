@@ -4,17 +4,17 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="rz.news.manager.post_has_category.class">Rz\NewsBundle\Entity\PostHasCategoryManager</parameter>
-        <parameter key="rz.news.manager.post_has_media.class">Rz\NewsBundle\Entity\PostHasMediaManager</parameter>
+        <parameter key="rz.news.entity.manager.post_has_category.class">Rz\NewsBundle\Entity\PostHasCategoryManager</parameter>
+        <parameter key="rz.news.entity.manager.post_has_media.class">Rz\NewsBundle\Entity\PostHasMediaManager</parameter>
     </parameters>
 
     <services>
-        <service id="rz.news.manager.post_has_category" class="%rz.news.manager.post_has_category.class%">
+        <service id="rz.news.manager.post_has_category" class="%rz.news.entity.manager.post_has_category.class%">
             <argument>%rz.news.post_has_category.entity%</argument>
             <argument type="service" id="doctrine" />
         </service>
 
-        <service id="rz.news.manager.post_has_media" class="%rz.news.manager.post_has_media.class%">
+        <service id="rz.news.manager.post_has_media" class="%rz.news.entity.manager.post_has_media.class%">
             <argument>%rz.news.post_has_media.entity%</argument>
             <argument type="service" id="doctrine" />
         </service>

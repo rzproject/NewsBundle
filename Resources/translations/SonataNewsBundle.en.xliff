@@ -34,6 +34,22 @@
                 <source>form.label_category</source>
                 <target>Category</target>
             </trans-unit>
+            <trans-unit id="rz_news_post_has_media_media">
+                <source>rz_news_post_has_media_media</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_has_media_media.rz_news_post_has_media_media">
+                <source>tab.rz_news_post_has_media_media.rz_news_post_has_media_media</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="rz_news_post_has_media_content">
+                <source>rz_news_post_has_media_content</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_has_media_content.rz_news_post_has_media_content">
+                <source>tab.rz_news_post_has_media_content.rz_news_post_has_media_content</source>
+                <target>Content</target>
+            </trans-unit>
             <trans-unit id="rz_news_media">
                 <source>rz_news_media</source>
                 <target>News Media</target>
@@ -49,6 +65,50 @@
 						<trans-unit id="form.label_media">
                 <source>form.label_media</source>
                 <target>Media</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_related_articles">
+                <source>tab.rz_news_related_articles</source>
+                <target>Related Articles</target>
+            </trans-unit>
+						<trans-unit id="rz_news_related_articles">
+                <source>rz_news_related_articles</source>
+                <target>Articles</target>
+            </trans-unit>
+						<trans-unit id="form.label_related_articles">
+                <source>form.label_related_articles</source>
+                <target></target>
+            </trans-unit>
+						<trans-unit id="form.label_related_article">
+                <source>form.label_related_article</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="label_related_articles">
+                <source>label_related_articles</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="form.label_position">
+                <source>form.label_position</source>
+                <target>Position</target>
+            </trans-unit>
+					<trans-unit id="tab.rz_news_suggested_articles">
+                <source>tab.rz_news_suggested_articles</source>
+                <target>Suggested Articles</target>
+            </trans-unit>
+						<trans-unit id="rz_news_suggested_articles">
+                <source>rz_news_suggested_articles</source>
+                <target>Articles</target>
+            </trans-unit>
+						<trans-unit id="form.label_suggested_articles">
+                <source>form.label_suggested_articles</source>
+                <target></target>
+            </trans-unit>
+						<trans-unit id="form.label_suggested_article">
+                <source>form.label_suggested_article</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="label_suggested_articles">
+                <source>label_suggested_articles</source>
+                <target>Post</target>
             </trans-unit>
         </body>
     </file>

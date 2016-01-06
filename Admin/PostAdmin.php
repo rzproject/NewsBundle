@@ -47,6 +47,12 @@ class PostAdmin extends Admin
             ->tab('Media')
                 ->with('rz_news_media', array('class' => 'col-md-12'))->end()
             ->end()
+            ->tab('tab.rz_news_related_articles')
+                ->with('rz_news_related_articles', array('class' => 'col-md-12'))->end()
+            ->end()
+            ->tab('tab.rz_news_suggested_articles')
+                ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
+            ->end()
         ;
 
 
@@ -135,6 +141,42 @@ class PostAdmin extends Admin
                             'sortable'          => 'position',
                             'link_parameters'   => array('context' => 'news'),
                             'admin_code'        => 'rz.news.admin.post_has_media',
+                        )
+                    )
+                ->end()
+            ->end()
+        ;
+
+        $formMapper
+            ->tab('tab.rz_news_related_articles')
+                ->with('rz_news_related_articles', array('class' => 'col-md-8'))
+                    ->add('relatedArticles', 'sonata_type_collection', array(
+                        'cascade_validation' => true,
+                        'required' => false,
+                    ), array(
+                            'edit'              => 'inline',
+                            'inline'            => 'table',
+                            'sortable'          => 'position',
+                            'link_parameters'   => array('context' => 'news'),
+                            'admin_code'        => 'rz.news.admin.related_articles',
+                        )
+                    )
+                ->end()
+            ->end()
+        ;
+
+        $formMapper
+            ->tab('tab.rz_news_suggested_articles')
+                ->with('rz_news_suggested_articles', array('class' => 'col-md-8'))
+                    ->add('suggestedArticles', 'sonata_type_collection', array(
+                        'cascade_validation' => true,
+                        'required' => false,
+                    ), array(
+                            'edit'              => 'inline',
+                            'inline'            => 'table',
+                            'sortable'          => 'position',
+                            'link_parameters'   => array('context' => 'news'),
+                            'admin_code'        => 'rz.news.admin.suggested_articles',
                         )
                     )
                 ->end()
@@ -359,6 +401,8 @@ class PostAdmin extends Admin
         parent::prePersist($object);
         $object->setPostHasCategory($object->getPostHasCategory());
         $object->setPostHasMedia($object->getPostHasMedia());
+        $object->setRelatedArticles($object->getRelatedArticles());
+        $object->setSuggestedArticles($object->getSuggestedArticles());
         $this->getPoolProvider()->prePersist($object);
     }
 
@@ -370,6 +414,8 @@ class PostAdmin extends Admin
         parent::preUpdate($object);
         $object->setPostHasCategory($object->getPostHasCategory());
         $object->setPostHasMedia($object->getPostHasMedia());
+        $object->setRelatedArticles($object->getRelatedArticles());
+        $object->setSuggestedArticles($object->getSuggestedArticles());
         $this->getPoolProvider()->preUpdate($object);
     }
 
