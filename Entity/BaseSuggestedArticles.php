@@ -22,4 +22,12 @@ abstract class BaseSuggestedArticles extends SuggestedArticles
     {
         $this->updatedAt = new \DateTime();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return $this->getPost()->getTitle() ?: 'n/a';
+    }
 }

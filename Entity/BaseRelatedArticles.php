@@ -22,4 +22,12 @@ abstract class BaseRelatedArticles extends RelatedArticles
     {
         $this->updatedAt = new \DateTime();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return $this->getPost()->getTitle() ?: 'n/a';
+    }
 }
