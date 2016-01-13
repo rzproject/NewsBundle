@@ -273,7 +273,7 @@ class PostManager extends ModelPostManager
                 } else {
                     $parameters['exclude_collection'] = $criteria['exclude_collection'];
                 }
-                $query->andWhere('p.collection = :exclude_collection');
+                $query->andWhere('p.collection != :exclude_collection');
             } else {
                 $coll = null;
                 foreach($criteria['exclude_collection'] as $collection) {
@@ -283,7 +283,7 @@ class PostManager extends ModelPostManager
                         $coll[] = (int) $collection;
                     }
                 }
-                $query->andWhere(sprintf('p.collection  IN (%s)', implode((array) $coll, ',')));
+                $query->andWhere(sprintf('p.collection NOT IN (%s)', implode((array) $coll, ',')));
             }
         }
 
