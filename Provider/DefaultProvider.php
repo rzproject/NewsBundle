@@ -69,21 +69,22 @@ class DefaultProvider extends BaseProvider
 
     protected function getMediaBuilder(FormMapper $formMapper) {
 
+        $mediaAdmin = clone $this->mediaAdmin;
         // simulate an association media...
-        $fieldDescription = $this->mediaAdmin->getModelManager()->getNewFieldDescriptionInstance($this->mediaAdmin->getClass(), 'media');
-        $fieldDescription->setAssociationAdmin($this->mediaAdmin);
+        $fieldDescription =  $mediaAdmin->getModelManager()->getNewFieldDescriptionInstance($mediaAdmin->getClass(), 'media');
+        $fieldDescription->setAssociationAdmin($mediaAdmin);
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
-        $fieldDescription->setOptions(array('link_parameters' => array('context' => 'news', 'hide_context' => true, 'provider' => 'sonata.media.provider.image')));
+        $fieldDescription->setOptions(array('link_parameters' => array('context' => 'news', 'hide_context' => true)));
         $fieldDescription->setAssociationMapping(array(
             'fieldName' => 'media',
             'type'      => \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_ONE
         ));
 
-        return $formMapper->create('ogImage', 'sonata_type_model_list', array(
+        return $formMapper->create('ogImage2', 'sonata_type_model_list', array(
             'sonata_field_description' => $fieldDescription,
-            'class'                    => $this->mediaAdmin->getClass(),
-            'model_manager'            => $this->mediaAdmin->getModelManager()),
+            'class'                    => $mediaAdmin->getClass(),
+            'model_manager'            => $mediaAdmin->getModelManager()),
             array('link_parameters' => array('context' => 'news', 'hide_context' => true))
         );
     }
