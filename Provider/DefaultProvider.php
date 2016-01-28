@@ -81,7 +81,7 @@ class DefaultProvider extends BaseProvider
             'type'      => \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_ONE
         ));
 
-        return $formMapper->create('ogImage2', 'sonata_type_model_list', array(
+        return $formMapper->create('ogImage', 'sonata_type_model_list', array(
             'sonata_field_description' => $fieldDescription,
             'class'                    => $mediaAdmin->getClass(),
             'model_manager'            => $mediaAdmin->getModelManager()),
