@@ -39,33 +39,39 @@ class PostSearchIndexListener extends AbstractSearchIndexListener
 
     public function postPersist(LifecycleEventArgs $args)
     {
-        $entity = $args->getEntity();
-        if($entity instanceof PostInterface) {
-            if($this->getConfigManager()->hasIndex($this->entityId)) {
-                if($indexManager = $this->getIndexManager()) {
-                    try {
-                        $indexManager->processIndexData('insert', $entity, $this->entityId);
-                    } catch (\Exception $e) {
-                        throw $e;
-                    }
-                }
-            }
+        $entity = $args->getEntity();		
+        if($entity instanceof PostInterface) {			
+			if(method_exists($entity, 'getNeedIndexer') && $entity->getNeedIndexer() == false){
+				return;
+			}			
+			if($this->getConfigManager()->hasIndex($this->entityId)) {
+				if($indexManager = $this->getIndexManager()) {
+					try {
+						$indexManager->processIndexData('insert', $entity, $this->entityId);
+					} catch (\Exception $e) {
+						throw $e;
+					}
+				}
+			}      
         }
     }
 
     public function postUpdate(LifecycleEventArgs $args)
     {
-        $entity = $args->getEntity();
-        if($entity instanceof PostInterface) {
-            if($this->getConfigManager()->hasIndex($this->entityId)) {
-                if($indexManager = $this->getIndexManager()) {
-                    try {
-                        $indexManager->processIndexData('update', $entity, $this->entityId);
-                    } catch (\Exception $e) {
-                        throw $e;
-                    }
-                }
-            }
+        $entity = $args->getEntity();		
+        if($entity instanceof PostInterface) {			
+			if(method_exists($entity, 'getNeedIndexer') && $entity->getNeedIndexer() == false){
+				return;
+			}
+			if($this->getConfigManager()->hasIndex($this->entityId)) {
+				if($indexManager = $this->getIndexManager()) {
+					try {
+						$indexManager->processIndexData('update', $entity, $this->entityId);
+					} catch (\Exception $e) {
+						throw $e;
+					}
+				}
+			}			
         }
     }
 }

@@ -22,6 +22,8 @@ abstract class BasePost extends Post
     protected $settings;
 
 	protected $viewCount;
+	
+	protected $needIndexer;
 
     const ROUTE_CLASSIFICATION_SEQ_COLLECTION = 'collection';
     const ROUTE_CLASSIFICATION_SEQ_CATEGORY = 'category';
@@ -185,5 +187,14 @@ abstract class BasePost extends Post
 
 	public function incrementViewCount() {
 		$this->viewCount++;
+	}
+	
+	public function setNeedIndexer($needIndexer = true){
+		$this->needIndexer = $needIndexer;
+		return $this;
+	}
+	
+	public function getNeedIndexer(){
+		return $this->needIndexer;
 	}
 }
