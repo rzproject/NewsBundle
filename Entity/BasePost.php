@@ -190,11 +190,12 @@ abstract class BasePost extends Post
 	}
 	
 	public function setNeedIndexer($needIndexer = true){
-		$this->needIndexer = $needIndexer;
-		return $this;
+	   $this->needIndexer = $needIndexer;
+	   return $this;
 	}
-	
+
 	public function getNeedIndexer(){
-		return $this->needIndexer;
+	   return $this->needIndexer;
 	}
+
 }
