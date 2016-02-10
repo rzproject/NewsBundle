@@ -80,7 +80,7 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-        /**
+    /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
     private function addAdminSection(ArrayNodeDefinition $node)
@@ -129,7 +129,7 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-         /**
+    /**
      * @param ArrayNodeDefinition $node
      */
     private function addModelSection(ArrayNodeDefinition $node)

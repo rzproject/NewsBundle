@@ -19,7 +19,8 @@
         "rz/user-bundle":  "2.0.0.*",
         "rz/media-bundle": "2.0.0.*",
         "rz/doctrine-orm-admin-bundle": "2.0.0.*",
-        "rz/classification-bundle": "2.0.0.*"
+        "rz/classification-bundle": "2.0.0.*",
+        "rz/redirect-bundle": "2.0.0.*"
     },
     "require-dev": {
         "rz/block-bundle": "2.0.0.*"
