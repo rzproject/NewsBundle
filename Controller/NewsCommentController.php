@@ -71,7 +71,7 @@ class NewsCommentController extends AbstractNewsController
         $comment->setPost($post);
         $comment->setStatus($post->getCommentsDefaultStatus());
 
-        return $this->get('form.factory')->createNamed('comment', 'rz_post_comment', $comment);
+        return $this->get('form.factory')->createNamed('comment', 'sonata_post_comment', $comment);
     }
 
     /**

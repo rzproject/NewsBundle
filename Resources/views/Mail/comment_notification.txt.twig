@@ -1,0 +1,11 @@
+{% autoescape false %}
+{{ 'mail_title_comment_notification'|trans({
+    '%post_title%'     : post.title,
+    '%blog_title%'     : blog.title,
+    '%comment_message%': comment.message,
+    '%comment_email%'  : comment.email,
+    '%comment_url%'    : comment.url,
+    '%comment_name%'   : comment.name,
+    '%post_url%'       : url('rz_news_view', { 'permalink': blog.permalinkGenerator.generate(post), '_format': 'html'}, true),
+    }, 'SonataNewsBundle')}}
+{% endautoescape %}
