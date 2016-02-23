@@ -41,7 +41,7 @@ class PostSearchIndexListener extends AbstractSearchIndexListener
     {
         $entity = $args->getEntity();		
         if($entity instanceof PostInterface) {			
-			if(method_exists($entity, 'getNeedIndexer') && $entity->getNeedIndexer() == false){
+			if(method_exists($entity, 'getNeedIndexer') && $entity->getNeedIndexer() === false){
 				return;
 			}			
 			if($this->getConfigManager()->hasIndex($this->entityId)) {
@@ -60,7 +60,7 @@ class PostSearchIndexListener extends AbstractSearchIndexListener
     {
         $entity = $args->getEntity();		
         if($entity instanceof PostInterface) {			
-			if(method_exists($entity, 'getNeedIndexer') && $entity->getNeedIndexer() == false){
+			if(method_exists($entity, 'getNeedIndexer') && $entity->getNeedIndexer() === false){
 				return;
 			}
 			if($this->getConfigManager()->hasIndex($this->entityId)) {
