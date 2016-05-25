@@ -14,6 +14,8 @@ class PostSetsAdmin extends Admin
 
     protected $pool;
 
+    protected $childPool;
+
     protected $defaultContext;
 
     protected $defaultCollection;
@@ -72,53 +74,65 @@ class PostSetsAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $formMapper
             ->tab('tab.rz_news_post_sets')
                 ->with('tab.group.rz_news_post', array('class' => 'col-md-12'))->end()
-            ->end()
-            ->tab('tab.rz_news_post_sets_settings')
-                ->with('tab.group.rz_news_post_sets_settings', array('class' => 'col-md-12'))->end()
             ->end()
             ->tab('tab.rz_news_post_sets_has_posts')
                 ->with('tab.group.rz_news_post_sets_has_posts', array('class' => 'col-md-12'))->end()
             ->end();
 
+        if($childProvider = $this->getPoolProvider($this->childPool)) {
+            $postSetsHasPostsFieldOptions = array(
+                'edit'            => 'inline',
+                'inline'          => 'standard',
+                'sortable'        => 'position',
+                'admin_code'      => 'rz.news.admin.post_sets_has_posts',
+            );
+            $postSetsHasPostsTabSettings = array('class' => 'col-md-8');
+        } else {
+            $postSetsHasPostsFieldOptions = array(
+                'edit'            => 'inline',
+                'inline'          => 'table',
+                'sortable'        => 'position',
+                'admin_code'      => 'rz.news.admin.post_sets_has_posts',
+            );
+            $postSetsHasPostsTabSettings = array('class' => 'col-md-12');
+        }
+
+
+        $provider = $this->getPoolProvider($this->pool);
+
+        if($provider){
+            $postSetsTabSettings = array('class' => 'col-md-6');
+        } else {
+            $postSetsTabSettings = array('class' => 'col-md-12');
+        }
 
         $formMapper
             ->tab('tab.rz_news_post_sets')
-                ->with('tab.group.rz_news_post', array('class' => 'col-md-12'))
+                ->with('tab.group.rz_news_post', $postSetsTabSettings)
                     ->add('name')
-                    ->add('description')
+                    ->add('description', null, array('attr'=>array('rows'=>14)))
                 ->end()
             ->end()
             ->tab('tab.rz_news_post_sets_has_posts')
-                ->with('tab.group.rz_news_post_sets_has_posts', array('class' => 'col-md-12'))
+                ->with('tab.group.rz_news_post_sets_has_posts', $postSetsHasPostsTabSettings)
                     ->add('postSetsHasPosts', 'sonata_type_collection', array(
                         'cascade_validation' => true,
                         'required'           => false,
-                        'label'              => false
-                    ), array(
-                            'edit'            => 'inline',
-                            'inline'          => 'table',
-                            'sortable'        => 'position',
-                            'admin_code'      => 'rz.news.admin.post_sets_has_posts',
-                        )
-                    )
+                    ), $postSetsHasPostsFieldOptions)
                 ->end()
             ->end();
 
-
-        $provider = $this->getPoolProvider();
-        dump($provider);
-        die();
-        $instance = $this->getSubject();
-
-        if ($instance && $instance->getId()) {
-            $provider->load($instance);
-            $provider->buildEditForm($formMapper);
-        } else {
-            $provider->buildCreateForm($formMapper);
+        if($provider) {
+            $instance = $this->getSubject();
+            if ($instance && $instance->getId()) {
+                $provider->load($instance);
+                $provider->buildEditForm($formMapper);
+            } else {
+                $provider->buildCreateForm($formMapper);
+            }
         }
     }
 
@@ -219,6 +233,22 @@ class PostSetsAdmin extends Admin
     }
 
     /**
+     * @return mixed
+     */
+    public function getChildPool()
+    {
+        return $this->childPool;
+    }
+
+    /**
+     * @param mixed $childPool
+     */
+    public function setChildPool($childPool)
+    {
+        $this->childPool = $childPool;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function prePersist($object)
@@ -253,15 +283,18 @@ class PostSetsAdmin extends Admin
         }
     }
 
-    protected function getPoolProvider() {
+    protected function getPoolProvider($pool) {
         $currentCollection = $this->fetchCurrentCollection();
-        if ($this->pool->hasCollection($currentCollection->getSlug())) {
-            $providerName = $this->pool->getProviderNameByCollection($currentCollection->getSlug());
+        if ($pool->hasCollection($currentCollection->getSlug())) {
+            $providerName = $pool->getProviderNameByCollection($currentCollection->getSlug());
         } else {
-            $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
+            $providerName = $pool->getProviderNameByCollection($pool->getDefaultCollection());
         }
 
-        return $this->pool->getProvider($providerName);
+        if(!$providerName) {
+            return;
+        }
+        return $pool->getProvider($providerName);
     }
 
     /**
@@ -300,20 +333,22 @@ class PostSetsAdmin extends Admin
     {
         $instance = parent::getNewInstance();
 
-        $galleryContext = $this->contextManager->findOneBy(array('id'=>$this->getSlugify()->slugify($this->getDefaultContext())));
+        $context = $this->contextManager->findOneBy(array('id'=>$this->getSlugify()->slugify($this->getDefaultContext())));
 
-        if(!$galleryContext && !$galleryContext instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
-            $galleryContext = $this->getContextManager->generateDefaultContext($this->getDefaultContext());
+        if(!$context && !$context instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
+            $context = $this->contextManager->generateDefaultContext($this->getDefaultContext());
         }
 
         $collectionSlug = $this->getPersistentParameter('collection') ?: $this->getSlugify()->slugify($this->getDefaultCollection());
-        $collections = $this->collectionManager->findBy(array('context'=>$galleryContext));
-        $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug, 'context'=>$galleryContext));
+        $collections = $this->collectionManager->findBy(array('context'=>$context));
+        $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug, 'context'=>$context));
 
         if (!$collections && !$collection && !$collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
-            $collection = $this->collectionManager->generateDefaultColection($galleryContext, $this->getDefaultCollection());
+            $collection = $this->collectionManager->generateDefaultColection($context, $this->getDefaultCollection());
         }
 
         $instance->setCollection($collection);
+
+        return $instance;
     }
 }

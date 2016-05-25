@@ -67,7 +67,11 @@ class PostAdminController extends CRUDController
 
         if ($this->admin->getPersistentParameter('collection')) {
             $collection = $collectiontManager->findOneBy(array('slug'=>$this->admin->getPersistentParameter('collection')));
-            $datagrid->setValue('collection', null, $collection->getId());
+            if($collection && $collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
+                $datagrid->setValue('collection', null, $collection->getId());
+            } else {
+                throw $this->createNotFoundException($this->get('translator')->trans('page_not_found', array(), 'SonataAdminBundle'));
+            }
         } else {
             $datagrid->setValue('collection', null, $currentCollection->getId());
         }

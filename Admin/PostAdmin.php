@@ -506,11 +506,10 @@ class PostAdmin extends Admin
         $parameters = array(
             'collection'      => $this->getDefaultCollection(),
             'site'            => $site ? $site : '',
-            'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0,
-        );
+            'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0);
 
         if ($this->getSubject()) {
-            $parameters['collection'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getSlug() : '';
+            $parameters['collection'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getSlug() : $this->getDefaultCollection();
             $parameters['site']       = $this->getSubject()->getSite() ? $this->getSubject()->getSite()->getId() : '';
             return $parameters;
         }
@@ -535,31 +534,21 @@ class PostAdmin extends Admin
             $instance->setSite($site);
         }
 
-        #TODO: set collection slug configurable
-        if ($collectionSlug = $this->getPersistentParameter('collection')?: $this->getDefaultCollection()) {
-            $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
+        $postContext = $this->contextManager->findOneBy(array('id'=>$this->getSlugify()->slugify($this->getDefaultContext())));
 
-            if (!$collection) {
-                //find 'news' context
-                $context = $this->contextManager->find($this->getDefaultContext());
-                if(!$context) {
-                    $context = $this->contextManager->create();
-                    $context->setEnabled(true);
-                    $context->setId($context);
-                    $context->setName($context);
-                    $this->contextManager->save($context);
-                }
-                //create collection
-                $collection = $this->collectionManager->create();
-                $collection->setContext($context);
-                $name = ucwords(str_replace('-', ' ',$collectionSlug));
-                $collection->setName($name);
-                $collection->setDescription($name);
-                $this->collectionManager->save($collection);
-            }
-
-            $instance->setCollection($collection);
+        if(!$postContext && !$postContext instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
+            $postContext = $this->getContextManager->generateDefaultContext($this->getDefaultContext());
         }
+
+        $collectionSlug = $this->getPersistentParameter('collection') ?: $this->getSlugify()->slugify($this->getDefaultCollection());
+        $collections = $this->collectionManager->findBy(array('context'=>$postContext));
+        $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug, 'context'=>$postContext));
+
+        if (!$collections && !$collection && !$collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
+            $collection = $this->collectionManager->generateDefaultColection($postContext, $this->getDefaultCollection());
+        }
+
+        $instance->setCollection($collection);
 
         return $instance;
     }

@@ -290,8 +290,12 @@
                 <target>Posts Collection</target>
             </trans-unit>
             <trans-unit id="form.label_post_sets_has_posts">
-                <source>tab.group.rz_news_post_sets_has_posts</source>
-                <target>Posts Collection</target>
+                <source>form.label_post_sets_has_posts</source>
+                <target></target>
+            </trans-unit>
+            <trans-unit id="form.label_post_sets_has_posts_header">
+                  <source>form.label_post_sets_has_posts_header</source>
+                  <target>Posts Collection #</target>
             </trans-unit>
             <trans-unit id="tab.rz_news_post_sets_settings">
                 <source>tab.rz_news_post_sets_settings</source>
@@ -308,6 +312,14 @@
             <trans-unit id="post_sets_collection_menu_header_description">
                 <source>post_sets_collection_menu_header_description</source>
                 <target>Sets Type</target>
+            </trans-unit>
+            <trans-unit id="label_post_sets_has_posts">
+                <source>label_post_sets_has_posts</source>
+                <target>Posts</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_news_post_settings">
+                <source>tab.group.rz_news_post_settings</source>
+                <target>Settings</target>
             </trans-unit>
         </body>
     </file>

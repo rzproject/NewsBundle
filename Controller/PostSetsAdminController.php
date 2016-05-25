@@ -52,11 +52,13 @@ class PostSetsAdminController extends Controller
             $currentCollection = $collectiontManager->findOneBy(array('slug'=>$slugify->slugify($defaultCollection), 'context'=>$context));
         }
 
-        if(!$currentCollection && !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
+        $collections = $collectiontManager->findBy(array('context'=>$context));
+
+        if(!$currentCollection &&
+           !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface &&
+            $collections < 0) {
             $currentCollection = $collectiontManager->generateDefaultColection($context, $defaultCollection);
         }
-
-        $collections = $collectiontManager->findBy(array('context'=>$context));
 
         if(count($collections)>0) {
 
@@ -65,8 +67,12 @@ class PostSetsAdminController extends Controller
             }
 
             if ($this->admin->getPersistentParameter('collection')) {
-                $collection = $collectiontManager->findOneBy(array('slug'=>$this->admin->getPersistentParameter('collection')));
-                $datagrid->setValue('collection', null, $collection->getId());
+                $collection = $collectiontManager->findOneBy(array('context'=>$context, 'slug'=>$this->admin->getPersistentParameter('collection')));
+                if($collection && $collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
+                    $datagrid->setValue('collection', null, $collection->getId());
+                } else {
+                    throw $this->createNotFoundException($this->get('translator')->trans('page_not_found', array(), 'SonataAdminBundle'));
+                }
             } else {
                 $datagrid->setValue('collection', null, $currentCollection->getId());
             }

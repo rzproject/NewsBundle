@@ -35,8 +35,8 @@ class PostSetsDefaultProvider extends BasePostSetsProvider
     public function buildCreateForm(FormMapper $formMapper, $object = null)
     {
         $formMapper
-            ->tab('tab.rz_news_post_sets_settings')
-                ->with('tab.group.rz_news_post_sets_settings', array('class' => 'col-md-12'))->end()
+            ->tab('tab.rz_news_post_sets')
+                ->with('tab.group.rz_news_post_settings', array('class' => 'col-md-6'))
                     ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
                 ->end()
             ->end();
