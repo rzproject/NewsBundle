@@ -80,8 +80,9 @@ class PostAdminController extends CRUDController
 
         if(!$currentCollection &&
             !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface &&
-            $collections < 0) {
+            count($collections) === 0) {
             $currentCollection = $collectiontManager->generateDefaultColection($context, $defaultCollection);
+            $collections = $collectiontManager->findBy(array('context'=>$context));
         }
 
         if(count($collections)>0) {
@@ -101,7 +102,7 @@ class PostAdminController extends CRUDController
                 $datagrid->setValue('collection', null, $currentCollection->getId());
             }
         }
-        
+
         $formView = $datagrid->getForm()->createView();
 
         // set the theme for the current Admin Form

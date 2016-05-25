@@ -56,8 +56,9 @@ class PostSetsAdminController extends Controller
 
         if(!$currentCollection &&
            !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface &&
-            $collections < 0) {
+            count($collections) === 0) {
             $currentCollection = $collectiontManager->generateDefaultColection($context, $defaultCollection);
+            $collections = $collectiontManager->findBy(array('context'=>$context));
         }
 
         if(count($collections)>0) {
