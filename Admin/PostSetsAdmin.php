@@ -285,16 +285,13 @@ class PostSetsAdmin extends Admin
 
     protected function getPoolProvider($pool) {
         $currentCollection = $this->fetchCurrentCollection();
+
         if ($pool->hasCollection($currentCollection->getSlug())) {
             $providerName = $pool->getProviderNameByCollection($currentCollection->getSlug());
-        } else {
-            $providerName = $pool->getProviderNameByCollection($pool->getDefaultCollection());
+            return $pool->getProvider($providerName);
         }
 
-        if(!$providerName) {
-            return;
-        }
-        return $pool->getProvider($providerName);
+        return;
     }
 
     /**

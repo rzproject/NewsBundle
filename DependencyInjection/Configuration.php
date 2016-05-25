@@ -25,8 +25,7 @@ class Configuration implements ConfigurationInterface
         $this->addAdminSection($node);
         $this->addPermalinkSection($node);
         $this->addNewsPageSection($node);
-        $this->addPostProviderSection($node);
-        $this->addPostSetsProviderSection($node);
+        $this->addProviderSection($node);
         $this->addSettingsSection($node);
         return $treeBuilder;
     }
@@ -41,7 +40,6 @@ class Configuration implements ConfigurationInterface
                     ->info('You should use: sonata.core.slugify.cocur, but for BC we keep \'sonata.core.slugify.native\' as default')
                     ->defaultValue('sonata.core.slugify.cocur')
                 ->end()
-                ->scalarNode('default_seo_provider')->defaultValue('rz.news.provider.seo.default')->end()
                 ->scalarNode('enable_controller')->defaultValue(false)->end()
             ->end()
         ;
@@ -85,24 +83,62 @@ class Configuration implements ConfigurationInterface
     /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
-    private function addPostProviderSection(ArrayNodeDefinition $node)
+    private function addProviderSection(ArrayNodeDefinition $node)
     {
         $node
             ->children()
-                ->arrayNode('post')
+                ->arrayNode('providers')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('default_context')->isRequired()->end()
-                        ->scalarNode('default_collection')->isRequired()->end()
-                        ->scalarNode('default_provider_collection')->isRequired()->end()
-                        ->arrayNode('collections')
-                            ->useAttributeAsKey('id')
-                            ->isRequired()
-                            ->prototype('array')
-                                ->children()
-                                    ->scalarNode('provider')->isRequired()->end()
-                                    ->scalarNode('preferred_template')->defaultValue('RzNewsBundle:Block:block_post_default.html.twig')->cannotBeEmpty()->end()
+                    ->arrayNode('post')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('default_context')->isRequired()->end()
+                            ->scalarNode('default_collection')->isRequired()->end()
+                            ->scalarNode('default_provider_collection')->isRequired()->end()
+                            ->arrayNode('collections')
+                                ->useAttributeAsKey('id')
+                                ->isRequired()
+                                ->prototype('array')
+                                    ->children()
+                                        ->scalarNode('provider')->isRequired()->end()
+                                        ->scalarNode('preferred_template')->defaultValue('RzNewsBundle:Block:block_post_default.html.twig')->cannotBeEmpty()->end()
+                                    ->end()
                                 ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('post_sets')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('default_context')->isRequired()->end()
+                            ->scalarNode('default_collection')->isRequired()->end()
+                            ->scalarNode('default_provider_collection')->isRequired()->end()
+                            ->arrayNode('collections')
+                                ->useAttributeAsKey('id')
+                                ->prototype('array')
+                                    ->children()
+                                         ->arrayNode('post_sets')
+                                             ->addDefaultsIfNotSet()
+                                             ->children()
+                                                ->scalarNode('provider')->end()
+                                             ->end()
+                                         ->end()
+                                          ->arrayNode('post_sets_has_posts')
+                                             ->addDefaultsIfNotSet()
+                                             ->children()
+                                                ->scalarNode('provider')->end()
+                                             ->end()
+                                         ->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('seo')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_provider')->defaultValue('rz.news.provider.seo.default')->end()
                             ->end()
                         ->end()
                     ->end()
@@ -110,8 +146,6 @@ class Configuration implements ConfigurationInterface
             ->end()
         ;
     }
-
-
 
     /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
@@ -311,44 +345,4 @@ class Configuration implements ConfigurationInterface
             ->end()
         ;
     }
-
-    /**
-     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
-     */
-    private function addPostSetsProviderSection(ArrayNodeDefinition $node)
-    {
-         $node
-            ->children()
-                ->arrayNode('post_sets')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('default_context')->isRequired()->end()
-                        ->scalarNode('default_collection')->isRequired()->end()
-                        ->scalarNode('default_provider_collection')->isRequired()->end()
-                        ->arrayNode('collections')
-                            ->useAttributeAsKey('id')
-                            ->isRequired()
-                            ->prototype('array')
-                                ->children()
-                                     ->arrayNode('post_sets')
-                                         ->addDefaultsIfNotSet()
-                                         ->children()
-                                            ->scalarNode('provider')->end()
-                                         ->end()
-                                     ->end()
-                                      ->arrayNode('post_sets_has_posts')
-                                         ->addDefaultsIfNotSet()
-                                         ->children()
-                                            ->scalarNode('provider')->end()
-                                         ->end()
-                                     ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
-            ->end()
-        ;
-    }
-
 }

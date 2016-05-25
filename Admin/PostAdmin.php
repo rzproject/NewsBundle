@@ -119,7 +119,6 @@ class PostAdmin extends Admin
                     ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->end()
                 ->with('group_status', array('class' => 'col-md-4',))
-                    //->add('author', 'sonata_type_model_list')
                     ->add('enabled', null, array('required' => false))
                     ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
                 ->end()

@@ -34,10 +34,9 @@ class RzNewsExtension extends Extension
         $this->configurePermalinks($container, $config);
 
         $loader->load('post_provider.xml');
-        $this->configurePostProviders($container, $config);
-
         $loader->load('post_sets_provider.xml');
-        $this->configurePostSetsProviders($container, $config);
+        $loader->load('seo_provider.xml');
+        $this->configureProviders($container, $config['providers']);
 
         $container->setParameter('rz.news.enable_controller',  $config['enable_controller']);
         $container->setParameter('rz.news.slugify_service',    $config['slugify_service']);
@@ -51,8 +50,7 @@ class RzNewsExtension extends Extension
             $loader->load('news_page_service.xml');
             $this->configureNewsPage($container, $config);
         }
-        $loader->load('seo_provider.xml');
-        $this->configureSeo($container, $config);
+
         $this->registerDoctrineMapping($config);
     }
 
@@ -149,38 +147,32 @@ class RzNewsExtension extends Extension
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      * @param array                                                   $config
      */
-    public function configurePostProviders(ContainerBuilder $container, $config)
+    public function configureProviders(ContainerBuilder $container, $config)
     {
-
+        #Post Provider
         $postPool = $container->getDefinition('rz.news.post.pool');
         $postPool->replaceArgument(0, $config['post']['default_provider_collection']);
 
-        $container->setParameter('rz.news.post.default_context',             $config['post']['default_context']);
-        $container->setParameter('rz.news.post.default_collection',          $config['post']['default_collection']);
-
-        $container->setParameter('rz.news.post.provider.default_provider_collection', $config['post']['default_provider_collection']);
-        $container->setParameter('rz.news.post.provider.collections',                 $config['post']['collections']);
-    }
+        $container->setParameter('rz.news.post.default_context',                        $config['post']['default_context']);
+        $container->setParameter('rz.news.post.default_collection',                     $config['post']['default_collection']);
+        $container->setParameter('rz.news.post.provider.default_provider_collection',   $config['post']['default_provider_collection']);
+        $container->setParameter('rz.news.post.provider.collections',                   $config['post']['collections']);
 
 
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param array                                                   $config
-     */
-    public function configurePostSetsProviders(ContainerBuilder $container, $config)
-    {
+        #Post Sets Provider
         $postSetsPool = $container->getDefinition('rz.news.post_sets.pool');
         $postSetsPool->replaceArgument(0, $config['post_sets']['default_provider_collection']);
 
         $postSetsPool = $container->getDefinition('rz.news.post_sets_has_posts.pool');
         $postSetsPool->replaceArgument(0, $config['post_sets']['default_provider_collection']);
 
-        $container->setParameter('rz.news.post_sets.default_context',             $config['post_sets']['default_context']);
-        $container->setParameter('rz.news.post_sets.default_collection',          $config['post_sets']['default_collection']);
+        $container->setParameter('rz.news.post_sets.default_context',                       $config['post_sets']['default_context']);
+        $container->setParameter('rz.news.post_sets.default_collection',                    $config['post_sets']['default_collection']);
+        $container->setParameter('rz.news.post_sets.provider.default_provider_collection',  $config['post_sets']['default_provider_collection']);
+        $container->setParameter('rz.news.post_sets.provider.collections',                  $config['post_sets']['collections']);
 
-        $container->setParameter('rz.news.post_sets.provider.default_provider_collection', $config['post_sets']['default_provider_collection']);
-        $container->setParameter('rz.news.post_sets.provider.collections',                 $config['post_sets']['collections']);
-
+        # SEO Provider
+        $container->setParameter('rz.news.default_seo_provider',                            $config['seo']['default_provider']);
     }
 
     /**
@@ -229,15 +221,6 @@ class RzNewsExtension extends Extension
 
         $container->setParameter('rz.news.page_templates',                         $pageTemplates);
 
-    }
-
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param array                                                   $config
-     */
-    public function configureSeo(ContainerBuilder $container, $config)
-    {
-        $container->setParameter('rz.news.default_seo_provider',                   $config['default_seo_provider']);
     }
 
     /**
