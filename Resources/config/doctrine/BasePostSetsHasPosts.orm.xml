@@ -5,6 +5,7 @@
         <field name="position"                type="integer"   column="position"                  nullable="true"/>
         <field name="enabled"                 type="boolean"   column="enabled"                   nullable="true" />
         <field name="publicationDateStart"    type="datetime"  column="publication_date_start"    nullable="true"/>
+        <field name="settings"                type="json"       column="settings"                 nullable="true"/>
 
         <field name="updatedAt"          column="updated_at"     type="datetime" />
         <field name="createdAt"          column="created_at"     type="datetime" />

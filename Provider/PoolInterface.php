@@ -1,6 +1,6 @@
 <?php
 
-namespace Rz\NewsBundle\Provider\PostSets;
+namespace Rz\NewsBundle\Provider;
 
 interface PoolInterface
 {

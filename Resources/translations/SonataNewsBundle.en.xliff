@@ -325,6 +325,14 @@
                 <source>breadcrumb.link_post_sets_create</source>
                 <target>Create</target>
             </trans-unit>
+            <trans-unit id="tab.rz_news_post_sets_has_posts.tab.group.rz_news_post_sets_has_posts">
+                <source>tab.rz_news_post_sets_has_posts.tab.group.rz_news_post_sets_has_posts</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings">
+                <source>tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings</source>
+                <target>Settings</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

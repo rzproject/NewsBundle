@@ -27,6 +27,7 @@ class RzNewsExtension extends Extension
         $loader->load('admin.xml');
         $this->configureManagerClass($config, $container);
         $this->configureClass($config, $container);
+        $this->configureAdminClass($config, $container);
         $this->configureController($config, $container);
         $this->configureTranslationDomain($config, $container);
 

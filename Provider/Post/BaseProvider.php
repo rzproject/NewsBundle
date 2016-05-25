@@ -4,37 +4,14 @@ namespace Rz\NewsBundle\Provider\Post;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\NewsBundle\Model\PostInterface;
+use Rz\NewsBundle\Provider\BaseProvider as Provider;
 
-abstract class BaseProvider implements ProviderInterface
+abstract class BaseProvider extends Provider
 {
     protected $templates = [];
     protected $defaultTemplate;
     protected $postManager;
     protected $isControllerEnabled;
-
-    /**
-     * @param string                                           $name
-     */
-    public function __construct($name)
-    {
-        $this->name          = $name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 
     /**
      * {@inheritdoc}
@@ -57,26 +34,19 @@ abstract class BaseProvider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function postPersist(PostInterface $object)
-    {
-    }
+    public function postPersist(PostInterface $object){}
 
     /**
      * {@inheritdoc}
      */
-    public function postUpdate(PostInterface $object)
-    {
-    }
+    public function postUpdate(PostInterface $object){}
 
     /**
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, PostInterface $object)
-    {
-    }
+    public function validate(ErrorElement $errorElement, PostInterface $object){}
 
-    public function load(PostInterface $object) {
-    }
+    public function load(PostInterface $object) {}
 
     /**
      * @return mixed
@@ -144,7 +114,6 @@ abstract class BaseProvider implements ProviderInterface
 
     public function getPreferedChoice() {
         $template = $this->getDefaultTemplate() ?: null;
-
         if($template) {
             return array($template);
         }

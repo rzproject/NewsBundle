@@ -26,8 +26,6 @@ class PostSetsAdmin extends Admin
 
     protected $slugify;
 
-    const POST_SETS_DEFAULT_COLLECTION = 'default';
-
     /**
      * {@inheritdoc}
      */

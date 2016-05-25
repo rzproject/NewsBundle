@@ -11,8 +11,7 @@
         <parameter key="rz.news.admin.related_articles.class">Rz\NewsBundle\Admin\RelatedArticlesAdmin</parameter>
         <parameter key="rz.news.admin.suggested_articles.class">Rz\NewsBundle\Admin\SuggestedArticlesAdmin</parameter>
         <parameter key="rz.news.admin.post_sets.class">Rz\NewsBundle\Admin\PostSetsAdmin</parameter>
-        <parameter key="rz.news.admin.post_sets_has_posts.class">Rz\NewsBundle\Admin\PostSetsHasPostAdmin</parameter>
-
+        <parameter key="rz.news.admin.post_sets_has_posts.class">Rz\NewsBundle\Admin\PostSetsHasPostsAdmin</parameter>
 
     </parameters>
 

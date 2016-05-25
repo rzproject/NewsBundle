@@ -8,19 +8,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Rz\NewsBundle\Model\PostSetsHasPostsInterface;
+use Rz\NewsBundle\Provider\BaseProvider;
 
-class PostSetsHasPostsDefaultProvider extends BasePostSetsHasPostsProvider
+class PostSetsHasPostsDefaultProvider extends BaseProvider
 {
-    protected $translator;
-
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
-    {
-        parent::__construct($name);
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -35,8 +26,8 @@ class PostSetsHasPostsDefaultProvider extends BasePostSetsHasPostsProvider
     public function buildCreateForm(FormMapper $formMapper, $object = null)
     {
         $formMapper
-            ->tab('Settings')
-                ->with('rz_gallery_has_media_settings',  array('class' => 'col-md-6'))
+            ->tab('tab.rz_news_post_sets_has_posts_settings')
+                ->with('tab.group.rz_news_post_sets_has_posts_settings',  array('class' => 'col-md-8'))
                     ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
                 ->end()
             ->end();
@@ -64,19 +55,5 @@ class PostSetsHasPostsDefaultProvider extends BasePostSetsHasPostsProvider
         return $settings;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * @param mixed $translator
-     */
-    public function setTranslator($translator)
-    {
-        $this->translator = $translator;
-    }
+    public function load(PostSetsHasPostsInterface $object) {}
 }

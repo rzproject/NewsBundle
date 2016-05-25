@@ -20,14 +20,6 @@ class DefaultSeoProvider extends BaseProvider
     protected $translator;
 
     /**
-     * @param string $name
-     */
-    public function __construct($name)
-    {
-        parent::__construct($name);
-    }
-
-    /**
      * @return array
      */
     public function getMetatagChoices()
@@ -110,20 +102,18 @@ class DefaultSeoProvider extends BaseProvider
         );
     }
 
-    public function load(PostInterface $post) {
+    public function load(PostInterface $object) {
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             //load media
-            $media = $post->getSeoSetting('ogImage', null);
+            $media = $object->getSeoSetting('ogImage', null);
             if (is_int($media)) {
                 $media = $this->mediaManager->findOneBy(array('id' => $media));
             }
-            $post->setSeoSetting('ogImage', $media);
+            $object->setSeoSetting('ogImage', $media);
         }
     }
 
-    public function getOptions() {
-
-    }
+    public function getOptions(){}
 
     /**
      * @return mixed

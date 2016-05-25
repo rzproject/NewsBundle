@@ -14,7 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 class DefaultProvider extends BaseProvider
 {
     protected $isNew;
-    protected $translator;
 
     /**
      * @param string $name
@@ -70,22 +69,5 @@ class DefaultProvider extends BaseProvider
         return $settings;
     }
 
-    public function load(PostInterface $post) {
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * @param mixed $translator
-     */
-    public function setTranslator($translator)
-    {
-        $this->translator = $translator;
-    }
+    public function load(PostInterface $object) {}
 }

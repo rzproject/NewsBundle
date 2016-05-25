@@ -1,6 +1,6 @@
 <?php
 
-namespace Rz\NewsBundle\Provider\Post;
+namespace Rz\NewsBundle\Provider;
 
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
@@ -37,23 +37,7 @@ interface ProviderInterface
      */
     public function buildEditForm(FormMapper $formMapper);
 
-    /**
-     * @return array
-     */
-    public function getTemplates();
+    public function getTranslator();
 
-    /**
-     * @param array $templates
-     */
-    public function setTemplates($templates);
-
-    /**
-     * @return mixed
-     */
-    public function getIsControllerEnabled();
-
-    /**
-     * @param mixed $isControllerEnabled
-     */
-    public function setIsControllerEnabled($isControllerEnabled);
+    public function setTranslator($translator);
 }

@@ -8,19 +8,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Rz\NewsBundle\Model\PostSetsInterface;
+use Rz\NewsBundle\Provider\BaseProvider;
 
-class PostSetsDefaultProvider extends BasePostSetsProvider
+class PostSetsDefaultProvider extends BaseProvider
 {
-    protected $translator;
-
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
-    {
-        parent::__construct($name);
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -63,20 +54,5 @@ class PostSetsDefaultProvider extends BasePostSetsProvider
         return $settings;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * @param mixed $translator
-     */
-    public function setTranslator($translator)
-    {
-        $this->translator = $translator;
-    }
-
+    public function load(PostSetsInterface $object) {}
 }
