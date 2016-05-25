@@ -190,7 +190,7 @@ class PostAdmin extends Admin
                             'edit'              => 'inline',
                             'inline'            => 'standard',
                             'sortable'          => 'position',
-                            'link_parameters'   => array('context' => 'news'),
+                            'link_parameters'   => array('context' => $this->getDefaultContext()),
                             'admin_code'        => 'rz.news.admin.post_has_media',
                         )
                     )
@@ -208,7 +208,7 @@ class PostAdmin extends Admin
                             'edit'              => 'inline',
                             'inline'            => 'table',
                             'sortable'          => 'position',
-                            'link_parameters'   => array('context' => 'news'),
+                            'link_parameters'   => array('context' => $this->getDefaultContext()),
                             'admin_code'        => 'rz.news.admin.related_articles',
                         )
                     )
@@ -226,7 +226,7 @@ class PostAdmin extends Admin
                             'edit'              => 'inline',
                             'inline'            => 'table',
                             'sortable'          => 'position',
-                            'link_parameters'   => array('context' => 'news'),
+                            'link_parameters'   => array('context' => $this->getDefaultContext()),
                             'admin_code'        => 'rz.news.admin.suggested_articles',
                         )
                     )
@@ -338,7 +338,7 @@ class PostAdmin extends Admin
                     $datagrid = $admin->getDatagrid();
                     $queryBuilder = $datagrid->getQuery();
                     $queryBuilder->andWhere(sprintf('%s.context = :context', $queryBuilder->getRootAlias()));
-                    $queryBuilder->setParameter('context', 'news');
+                    $queryBuilder->setParameter('context', $this->getDefaultContext());
                 }
 
             ))
@@ -504,7 +504,7 @@ class PostAdmin extends Admin
         $site = $this->getSite();
 
         $parameters = array(
-            'collection'      => 'article',
+            'collection'      => $this->getDefaultCollection(),
             'site'            => $site ? $site : '',
             'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0,
         );
