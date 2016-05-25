@@ -8,6 +8,8 @@
         <parameter key="rz.news.entity.manager.post_has_media.class">Rz\NewsBundle\Entity\PostHasMediaManager</parameter>
         <parameter key="rz.news.entity.manager.related_articles.class">Rz\NewsBundle\Entity\RelatedArticlesManager</parameter>
         <parameter key="rz.news.entity.manager.suggested_articles.class">Rz\NewsBundle\Entity\SuggestedArticlesManager</parameter>
+        <parameter key="rz.news.entity.manager.post_sets.class">Rz\NewsBundle\Entity\PostSetsManager</parameter>
+        <parameter key="rz.news.entity.manager.post_sets_has_post.class">Rz\NewsBundle\Entity\PostSetsHasPostManager</parameter>
     </parameters>
 
     <services>
@@ -30,6 +32,15 @@
             <argument>%rz.news.suggested_articles.entity%</argument>
             <argument type="service" id="doctrine" />
         </service>
-        
+
+        <service id="rz.news.manager.post_sets" class="%rz.news.entity.manager.post_sets.class%">
+            <argument>%rz.news.post_sets.entity%</argument>
+            <argument type="service" id="doctrine" />
+        </service>
+
+        <service id="rz.news.manager.post_sets_has_posts" class="%rz.news.entity.manager.post_sets_has_posts.class%">
+            <argument>%rz.news.post_sets_has_posts.entity%</argument>
+            <argument type="service" id="doctrine" />
+        </service>
     </services>
 </container>

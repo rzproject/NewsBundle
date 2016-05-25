@@ -1,6 +1,6 @@
 <?php
 
-namespace Rz\NewsBundle\Provider;
+namespace Rz\NewsBundle\Provider\Post;
 
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
@@ -9,12 +9,15 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Sonata\NewsBundle\Model\PostInterface;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
-class DefaultProvider extends BaseProvider
+class DefaultSeoProvider extends BaseProvider
 {
-
+    protected $metatagChoices = [];
     protected $mediaAdmin;
     protected $mediaManager;
+    protected $isNew;
+    protected $translator;
 
     /**
      * @param string $name
@@ -22,6 +25,22 @@ class DefaultProvider extends BaseProvider
     public function __construct($name)
     {
         parent::__construct($name);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMetatagChoices()
+    {
+        return $this->metatagChoices;
+    }
+
+    /**
+     * @param array $metatagChoices
+     */
+    public function setMetatagChoices($metatagChoices)
+    {
+        $this->metatagChoices = $metatagChoices;
     }
 
     /**
@@ -38,9 +57,9 @@ class DefaultProvider extends BaseProvider
     public function buildCreateForm(FormMapper $formMapper, $object = null)
     {
         $formMapper
-            ->tab('Settings')
-                ->with('rz_news_settings', array('class' => 'col-md-8',))
-                    ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>'form.label_settings'))
+            ->tab('tab.rz_news_seo_settings')
+                ->with('rz_news_seo_settings', array('class' => 'col-md-12',))
+                    ->add('seoSettings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
                 ->end()
             ->end();
     }
@@ -52,18 +71,20 @@ class DefaultProvider extends BaseProvider
      */
     public function getFormSettingsKeys(FormMapper $formMapper, $object = null)
     {
-        $settings = array(
-            array('seoTitle', 'text', array('required' => false)),
-            array('seoMetaKeyword', 'textarea', array('required' => false, 'attr'=>array('rows'=>5))),
-            array('seoMetaDescription', 'textarea', array('required' => false, 'attr'=>array('rows'=>5))),
-            array('ogTitle', 'text', array('required' => false, 'attr'=>array('class'=>'span8'))),
-            array('ogType', 'choice', array('choices'=>$this->getMetatagChoices(), 'attr'=>array('class'=>'span4'))),
-            array('ogDescription', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5))),
-        );
+        $settings = [];
+
+        $settings[] = array('seoTitle', 'text', array('required' => false));
+        $settings[] = array('seoMetaKeyword', 'textarea', array('required' => false, 'attr'=>array('rows'=>5)));
+        $settings[] = array('seoMetaDescription', 'textarea', array('required' => false, 'attr'=>array('rows'=>5)));
+        $settings[] = array('ogTitle', 'text', array('required' => false, 'attr'=>array('class'=>'span8')));
+        $settings[] = array('ogType', 'choice', array('choices'=>$this->getMetatagChoices(), 'attr'=>array('class'=>'span4')));
+        $settings[] = array('ogDescription', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5)));
+
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
-            array_push($settings, array($this->getMediaBuilder($formMapper), null, array()));
+            $settings[] = array($this->getMediaBuilder($formMapper), null, array());
         }
+
         return $settings;
     }
 
@@ -92,11 +113,11 @@ class DefaultProvider extends BaseProvider
     public function load(PostInterface $post) {
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             //load media
-            $media = $post->getSetting('ogImage', null);
+            $media = $post->getSeoSetting('ogImage', null);
             if (is_int($media)) {
                 $media = $this->mediaManager->findOneBy(array('id' => $media));
             }
-            $post->setSetting('ogImage', $media);
+            $post->setSeoSetting('ogImage', $media);
         }
     }
 
@@ -152,5 +173,21 @@ class DefaultProvider extends BaseProvider
     {
         $post->setSetting('ogImage', is_object($post->getSetting('ogImage')) ? $post->getSetting('ogImage')->getId() : null);
         parent::postUpdate($post);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
+
+    /**
+     * @param mixed $translator
+     */
+    public function setTranslator($translator)
+    {
+        $this->translator = $translator;
     }
 }

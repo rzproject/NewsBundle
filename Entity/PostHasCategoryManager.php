@@ -12,7 +12,7 @@ class PostHasCategoryManager extends BaseEntityManager
     public function getUniqueCategories() {
         $query = $this->getRepository()
             ->createQueryBuilder('phc')
-            ->select('c.id, c.name, c.slug')
+            ->select('c.id, c.name')
             ->leftJoin('phc.category', 'c')
             ->addGroupBy('c.name')
             ->getQuery()
@@ -20,4 +20,6 @@ class PostHasCategoryManager extends BaseEntityManager
 
         return $query->getResult();
     }
+
+
 }

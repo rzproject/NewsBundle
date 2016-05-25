@@ -22,9 +22,29 @@ class Configuration implements ConfigurationInterface
         $node = $treeBuilder->root('rz_news');
         $this->addManagerSection($node);
         $this->addModelSection($node);
-        $this->addProviderSection($node);
         $this->addAdminSection($node);
+        $this->addPermalinkSection($node);
+        $this->addNewsPageSection($node);
+        $this->addPostProviderSection($node);
+        $this->addPostSetsProviderSection($node);
+        $this->addSettingsSection($node);
         return $treeBuilder;
+    }
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addSettingsSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->scalarNode('slugify_service')
+                    ->info('You should use: sonata.core.slugify.cocur, but for BC we keep \'sonata.core.slugify.native\' as default')
+                    ->defaultValue('sonata.core.slugify.cocur')
+                ->end()
+                ->scalarNode('default_seo_provider')->defaultValue('rz.news.provider.seo.default')->end()
+                ->scalarNode('enable_controller')->defaultValue(false)->end()
+            ->end()
+        ;
     }
 
     /**
@@ -45,6 +65,9 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('post_has_media')->defaultValue('Rz\\NewsBundle\\Entity\\PostHasMediaManager')->end()
                                 ->scalarNode('related_articles')->defaultValue('Rz\\NewsBundle\\Entity\\RelatedArticlesManager')->end()
                                 ->scalarNode('suggested_articles')->defaultValue('Rz\\NewsBundle\\Entity\\SuggestedArticlesManager')->end()
+                                ->scalarNode('post_has_page')->defaultValue('Rz\\NewsBundle\\Entity\\PostHasPageManager')->end()
+                                ->scalarNode('post_sets')->defaultValue('Rz\\NewsBundle\\Entity\\PostSetsManager')->end()
+                                ->scalarNode('post_sets_has_posts')->defaultValue('Rz\\NewsBundle\\Entity\\PostSetsHasPostsManager')->end()
                             ->end()
                         ->end()
                         ->arrayNode('mongodb')
@@ -62,17 +85,136 @@ class Configuration implements ConfigurationInterface
     /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
-    private function addProviderSection(ArrayNodeDefinition $node)
+    private function addPostProviderSection(ArrayNodeDefinition $node)
     {
         $node
             ->children()
-                ->scalarNode('default_collection')->isRequired()->end()
-                ->arrayNode('collections')
-                    ->useAttributeAsKey('id')
-                    ->isRequired()
-                    ->prototype('array')
-                        ->children()
-                            ->scalarNode('provider')->isRequired()->end()
+                ->arrayNode('post')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('default_context')->isRequired()->end()
+                        ->scalarNode('default_collection')->isRequired()->end()
+                        ->scalarNode('default_provider_collection')->isRequired()->end()
+                        ->arrayNode('collections')
+                            ->useAttributeAsKey('id')
+                            ->isRequired()
+                            ->prototype('array')
+                                ->children()
+                                    ->scalarNode('provider')->isRequired()->end()
+                                    ->scalarNode('preferred_template')->defaultValue('RzNewsBundle:Block:block_post_default.html.twig')->cannotBeEmpty()->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+
+
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addPermalinkSection(ArrayNodeDefinition $node)
+    {
+         $node
+            ->children()
+                ->arrayNode('permalink')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('default_permalink')->isRequired()->end()
+                        ->scalarNode('default_category_permalink')->isRequired()->end()
+                        ->arrayNode('permalinks')
+                            ->useAttributeAsKey('id')
+                            ->isRequired()
+                            ->prototype('array')
+                                ->children()
+                                    ->scalarNode('permalink')->isRequired()->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+     /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addNewsPageSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('news_page')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('page_templates')
+                            ->useAttributeAsKey('id')
+                            ->prototype('array')
+                                ->children()
+                                    ->scalarNode('name')->isRequired()->end()
+                                    ->scalarNode('template_code')->isRequired()->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->scalarNode('news_page_parent_slug')->cannotBeEmpty()->defaultValue('article')->end()
+                        ->arrayNode('transformer')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Entity\\Transformer')->end()
+                            ->end()
+                        ->end()
+                       ->arrayNode('manager_class')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->arrayNode('orm')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('post_has_page')->defaultValue('Rz\\NewsBundle\\Entity\\PostHasPageManager')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('admin')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                               ->arrayNode('post_has_page')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Admin\\PostHasPageAdmin')->end()
+                                        ->scalarNode('controller')->cannotBeEmpty()->defaultValue('SonataAdminBundle:CRUD')->end()
+                                        ->scalarNode('translation')->cannotBeEmpty()->defaultValue('SonataNewsBundle')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('class')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('post_has_page')->defaultValue('AppBundle\\Entity\\News\\PostHasPage')->end()
+                                ->scalarNode('page')->defaultValue('AppBundle\\Entity\\Page\\Page')->end()
+                                ->scalarNode('site')->defaultValue('AppBundle\\Entity\\Page\\Site')->end()
+                                ->scalarNode('block')->defaultValue('AppBundle\\Entity\\Page\\Block')->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('page_services')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default')->defaultValue('rz.news.page.service.default')->end()
+                                ->scalarNode('category')->defaultValue('rz.news.page.service.category')->end()
+                                ->scalarNode('post_canonical')->defaultValue('rz.news.page.service.post_canonical')->end()
+                                ->scalarNode('category_canonical')->defaultValue('rz.news.page.service.category_canonical')->end()
+                            ->end()
+                        ->end()
+                        ->scalarNode('post_block_service')->defaultValue('rz.news.block.post')->cannotBeEmpty()->end()
+                            ->arrayNode('default_post_block_template')
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->scalarNode('name')->defaultValue('Default')->cannotBeEmpty()->end()
+                                    ->scalarNode('template')->defaultValue('RzNewsBundle:Block:block_post_default.html.twig')->cannotBeEmpty()->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
@@ -94,7 +236,7 @@ class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Admin\\PostHasCategoryAdmin')->end()
-                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('SonataAdminBundle:CRUD')->end()
+                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('RzNewsBundle:PostHasCategoryAdmin')->end()
                                 ->scalarNode('translation')->cannotBeEmpty()->defaultValue('SonataNewsBundle')->end()
                             ->end()
                         ->end()
@@ -122,7 +264,22 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('translation')->cannotBeEmpty()->defaultValue('SonataNewsBundle')->end()
                             ->end()
                         ->end()
-
+                        ->arrayNode('post_sets')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Admin\\PostSetsAdmin')->end()
+                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('RzNewsBundle:PostSetsAdmin')->end()
+                                ->scalarNode('translation')->cannotBeEmpty()->defaultValue('SonataNewsBundle')->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('post_sets_has_posts')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Admin\\PostSetsHasPostsAdmin')->end()
+                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('SonataAdminBundle:CRUD')->end()
+                                ->scalarNode('translation')->cannotBeEmpty()->defaultValue('SonataNewsBundle')->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
             ->end()
@@ -144,11 +301,54 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('post_has_media')->defaultValue('AppBundle\\Entity\\News\\PostHasMedia')->end()
                         ->scalarNode('related_articles')->defaultValue('AppBundle\\Entity\\News\\RelatedArticles')->end()
                         ->scalarNode('suggested_articles')->defaultValue('AppBundle\\Entity\\News\\SuggestedArticles')->end()
+                        ->scalarNode('post_sets')->defaultValue('AppBundle\\Entity\\News\\PostSets')->end()
+                        ->scalarNode('post_sets_has_posts')->defaultValue('AppBundle\\Entity\\News\\PostSetsHasPosts')->end()
                         ->scalarNode('category')->defaultValue('AppBundle\\Entity\\Classification\\Category')->end()
+                        ->scalarNode('collection')->defaultValue('AppBundle\\Entity\\Classification\\Collection')->end()
                         ->scalarNode('media')->defaultValue('AppBundle\\Entity\\Media\\Media')->end()
                     ->end()
                 ->end()
             ->end()
         ;
     }
+
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addPostSetsProviderSection(ArrayNodeDefinition $node)
+    {
+         $node
+            ->children()
+                ->arrayNode('post_sets')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('default_context')->isRequired()->end()
+                        ->scalarNode('default_collection')->isRequired()->end()
+                        ->scalarNode('default_provider_collection')->isRequired()->end()
+                        ->arrayNode('collections')
+                            ->useAttributeAsKey('id')
+                            ->isRequired()
+                            ->prototype('array')
+                                ->children()
+                                     ->arrayNode('post_sets')
+                                         ->addDefaultsIfNotSet()
+                                         ->children()
+                                            ->scalarNode('provider')->isRequired()->end()
+                                         ->end()
+                                     ->end()
+                                      ->arrayNode('post_sets_has_posts')
+                                         ->addDefaultsIfNotSet()
+                                         ->children()
+                                            ->scalarNode('provider')->isRequired()->end()
+                                         ->end()
+                                     ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
 }

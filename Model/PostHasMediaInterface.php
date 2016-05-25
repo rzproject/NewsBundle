@@ -15,7 +15,7 @@ interface PostHasMediaInterface extends NewsRelationModelInterface
     /**
      * @param mixed $category
      */
-    public function setMedia(MediaInterface $category);
+    public function setMedia(MediaInterface $media);
 
     /**
      * @return mixed

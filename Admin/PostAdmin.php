@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 class PostAdmin extends Admin
 {
@@ -16,35 +17,70 @@ class PostAdmin extends Admin
 
     protected $contextManager;
 
+    protected $siteManager;
+
+    protected $tagManager;
+
     protected $pool;
+
+    protected $transformer;
+
+    protected $defaultContext;
+
+    protected $defaultCollection;
+
+    protected $slugify;
+
+    protected $seoProvider;
+
+    protected $isControllerEnabled;
+
+    protected $pageTemplates = [];
+
+    protected $securityTokenStorage;
 
     const NEWS_DEFAULT_COLLECTION = 'article';
 
     protected $datagridValues = array(
-        '_page' => 1,
+        '_page'       => 1,
+        '_per_page'   => 12,
         '_sort_order' => 'DESC',
-        '_sort_by' => 'publicationDateStart',
+        '_sort_by'    => 'publicationDateStart',
     );
+
+    /**
+     * @param string $code
+     * @param string $class
+     * @param string $baseControllerName
+     */
+    public function __construct($code, $class, $baseControllerName)
+    {
+        $this->maxPerPage = 12;
+        $this->perPageOptions = array(8,12,16,32);
+        parent::__construct($code, $class, $baseControllerName);
+    }
 
     /**
      * {@inheritdoc}
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-         // define group zoning
         $formMapper
-            ->tab('News')
+            ->tab('tab.rz_news')
                 ->with('group_post', array('class' => 'col-md-8'))->end()
                 ->with('group_status', array('class' => 'col-md-4'))->end()
-                ->with('group_classification', array('class' => 'col-md-4'))->end()
+                ->with('group_content', array('class' => 'col-md-12'))->end()
             ->end()
-            ->tab('Settings')
+            ->tab('tab.rz_news_settings')
                 ->with('rz_news_settings', array('class' => 'col-md-12'))->end()
             ->end()
-            ->tab('Category')
+            ->tab('tab.rz_news_tags')
+                ->with('group_classification', array('class' => 'col-md-12'))->end()
+            ->end()
+            ->tab('tab.rz_news_category')
                 ->with('rz_news_category', array('class' => 'col-md-12'))->end()
             ->end()
-            ->tab('Media')
+            ->tab('tab.rz_news_media')
                 ->with('rz_news_media', array('class' => 'col-md-12'))->end()
             ->end()
             ->tab('tab.rz_news_related_articles')
@@ -55,15 +91,40 @@ class PostAdmin extends Admin
             ->end()
         ;
 
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+
+            $formMapper->tab('tab.rz_news_suggested_articles')
+                            ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
+                       ->end();
+
+
+            $formMapper->tab('tab.rz_news_seo_settings')
+                            ->with('rz_news_seo_settings', array('class' => 'col-md-12'))->end()
+                       ->end();
+        }
+
 
         $formMapper
-            ->tab('News')
+            ->tab('tab.rz_news')
                 ->with('group_post', array(
                         'class' => 'col-md-8',
                     ))
-                    ->add('author', 'sonata_type_model_list')
                     ->add('title')
+                    ->add('image', 'sonata_type_model_list', array('required' => false), array(
+                        'link_parameters' => array(
+                            'context'      => $this->getDefaultContext(),
+                            'hide_context' => true,
+                        ),
+                    ))
                     ->add('abstract', null, array('attr' => array('rows' => 5)))
+                ->end()
+                ->with('group_status', array('class' => 'col-md-4',))
+                    //->add('author', 'sonata_type_model_list')
+                    ->add('enabled', null, array('required' => false))
+                    ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
+                ->end()
+
+                ->with('group_content', array('class' => 'col-md-12',))
                     ->add('content', 'sonata_formatter_type', array(
                         'event_dispatcher'          => $formMapper->getFormBuilder()->getEventDispatcher(),
                         'format_field'              => 'contentFormatter',
@@ -72,56 +133,46 @@ class PostAdmin extends Admin
                             'horizontal_input_wrapper_class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'col-lg-12' : '',
                             'attr'                           => array('class' => $this->getConfigurationPool()->getOption('form_type') == 'horizontal' ? 'span10 col-sm-10 col-md-10' : '', 'rows' => 20),
                         ),
-                        'ckeditor_context'     => 'news',
+                        'ckeditor_context'     => $this->getDefaultContext(),
                         'target_field'         => 'content',
                         'listener'             => true,
-                    ))
-                ->end()
-                ->with('group_status', array(
-                        'class' => 'col-md-4',
-                    ))
-                    ->add('enabled', null, array('required' => false))
-                    ->add('image', 'sonata_type_model_list', array('required' => false), array(
-                        'link_parameters' => array(
-                            'context'      => 'news',
-                            'hide_context' => true,
-                        ),
-                    ))
-                    ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
-                ->end()
-
-                ->with('group_classification', array(
-                    'class' => 'col-md-4',
-                    ))
-                    ->add('tags', 'sonata_type_model_autocomplete', array(
-                        'property' => 'name',
-                        'multiple' => 'true',
-                        'required' => false,
-                        'callback' => function ($admin, $property, $value) {
-                            $datagrid = $admin->getDatagrid();
-                            $queryBuilder = $datagrid->getQuery();
-                            $queryBuilder
-                                ->andWhere($queryBuilder->getRootAlias() . '.context=:context')
-                                ->setParameter('context', 'news')
-                            ;
-                            $datagrid->setValue($property, null, $value);
-                        },
                     ))
                 ->end()
             ->end()
         ;
 
         $formMapper
-            ->tab('Category')
-                ->with('rz_news_category', array('class' => 'col-md-8'))
+            ->tab('tab.rz_news_tags')
+            ->with('group_classification', array('class' => 'col-md-8'))
+                    ->add('tags', 'sonata_type_model', array(
+                        'property' => 'name',
+                        'multiple' => 'true',
+                        'required' => false,
+                        'expanded' => true,
+                        'query'    => $this->getTagManager()->geTagQueryForDatagrid(array($this->getDefaultContext()))
+                    ),
+                        array(
+                            'link_parameters' => array(
+                                'context'      => $this->getDefaultContext(),
+                                'hide_context' => true,
+                            ))
+                    )
+                ->end()
+            ->end()
+        ;
+
+
+        $formMapper
+            ->tab('tab.rz_news_category')
+                ->with('rz_news_category', array('class' => 'col-md-12'))
                     ->add('postHasCategory', 'sonata_type_collection', array(
                         'cascade_validation' => true,
                         'required' => false,
                     ), array(
                             'edit'              => 'inline',
-                            'inline'            => 'standard',
+                            'inline'            => 'table',
                             'sortable'          => 'position',
-                            'link_parameters'   => array('context' => 'news'),
+                            'link_parameters'   => array('context' => $this->getDefaultContext()),
                             'admin_code'        => 'rz.news.admin.post_has_category',
                         )
                     )
@@ -130,8 +181,8 @@ class PostAdmin extends Admin
         ;
 
         $formMapper
-            ->tab('Media')
-                ->with('rz_news_media', array('class' => 'col-md-8'))
+            ->tab('tab.rz_news_media')
+                ->with('rz_news_media', array('class' => 'col-md-12'))
                     ->add('postHasMedia', 'sonata_type_collection', array(
                         'cascade_validation' => true,
                         'required' => false,
@@ -149,7 +200,7 @@ class PostAdmin extends Admin
 
         $formMapper
             ->tab('tab.rz_news_related_articles')
-                ->with('rz_news_related_articles', array('class' => 'col-md-8'))
+                ->with('rz_news_related_articles', array('class' => 'col-md-12'))
                     ->add('relatedArticles', 'sonata_type_collection', array(
                         'cascade_validation' => true,
                         'required' => false,
@@ -167,7 +218,7 @@ class PostAdmin extends Admin
 
         $formMapper
             ->tab('tab.rz_news_suggested_articles')
-                ->with('rz_news_suggested_articles', array('class' => 'col-md-8'))
+                ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))
                     ->add('suggestedArticles', 'sonata_type_collection', array(
                         'cascade_validation' => true,
                         'required' => false,
@@ -183,14 +234,63 @@ class PostAdmin extends Admin
             ->end()
         ;
 
-        $provider = $this->getPoolProvider();
         $instance = $this->getSubject();
+
+        #ADD page template if news does not use controller
+        if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
+            $formMapper->tab('tab.rz_news')->with('group_status');
+            if ($instance && $instance->getId()) {
+                $formMapper->add('author', 'sonata_type_model_list');
+            }
+            $formMapper->end()->end();
+        }
+
+        //POST PROVIDER
+        $provider = $this->getPoolProvider();
 
         if ($instance && $instance->getId()) {
             $provider->load($instance);
-            $provider->buildEditForm($formMapper);
+            $provider->buildEditForm($formMapper, $instance);
         } else {
-            $provider->buildCreateForm($formMapper);
+            $provider->buildCreateForm($formMapper, $instance);
+        }
+
+        //ADD page template if news does not use controller
+        $formMapper->tab('tab.rz_news_settings')->with('rz_news_settings');
+        if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface') &&
+            $formMapper->has('settings') &&
+            !$this->getIsControllerEnabled()) {
+
+            $settingsField = $formMapper->get('settings');
+
+            if ($instance && $instance->getId() && $instance->getSetting('pageTemplateCode')) {
+                $settingsField->add('pageTemplateCode',
+                    'text',
+                    array('help_block' => $this->getTranslator()->trans('help.provider_page_template_code', array(), 'SonataNewsBundle'),
+                          'required' => true,
+                          'attr'=>array('readonly'=>'readonly')
+                    ));
+            } else {
+                $settingsField->add('pageTemplateCode',
+                    'choice',
+                    array('choices'=>$this->getPageTemplates(),
+                          'help_block' => $this->getTranslator()->trans('help.provider_page_template_code_new', array(), 'SonataNewsBundle'),
+                          'required' => true
+                    ));
+            }
+        }
+
+        $formMapper->end()->end();
+
+        //SEO PROVIDER
+        $seoProvider = $this->getSeoProvider();
+        if($seoProvider && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            if ($instance && $instance->getId()) {
+                $seoProvider->load($instance);
+                $seoProvider->buildEditForm($formMapper, $instance);
+            } else {
+                $seoProvider->buildCreateForm($formMapper, $instance);
+            }
         }
     }
 
@@ -223,13 +323,6 @@ class PostAdmin extends Admin
             $this->trans('sidemenu.link_edit_post'),
             array('uri' => $admin->generateUrl('edit', array('id' => $id)))
         );
-
-        if ($this->hasSubject() && $this->getSubject()->getId() !== null) {
-            $menu->addChild(
-                $this->trans('sidemenu.link_view_post'),
-                array('uri' => $admin->getRouteGenerator()->generate('sonata_news_view', array('permalink' => $this->permalinkGenerator->generate($this->getSubject()))))
-            );
-        }
     }
 
     /**
@@ -238,7 +331,8 @@ class PostAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('collection', 'doctrine_orm_model_autocomplete', array(), null, array(
+            ->add('site', null, array('show_filter' => false))
+            ->add('collection', 'doctrine_orm_model_autocomplete', array('show_filter' => false), null, array(
                 'property' => 'name',
                 'callback' => function ($admin, $property, $value) {
                     $datagrid = $admin->getDatagrid();
@@ -254,6 +348,22 @@ class PostAdmin extends Admin
             ->add('author')
             ->add('publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
         ;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTransformer()
+    {
+        return $this->transformer;
+    }
+
+    /**
+     * @param mixed $transformer
+     */
+    public function setTransformer($transformer)
+    {
+        $this->transformer = $transformer;
     }
 
     /**
@@ -306,24 +416,108 @@ class PostAdmin extends Admin
     }
 
     /**
+     * @return mixed
+     */
+    public function getSiteManager()
+    {
+        return $this->siteManager;
+    }
+
+    /**
+     * @param mixed $siteManager
+     */
+    public function setSiteManager(ManagerInterface $siteManager)
+    {
+        $this->siteManager = $siteManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTagManager()
+    {
+        return $this->tagManager;
+    }
+
+    /**
+     * @param mixed $tagManager
+     */
+    public function setTagManager($tagManager)
+    {
+        $this->tagManager = $tagManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlugify()
+    {
+        return $this->slugify;
+    }
+
+    /**
+     * @param mixed $slugify
+     */
+    public function setSlugify($slugify)
+    {
+        $this->slugify = $slugify;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultContext()
+    {
+        return $this->defaultContext;
+
+    }
+
+    /**
+     * @param mixed $defaultContext
+     */
+    public function setDefaultContext($defaultContext)
+    {
+        $this->defaultContext = $this->getSlugify()->slugify($defaultContext);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultCollection()
+    {
+        return $this->defaultCollection;
+    }
+
+    /**
+     * @param mixed $defaultCollection
+     */
+    public function setDefaultCollection($defaultCollection)
+    {
+        $this->defaultCollection = $defaultCollection;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getPersistentParameters()
     {
+        $site = $this->getSite();
+
         $parameters = array(
             'collection'      => 'article',
+            'site'            => $site ? $site : '',
             'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0,
         );
 
         if ($this->getSubject()) {
             $parameters['collection'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getSlug() : '';
-
+            $parameters['site']       = $this->getSubject()->getSite() ? $this->getSubject()->getSite()->getId() : '';
             return $parameters;
         }
 
         if ($this->hasRequest()) {
             $parameters['collection'] = $this->getRequest()->get('collection');
-
+            $parameters['site'] = $this->getRequest()->get('site');
             return $parameters;
         }
 
@@ -337,12 +531,17 @@ class PostAdmin extends Admin
     {
         $instance = parent::getNewInstance();
 
-        if ($collectionSlug = $this->getPersistentParameter('collection')?: 'article') {
+        if ($site = $this->getSite()) {
+            $instance->setSite($site);
+        }
+
+        #TODO: set collection slug configurable
+        if ($collectionSlug = $this->getPersistentParameter('collection')?: $this->getDefaultCollection()) {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
 
             if (!$collection) {
                 //find 'news' context
-                $context = $this->contextManager->find('news');
+                $context = $this->contextManager->find($this->getDefaultContext());
                 if(!$context) {
                     $context = $this->contextManager->create();
                     $context->setEnabled(true);
@@ -372,7 +571,7 @@ class PostAdmin extends Admin
         if($collectionSlug) {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
         } else {
-            $collection = $this->collectionManager->findOneBy(array('slug'=>self::NEWS_DEFAULT_COLLECTION));
+            $collection = $this->collectionManager->findOneBy(array('slug'=>$this->getDefaultCollection()));
         }
 
         if($collection) {
@@ -384,13 +583,18 @@ class PostAdmin extends Admin
 
     protected function getPoolProvider() {
         $currentCollection = $this->fetchCurrentCollection();
+
         if ($this->pool->hasCollection($currentCollection->getSlug())) {
             $providerName = $this->pool->getProviderNameByCollection($currentCollection->getSlug());
         } else {
             $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
         }
 
-        return $this->pool->getProvider($providerName);
+        $defaultTemplate = $this->pool->getDefaultTemplateByCollection($currentCollection->getSlug());
+        $provider = $this->pool->getProvider($providerName);
+        //set default template
+        $provider->setDefaultTemplate($defaultTemplate);
+        return $provider;
     }
 
     /**
@@ -403,6 +607,7 @@ class PostAdmin extends Admin
         $object->setPostHasMedia($object->getPostHasMedia());
         $object->setRelatedArticles($object->getRelatedArticles());
         $object->setSuggestedArticles($object->getSuggestedArticles());
+        $object->setAuthor($this->getCurrentUser());
         $this->getPoolProvider()->prePersist($object);
     }
 
@@ -417,6 +622,45 @@ class PostAdmin extends Admin
         $object->setRelatedArticles($object->getRelatedArticles());
         $object->setSuggestedArticles($object->getSuggestedArticles());
         $this->getPoolProvider()->preUpdate($object);
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $object->setPostHasPage($object->getPostHasPage());
+            $this->getTransformer()->update($object);
+        }
+
+
+    }
+
+    /**
+     * @return SiteInterface|bool
+     *
+     * @throws \RuntimeException
+     */
+    public function getSite()
+    {
+        if (!$this->hasRequest()) {
+            return false;
+        }
+
+        $siteId = null;
+
+        if ($this->getRequest()->getMethod() == 'POST') {
+            $values = $this->getRequest()->get($this->getUniqid());
+            $siteId = isset($values['site']) ? $values['site'] : null;
+        }
+
+        $siteId = (null !== $siteId) ? $siteId : $this->getRequest()->get('site');
+
+        if ($siteId) {
+            $site = $this->siteManager->findOneBy(array('id' => $siteId));
+
+            if (!$site) {
+                throw new \RuntimeException('Unable to find the site with id='.$this->getRequest()->get('site'));
+            }
+
+            return $site;
+        } else {
+            return $this->siteManager->findOneBy(array('host'=>'localhost'));
+        }
     }
 
 
@@ -436,6 +680,85 @@ class PostAdmin extends Admin
     {
         parent::postPersist($object);
         $this->getPoolProvider()->postPersist($object);
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $object->setPostHasPage($object->getPostHasPage());
+            $this->getTransformer()->create($object);
+        }
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSeoProvider()
+    {
+        return $this->seoProvider;
+    }
+
+    /**
+     * @param mixed $seoProvider
+     */
+    public function setSeoProvider($seoProvider)
+    {
+        $this->seoProvider = $seoProvider;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsControllerEnabled()
+    {
+        return $this->isControllerEnabled;
+    }
+
+    /**
+     * @param mixed $isControllerEnabled
+     */
+    public function setIsControllerEnabled($isControllerEnabled)
+    {
+        $this->isControllerEnabled = $isControllerEnabled;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPageTemplates()
+    {
+        return $this->pageTemplates;
+    }
+
+    /**
+     * @param array $pageTemplates
+     */
+    public function setPageTemplates($pageTemplates)
+    {
+        $this->pageTemplates = $pageTemplates;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSecurityTokenStorage()
+    {
+        return $this->securityTokenStorage;
+    }
+
+    /**
+     * @param mixed $securityTokenStorage
+     */
+    public function setSecurityTokenStorage($securityTokenStorage)
+    {
+        $this->securityTokenStorage = $securityTokenStorage;
+    }
+
+    public function getCurrentUser() {
+        return $this->getSecurityTokenStorage()->getToken()->getUser();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate(ErrorElement $errorElement, $object)
+    {
+    }
 }

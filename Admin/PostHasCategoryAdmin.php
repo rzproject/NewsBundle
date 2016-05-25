@@ -7,10 +7,11 @@ use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\AdminBundle\Route\RouteCollection;
 
 class PostHasCategoryAdmin extends Admin
 {
-
     protected $parentAssociationMapping = 'post';
 
     /**
@@ -39,15 +40,9 @@ class PostHasCategoryAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('category.name', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('enabled', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet')), 'editable' => true))
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
-                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
-                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
-                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
-            ))
+            ->add('post', null, array('associated_property' => 'title'))
+            ->add('position', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm'))), 'editable' => true))
+            ->add('post.publicationDateStart', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm')))))
         ;
     }
 
@@ -57,32 +52,17 @@ class PostHasCategoryAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $filter)
     {
         $filter
-            ->add('post')
-            ->add('category')
-            ->add('enabled');
+            ->add('post.site', null, array('show_filter' => false))
+            ->add('post.title')
+            ->add('post.publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
+            ->add('category', null, array('show_filter' => false,));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getListModes()
+    protected function configureRoutes(RouteCollection $collection)
     {
-        return parent::getListMode();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setListMode($mode)
-    {
-        return parent::setListMode($mode);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getListMode()
-    {
-        return parent::getListMode();
+        $collection->clearExcept(array('list', 'edit', 'create', 'show'));
     }
 }

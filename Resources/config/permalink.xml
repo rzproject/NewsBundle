@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="rz.news.permalink.default" class="Rz\NewsBundle\Permalink\DefaultPermalink">
+            <tag name="rz.news.permalink" />
+            <argument />
+        </service>
+
+        <service id="rz.news.permalink.slug" class="Rz\NewsBundle\Permalink\SlugPermalink">
+            <tag name="rz.news.permalink" />
+            <argument />
+        </service>
+
+        <service id="rz.news.permalink.category" class="Rz\NewsBundle\Permalink\CategoryPermalink">
+            <tag name="rz.news.permalink" />
+            <argument />
+        </service>
+    </services>
+</container>

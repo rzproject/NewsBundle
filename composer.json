@@ -20,10 +20,10 @@
         "rz/media-bundle": "2.0.0.*",
         "rz/doctrine-orm-admin-bundle": "2.0.0.*",
         "rz/classification-bundle": "2.0.0.*",
-        "rz/redirect-bundle": "2.0.0.*"
-    },
-    "require-dev": {
-        "rz/block-bundle": "2.0.0.*"
+        "rz/redirect-bundle": "2.0.0.*",
+        "rz/page-bundle": "2.0.0.*",
+        "rz/block-bundle": "2.0.0.*",
+        "rz/formatter-bundle": "2.0.0.*"
     },
     "autoload": {
         "psr-4": { "Rz\\NewsBundle\\": "" }

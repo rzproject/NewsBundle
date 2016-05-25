@@ -23,23 +23,66 @@ class AddProviderCompilerPass implements CompilerPassInterface
      */
     public function attachProviders(ContainerBuilder $container)
     {
-        $pool = $container->getDefinition('rz.news.pool');
+        ########################
+        # Post Provider
+        ########################
+        $pool = $container->getDefinition('rz.news.post.pool');
 
-        foreach ($container->findTaggedServiceIds('rz.news.provider') as $id => $attributes) {
+        if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface')) {
+            $blocks = $container->getParameter('sonata_block.blocks');
+            $blockService = $container->getParameter('rz.news.post_block_service');
+            if(isset($blocks[$blockService]) && isset($blocks[$blockService]['templates'])) {
+                $container->setParameter('rz.news.post_templates', $blocks[$blockService]['templates']);
+            }
+        }
+
+        $postTemplates = $container->getParameter('rz.news.post_templates');
+
+        foreach ($container->findTaggedServiceIds('rz.news.post.provider') as $id => $attributes) {
             $pool->addMethodCall('addProvider', array($id, new Reference($id)));
         }
 
-        $collections = $container->getParameter('rz.news.provider.collections');
+        $collections = $container->getParameter('rz.news.post.provider.collections');
+
+        $templates = [];
+        foreach ($postTemplates as $item) {
+            $templates[$item['template']] = $item['name'];
+        }
 
         foreach ($collections as $name => $settings) {
-            $pool->addMethodCall('addCollection', array($name, $settings['provider']));
-
+            $pool->addMethodCall('addCollection', array($name, $settings['provider'], $settings['preferred_template']));
             if($container->hasDefinition($settings['provider'])) {
                 $provider =$container->getDefinition($settings['provider']);
-                $provider->addMethodCall('setPostManager', array($id, new Reference('sonata.news.manager.post')));
-                $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
-                $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
-                $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
+                $provider->addMethodCall('setPostManager', array(new Reference('sonata.news.manager.post')));
+                $provider->addMethodCall('setTemplates', array($templates));
+                $provider->addMethodCall('setIsControllerEnabled', array($container->getParameter('rz.news.enable_controller')));
+
+            }
+        }
+
+        ########################
+        # Post Sets Provider
+        ########################
+
+        $postSetsPool = $container->getDefinition('rz.news.post_sets.pool');
+        foreach ($container->findTaggedServiceIds('rz.news.post_sets.provider') as $id => $attributes) {
+            $postSetsPool->addMethodCall('addProvider', array($id, new Reference($id)));
+        }
+
+        $postSetsHasPostsPool = $container->getDefinition('rz.news.post_sets_has_posts.pool');
+        foreach ($container->findTaggedServiceIds('rz.news.post_sets_has_posts.provider') as $id => $attributes) {
+            $postSetsHasPostsPool->addMethodCall('addProvider', array($id, new Reference($id)));
+        }
+
+        $collections = $container->getParameter('rz.news.post_sets.provider.collections');
+
+        foreach ($collections as $name => $settings) {
+            if($settings['post_sets']['provider']) {
+                $postSetsPool->addMethodCall('addCollection', array($name, $settings['post_sets']['provider']));
+            }
+
+            if($settings['post_sets_has_posts']['provider']) {
+                $postSetsHasPostsPool->addMethodCall('addCollection', array($name, $settings['post_sets_has_posts']['provider']));
             }
         }
     }

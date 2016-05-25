@@ -1,10 +1,10 @@
 <?php
 
-namespace Rz\NewsBundle\Provider;
+namespace Rz\NewsBundle\Provider\PostSets;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
 
-class Pool implements PoolInterface
+abstract class Pool implements PoolInterface
 {
     /**
      * @var array
@@ -15,7 +15,7 @@ class Pool implements PoolInterface
 
     protected $defaultCollection;
 
-    const NEWS_POOL_DEFAULT_COLLECTION = 'default';
+    const POST_SETS_POOL_DEFAULT_COLLECTION = 'default';
 
     /**
      * @param string $collection

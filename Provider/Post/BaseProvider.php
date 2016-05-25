@@ -1,14 +1,16 @@
 <?php
 
-namespace Rz\NewsBundle\Provider;
+namespace Rz\NewsBundle\Provider\Post;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\NewsBundle\Model\PostInterface;
 
 abstract class BaseProvider implements ProviderInterface
 {
-    protected $metatagChoices = array();
+    protected $templates = [];
+    protected $defaultTemplate;
     protected $postManager;
+    protected $isControllerEnabled;
 
     /**
      * @param string                                           $name
@@ -77,22 +79,6 @@ abstract class BaseProvider implements ProviderInterface
     }
 
     /**
-     * @return array
-     */
-    public function getMetatagChoices()
-    {
-        return $this->metatagChoices;
-    }
-
-    /**
-     * @param array $metatagChoices
-     */
-    public function setMetatagChoices($metatagChoices)
-    {
-        $this->metatagChoices = $metatagChoices;
-    }
-
-    /**
      * @return mixed
      */
     public function getPostManager()
@@ -106,5 +92,62 @@ abstract class BaseProvider implements ProviderInterface
     public function setPostManager($postManager)
     {
         $this->postManager = $postManager;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTemplates()
+    {
+        return $this->templates;
+    }
+
+    /**
+     * @param array $templates
+     */
+    public function setTemplates($templates)
+    {
+        $this->templates = $templates;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsControllerEnabled()
+    {
+        return $this->isControllerEnabled;
+    }
+
+    /**
+     * @param mixed $isControllerEnabled
+     */
+    public function setIsControllerEnabled($isControllerEnabled)
+    {
+        $this->isControllerEnabled = $isControllerEnabled;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultTemplate()
+    {
+        return $this->defaultTemplate;
+    }
+
+    /**
+     * @param mixed $defaultTemplate
+     */
+    public function setDefaultTemplate($defaultTemplate)
+    {
+        $this->defaultTemplate = $defaultTemplate;
+    }
+
+    public function getPreferedChoice() {
+        $template = $this->getDefaultTemplate() ?: null;
+
+        if($template) {
+            return array($template);
+        }
+        return [];
     }
 }

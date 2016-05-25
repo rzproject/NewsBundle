@@ -10,12 +10,16 @@
         <parameter key="rz.news.admin.post_has_media.class">Rz\NewsBundle\Admin\PostHasMediaAdmin</parameter>
         <parameter key="rz.news.admin.related_articles.class">Rz\NewsBundle\Admin\RelatedArticlesAdmin</parameter>
         <parameter key="rz.news.admin.suggested_articles.class">Rz\NewsBundle\Admin\SuggestedArticlesAdmin</parameter>
+        <parameter key="rz.news.admin.post_sets.class">Rz\NewsBundle\Admin\PostSetsAdmin</parameter>
+        <parameter key="rz.news.admin.post_sets_has_posts.class">Rz\NewsBundle\Admin\PostSetsHasPostAdmin</parameter>
+
+
     </parameters>
 
     <services>
 
         <service id="rz.news.admin.post_has_category" class="%rz.news.admin.post_has_category.class%">
-            <tag name="sonata.admin" manager_type="orm" group="sonata_blog" label="label_post_has_category"  show_in_dashboard="false" label_catalogue="%sonata.news.admin.post_has_category.translation_domain%" label_translator_strategy="sonata.admin.label.strategy.underscore" />
+            <tag name="sonata.admin" manager_type="orm" group="sonata_blog" label="label_post_has_category"  show_in_dashboard="true" label_catalogue="%sonata.news.admin.post_has_category.translation_domain%" label_translator_strategy="sonata.admin.label.strategy.underscore" />
             <argument />
             <argument>%rz.news.admin.post_has_category.entity%</argument>
             <argument>%rz.news.admin.post_has_category.controller%</argument>
@@ -55,6 +59,28 @@
 
             <call method="setTranslationDomain">
                 <argument>%rz.news.admin.suggested_articles.translation_domain%</argument>
+            </call>
+        </service>
+
+        <service id="rz.news.admin.post_sets" class="%rz.news.admin.post_sets.class%">
+            <tag name="sonata.admin" manager_type="orm" group="sonata_blog" label="label_post_sets"  show_in_dashboard="true" label_catalogue="%sonata.news.admin.post_sets.translation_domain%" label_translator_strategy="sonata.admin.label.strategy.underscore" />
+            <argument />
+            <argument>%rz.news.admin.post_sets.entity%</argument>
+            <argument>%rz.news.admin.post_sets.controller%</argument>
+
+            <call method="setTranslationDomain">
+                <argument>%rz.news.admin.post_sets.translation_domain%</argument>
+            </call>
+        </service>
+
+        <service id="rz.news.admin.post_sets_has_posts" class="%rz.news.admin.post_sets_has_posts.class%">
+            <tag name="sonata.admin" manager_type="orm" group="sonata_blog" label="label_post_sets_has_posts"  show_in_dashboard="false" label_catalogue="%sonata.news.admin.post_sets_has_posts.translation_domain%" label_translator_strategy="sonata.admin.label.strategy.underscore" />
+            <argument />
+            <argument>%rz.news.admin.post_sets_has_posts.entity%</argument>
+            <argument>%rz.news.admin.post_sets_has_posts.controller%</argument>
+
+            <call method="setTranslationDomain">
+                <argument>%rz.news.admin.post_sets_has_posts.translation_domain%</argument>
             </call>
         </service>
 
