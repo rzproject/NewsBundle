@@ -321,6 +321,10 @@
                 <source>tab.group.rz_news_post_settings</source>
                 <target>Settings</target>
             </trans-unit>
+            <trans-unit id="breadcrumb.link_post_sets_create">
+                <source>breadcrumb.link_post_sets_create</source>
+                <target>Create</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

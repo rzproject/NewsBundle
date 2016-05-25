@@ -247,6 +247,7 @@ class Transformer implements TransformerInterface
                 }
             }
             $pageCategory = $this->createPage($post, $parentPageCategory, $newsCanonicalPage, $category->getName(), null, $this->getPageService('category'));
+            #TODO insert data to category_page
         }
 
         if($currentCategory->getId() === $category->getId()) {

@@ -18,24 +18,6 @@ class PostAdminController extends CRUDController
     public function listAction(Request $request = null)
     {
 
-        #collection
-        $collectiontManager = $this->get('sonata.classification.manager.collection');
-
-        $currentCollection = null;
-
-        if ($collection = $request->get('collection')) {
-            $currentCollection = $collectiontManager->findOneBy(array('slug'=>$collection));
-        } else {
-            $currentCollection = $collectiontManager->findOneBy(array('slug'=>'article'));
-        }
-        $contextManager = $this->get('sonata.classification.manager.context');
-        $context = $contextManager->find('news');
-        $collections = $collectiontManager->findBy(array('context'=>$context));
-
-        if (!$currentCollection) {
-            $currentCollection = array_shift($collections);
-        }
-
         #site TODO: should have check if pageBunlde is not available
         $siteManager = $this->get('sonata.page.manager.site');
         $sites = $siteManager->findBy(array());
@@ -65,16 +47,6 @@ class PostAdminController extends CRUDController
 
         $datagrid = $this->admin->getDatagrid();
 
-        if ($this->admin->getPersistentParameter('collection')) {
-            $collection = $collectiontManager->findOneBy(array('slug'=>$this->admin->getPersistentParameter('collection')));
-            if($collection && $collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
-                $datagrid->setValue('collection', null, $collection->getId());
-            } else {
-                throw $this->createNotFoundException($this->get('translator')->trans('page_not_found', array(), 'SonataAdminBundle'));
-            }
-        } else {
-            $datagrid->setValue('collection', null, $currentCollection->getId());
-        }
 
         if ($this->admin->getPersistentParameter('site')) {
             $site = $siteManager->findOneBy(array('id'=>$this->admin->getPersistentParameter('site')));
@@ -83,6 +55,53 @@ class PostAdminController extends CRUDController
             $datagrid->setValue('site', null, $currentSite->getId());
         }
 
+        $collectiontManager = $this->get('sonata.classification.manager.collection');
+        $slugify = $this->get($this->container->getParameter('rz.news.slugify_service'));
+
+        $contextManager = $this->get('sonata.classification.manager.context');
+        $defaultContext = $this->container->getParameter('rz.news.post.default_context');
+        $context = $contextManager->findOneBy(array('id'=>$slugify->slugify($defaultContext)));
+
+        if(!$context && !$context instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
+            $context = $contextManager->generateDefaultContext($defaultContext);
+        }
+
+        $currentCollection = null;
+        $defaultCollection = $this->container->getParameter('rz.news.post.default_collection');
+
+
+        if ($collection = $request->get('collection')) {
+            $currentCollection = $collectiontManager->findOneBy(array('slug'=>$slugify->slugify($collection), 'context'=>$context));
+        } else {
+            $currentCollection = $collectiontManager->findOneBy(array('slug'=>$slugify->slugify($defaultCollection), 'context'=>$context));
+        }
+
+        $collections = $collectiontManager->findBy(array('context'=>$context));
+
+        if(!$currentCollection &&
+            !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface &&
+            $collections < 0) {
+            $currentCollection = $collectiontManager->generateDefaultColection($context, $defaultCollection);
+        }
+
+        if(count($collections)>0) {
+
+            if (!$currentCollection) {
+                $currentCollection = current(array_shift($collections));
+            }
+
+            if ($this->admin->getPersistentParameter('collection')) {
+                $collection = $collectiontManager->findOneBy(array('context'=>$context, 'slug'=>$this->admin->getPersistentParameter('collection')));
+                if($collection && $collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
+                    $datagrid->setValue('collection', null, $collection->getId());
+                } else {
+                    throw $this->createNotFoundException($this->get('translator')->trans('page_not_found', array(), 'SonataAdminBundle'));
+                }
+            } else {
+                $datagrid->setValue('collection', null, $currentCollection->getId());
+            }
+        }
+        
         $formView = $datagrid->getForm()->createView();
 
         // set the theme for the current Admin Form

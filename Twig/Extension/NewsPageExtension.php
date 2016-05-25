@@ -84,9 +84,7 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
      */
     public function pageCanonical(PostInterface $post, $isCanonical = true)
     {
-
         $postHasPage = $this->postHasPageManager->findOneByPageAndIsCanonical(array('post'=>$post, 'is_canonical'=>$isCanonical));
-
         return $postHasPage->getPage();
     }
 
