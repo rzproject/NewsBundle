@@ -17,21 +17,21 @@ class Pool extends BasePool
      */
     public function addCollection($name, $provider = null, $defaultTemplate = null)
     {
-        if (!$this->hasCollection($name)) {
-            $this->collections[$name] = array('provider' => null);
+        if (!$this->hasGroup($name)) {
+            $this->groups[$name] = array('provider' => null);
         }
-        $this->collections[$name]['provider'] = $provider;
-        $this->collections[$name]['default_template'] = $defaultTemplate;
+        $this->groups[$name]['provider'] = $provider;
+        $this->groups[$name]['default_template'] = $defaultTemplate;
     }
 
     public function getDefaultTemplateByCollection($name)
     {
-        $collection = $this->getCollection($name);
+        $group = $this->getGroup($name);
 
-        if (!$collection) {
+        if (!$group) {
             return null;
         }
 
-        return $collection['default_template'];
+        return $group['default_template'];
     }
 }

@@ -16,14 +16,6 @@ class DefaultProvider extends BaseProvider
     protected $isNew;
 
     /**
-     * @param string $name
-     */
-    public function __construct($name)
-    {
-        parent::__construct($name);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function buildEditForm(FormMapper $formMapper, $object = null)

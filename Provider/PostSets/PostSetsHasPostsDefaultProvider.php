@@ -56,4 +56,6 @@ class PostSetsHasPostsDefaultProvider extends BaseProvider
     }
 
     public function load(PostSetsHasPostsInterface $object) {}
+
+    public function validate(ErrorElement $errorElement, PostSetsHasPostsInterface $object){}
 }
