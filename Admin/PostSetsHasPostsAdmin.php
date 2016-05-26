@@ -43,9 +43,9 @@ class PostSetsHasPostsAdmin extends Admin
                 ->tab('tab.rz_news_post_sets_has_posts')
                     ->with('tab.group.rz_news_post_sets_has_posts', array('class' => 'col-md-12'))
                         ->add('post', 'sonata_type_model_list', array('btn_delete' => false), array())
+                        ->add('position')
                         ->add('enabled', null, array('required' => false))
                         ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
-                        ->add('position', 'hidden')
                     ->end()
                 ->end();
 
