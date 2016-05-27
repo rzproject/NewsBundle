@@ -81,14 +81,14 @@ class PostAdminController extends CRUDController
         if(!$currentCollection &&
             !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface &&
             count($collections) === 0) {
-            $currentCollection = $collectiontManager->generateDefaultColection($context, $defaultCollection);
+            $currentCollection = $collectiontManager->generateDefaultCollection($context, $defaultCollection);
             $collections = $collectiontManager->findBy(array('context'=>$context));
         }
 
         if(count($collections)>0) {
 
             if (!$currentCollection) {
-                $currentCollection = current(array_shift($collections));
+                list($currentCollection) = $collections;
             }
 
             if ($this->admin->getPersistentParameter('collection')) {

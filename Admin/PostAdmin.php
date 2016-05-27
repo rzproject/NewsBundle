@@ -544,7 +544,7 @@ class PostAdmin extends Admin
         $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug, 'context'=>$postContext));
 
         if (!$collections && !$collection && !$collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
-            $collection = $this->collectionManager->generateDefaultColection($postContext, $this->getDefaultCollection());
+            $collection = $this->collectionManager->generateDefaultCollection($postContext, $this->getDefaultCollection());
         }
 
         $instance->setCollection($collection);
@@ -570,6 +570,7 @@ class PostAdmin extends Admin
     }
 
     protected function getPoolProvider() {
+
         $currentCollection = $this->fetchCurrentCollection();
 
         if ($this->pool->hasCollection($currentCollection->getSlug())) {

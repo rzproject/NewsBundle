@@ -17,9 +17,14 @@ class Pool extends BasePool
      */
     public function addCollection($name, $provider = null, $defaultTemplate = null)
     {
+        if($this->slugify) {
+            $name = $this->slugify->slugify($name);
+        }
+
         if (!$this->hasGroup($name)) {
             $this->groups[$name] = array('provider' => null);
         }
+
         $this->groups[$name]['provider'] = $provider;
         $this->groups[$name]['default_template'] = $defaultTemplate;
     }

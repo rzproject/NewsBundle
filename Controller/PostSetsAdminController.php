@@ -44,7 +44,7 @@ class PostSetsAdminController extends Controller
             $context = $contextManager->generateDefaultContext($defaultContext);
         }
 
-        $defaultCollection = $this->container->getParameter('rz.media.gallery.default_collection');
+        $defaultCollection = $this->container->getParameter('rz.news.post_sets.default_collection');
 
         if ($collection = $request->get('collection')) {
             $currentCollection = $collectiontManager->findOneBy(array('slug'=>$slugify->slugify($collection), 'context'=>$context));
@@ -57,7 +57,7 @@ class PostSetsAdminController extends Controller
         if(!$currentCollection &&
            !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface &&
             count($collections) === 0) {
-            $currentCollection = $collectiontManager->generateDefaultColection($context, $defaultCollection);
+            $currentCollection = $collectiontManager->generateDefaultCollection($context, $defaultCollection);
             $collections = $collectiontManager->findBy(array('context'=>$context));
         }
 

@@ -98,7 +98,6 @@ class PostSetsAdmin extends Admin
             $postSetsHasPostsTabSettings = array('class' => 'col-md-12');
         }
 
-
         $provider = $this->getPoolProvider($this->pool);
 
         if($provider){
@@ -339,7 +338,7 @@ class PostSetsAdmin extends Admin
         $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug, 'context'=>$context));
 
         if (!$collections && !$collection && !$collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
-            $collection = $this->collectionManager->generateDefaultColection($context, $this->getDefaultCollection());
+            $collection = $this->collectionManager->generateDefaultCollection($context, $this->getDefaultCollection());
         }
 
         $instance->setCollection($collection);

@@ -23,10 +23,15 @@ class AddProviderCompilerPass implements CompilerPassInterface
      */
     public function attachProviders(ContainerBuilder $container)
     {
+
+        #set slugify service
+        $serviceId = $container->getParameter('rz.news.slugify_service');
+
         ########################
         # Post Provider
         ########################
         $pool = $container->getDefinition('rz.news.post.pool');
+        $pool->addMethodCall('setSlugify', array(new Reference($serviceId)));
 
         if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface')) {
             $blocks = $container->getParameter('sonata_block.blocks');
@@ -63,13 +68,14 @@ class AddProviderCompilerPass implements CompilerPassInterface
         ########################
         # Post Sets Provider
         ########################
-
         $postSetsPool = $container->getDefinition('rz.news.post_sets.pool');
+        $postSetsPool->addMethodCall('setSlugify', array(new Reference($serviceId)));
         foreach ($container->findTaggedServiceIds('rz.news.post_sets.provider') as $id => $attributes) {
             $postSetsPool->addMethodCall('addProvider', array($id, new Reference($id)));
         }
 
         $postSetsHasPostsPool = $container->getDefinition('rz.news.post_sets_has_posts.pool');
+        $postSetsHasPostsPool->addMethodCall('setSlugify', array(new Reference($serviceId)));
         foreach ($container->findTaggedServiceIds('rz.news.post_sets_has_posts.provider') as $id => $attributes) {
             $postSetsHasPostsPool->addMethodCall('addProvider', array($id, new Reference($id)));
         }

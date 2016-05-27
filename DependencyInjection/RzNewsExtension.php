@@ -150,6 +150,9 @@ class RzNewsExtension extends Extension
      */
     public function configureProviders(ContainerBuilder $container, $config)
     {
+
+
+
         #Post Provider
         $postPool = $container->getDefinition('rz.news.post.pool');
         $postPool->replaceArgument(0, $config['post']['default_provider_collection']);
