@@ -29,13 +29,13 @@
 	{% endif %}
 	{% if not app.request.get('hide_collection') %}
 		<div class="col-xs-12 col-sm-12 col-md-8 rz-col">
+	{% else %}
+		<div class="col-xs-12 col-sm-12 col-md-12 rz-col">
 	{% endif %}
 	{% block list_inner_table %}
 		{{ parent() }}
 	{% endblock list_inner_table %}
-	{% if not app.request.get('hide_collection') %}
 		</div>
-	{% endif %}
 {% endblock %}
 
 
