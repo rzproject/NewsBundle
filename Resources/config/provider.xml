@@ -11,21 +11,21 @@
     </parameters>
 
     <services>
-        <service id="rz_news.pool" class="%rz_news.pool.class%" shared="true">
+        <service id="rz_news.pool" class="%rz_news.pool.class%" scope="prototype">
             <argument />
         </service>
 
-        <service id="rz_news.provider.default" class="%rz_news.provider.default.class%" shared="true">
+        <service id="rz_news.provider.default" class="%rz_news.provider.default.class%" scope="prototype">
             <tag name="rz_news.provider" />
             <argument>rz_news.provider.default</argument>
         </service>
 
-        <service id="rz_news.provider.event" class="%rz_news.provider.event.class%" shared="true">
+        <service id="rz_news.provider.event" class="%rz_news.provider.event.class%" scope="prototype">
             <tag name="rz_news.provider" />
             <argument>rz_news.provider.event</argument>
         </service>
 
-        <service id="rz_news.provider.ads" class="%rz_news.provider.ads.class%" shared="true">
+        <service id="rz_news.provider.ads" class="%rz_news.provider.ads.class%" scope="prototype">
             <tag name="rz_news.provider" />
             <argument>rz_news.provider.ads</argument>
         </service>
