@@ -22,6 +22,7 @@ abstract class BasePost extends Post
     protected $suggestedArticles;
     protected $postHasPage;
     protected $site;
+    protected $publicationDateEnd;
 
     /**
      * {@inheritdoc}
@@ -357,5 +358,21 @@ abstract class BasePost extends Post
     public function setSite($site)
     {
         $this->site = $site;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPublicationDateEnd()
+    {
+        return $this->publicationDateEnd;
+    }
+
+    /**
+     * @param mixed $publicationDateEnd
+     */
+    public function setPublicationDateEnd($publicationDateEnd)
+    {
+        $this->publicationDateEnd = $publicationDateEnd;
     }
 }

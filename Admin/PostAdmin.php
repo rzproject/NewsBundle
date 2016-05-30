@@ -148,6 +148,7 @@ class PostAdmin extends Admin
                 ->with('group_status', array('class' => 'col-md-4',))
                     ->add('enabled', null, array('required' => false))
                     ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
+                    ->add('publicationDateEnd',   'sonata_type_datetime_picker', array('dp_side_by_side' => true))
                 ->end()
 
                 ->with('group_content', array('class' => 'col-md-12',))
@@ -330,6 +331,7 @@ class PostAdmin extends Admin
             ->add('custom', 'string', array('template' => 'RzNewsBundle:PostAdmin:list_post_custom.html.twig', 'label' => 'Post'))
             ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
             ->add('publicationDateStart', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
+            ->add('publicationDateEnd', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
         ;
     }
 
@@ -374,6 +376,7 @@ class PostAdmin extends Admin
             ->add('tags', null, array('field_options' => array('expanded' => true, 'multiple' => true)))
             ->add('author')
             ->add('publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
+            ->add('publicationDateEnd',   'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
         ;
     }
 

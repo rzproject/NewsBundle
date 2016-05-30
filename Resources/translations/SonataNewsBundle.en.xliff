@@ -333,6 +333,22 @@
                 <source>tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings</source>
                 <target>Settings</target>
             </trans-unit>
+            <trans-unit id="list.label_publication_date_end">
+                <source>list.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
+            <trans-unit id="form.label_publication_date_end">
+                <source>form.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
+            <trans-unit id="filter.label_publication_date_end">
+                <source>filter.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
+            <trans-unit id="show.label_publication_date_end">
+                <source>show.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
