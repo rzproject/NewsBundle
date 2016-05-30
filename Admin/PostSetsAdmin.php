@@ -11,7 +11,6 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class PostSetsAdmin extends Admin
 {
-
     protected $pool;
 
     protected $childPool;
@@ -19,6 +18,10 @@ class PostSetsAdmin extends Admin
     protected $defaultContext;
 
     protected $defaultCollection;
+
+    protected $defaultLookupCollection;
+
+    protected $defaultLookupHideCollection;
 
     protected $collectionManager;
 
@@ -72,6 +75,8 @@ class PostSetsAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+        $provider = $this->getPoolProvider($this->pool);
+
         $formMapper
             ->tab('tab.rz_news_post_sets')
                 ->with('tab.group.rz_news_post', array('class' => 'col-md-12'))->end()
@@ -80,12 +85,18 @@ class PostSetsAdmin extends Admin
                 ->with('tab.group.rz_news_post_sets_has_posts', array('class' => 'col-md-12'))->end()
             ->end();
 
+        $postSetsHasPostDefaultCollection = ($provider && $provider->getDefaultLookupCollection()) ? $provider->getDefaultLookupCollection() : $this->getDefaultLookupCollection();
+        $postSetsHasPostIsHideCollection = ($provider && ($provider->getDefaultLookupHideCollection() !== null)) ? $provider->getDefaultLookupHideCollection() : $this->getDefaultLookupHideCollection();
+
+        dump($postSetsHasPostIsHideCollection);
         if($childProvider = $this->getPoolProvider($this->childPool)) {
             $postSetsHasPostsFieldOptions = array(
                 'edit'            => 'inline',
                 'inline'          => 'standard',
                 'sortable'        => 'position',
                 'admin_code'      => 'rz.news.admin.post_sets_has_posts',
+                'link_parameters' => array('collection'=> $postSetsHasPostDefaultCollection,
+                                           'hide_collection'=>$postSetsHasPostIsHideCollection),
             );
             $postSetsHasPostsTabSettings = array('class' => 'col-md-8');
         } else {
@@ -94,17 +105,19 @@ class PostSetsAdmin extends Admin
                 'inline'          => 'table',
                 'sortable'        => 'position',
                 'admin_code'      => 'rz.news.admin.post_sets_has_posts',
+                'link_parameters' => array('collection'=> $postSetsHasPostDefaultCollection,
+                                           'hide_collection'=>$postSetsHasPostIsHideCollection),
             );
             $postSetsHasPostsTabSettings = array('class' => 'col-md-12');
         }
-
-        $provider = $this->getPoolProvider($this->pool);
 
         if($provider){
             $postSetsTabSettings = array('class' => 'col-md-6');
         } else {
             $postSetsTabSettings = array('class' => 'col-md-12');
         }
+
+
 
         $formMapper
             ->tab('tab.rz_news_post_sets')
@@ -115,10 +128,7 @@ class PostSetsAdmin extends Admin
             ->end()
             ->tab('tab.rz_news_post_sets_has_posts')
                 ->with('tab.group.rz_news_post_sets_has_posts', $postSetsHasPostsTabSettings)
-                    ->add('postSetsHasPosts', 'sonata_type_collection', array(
-                        'cascade_validation' => true,
-                        'required'           => false,
-                    ), $postSetsHasPostsFieldOptions)
+                    ->add('postSetsHasPosts', 'sonata_type_collection', array('cascade_validation' => true, 'required' => false), $postSetsHasPostsFieldOptions)
                 ->end()
             ->end();
 
@@ -246,6 +256,38 @@ class PostSetsAdmin extends Admin
     }
 
     /**
+     * @return mixed
+     */
+    public function getDefaultLookupCollection()
+    {
+        return $this->defaultLookupCollection;
+    }
+
+    /**
+     * @param mixed $defaultLookupCollection
+     */
+    public function setDefaultLookupCollection($defaultLookupCollection)
+    {
+        $this->defaultLookupCollection = $defaultLookupCollection;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultLookupHideCollection()
+    {
+        return $this->defaultLookupHideCollection;
+    }
+
+    /**
+     * @param mixed $defaultLookupHideCollection
+     */
+    public function setDefaultLookupHideCollection($defaultLookupHideCollection)
+    {
+        $this->defaultLookupHideCollection = $defaultLookupHideCollection;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function prePersist($object)
@@ -285,10 +327,24 @@ class PostSetsAdmin extends Admin
 
         if ($pool->hasCollection($currentCollection->getSlug())) {
             $providerName = $pool->getProviderNameByCollection($currentCollection->getSlug());
-            return $pool->getProvider($providerName);
+
+            if(!$providerName) {
+                return null;
+            }
+
+            $provider = $pool->getProvider($providerName);
+
+            if($pool instanceof \Rz\NewsBundle\Provider\PostSets\PostSetsPool) {
+                $defaultPostLookupCollection = $pool->getPostLookupCollectionByCollection($currentCollection->getSlug());
+                $provider->setDefaultLookupCollection($defaultPostLookupCollection);
+                $defaultLookupHideCollection = $pool->getPostLookupHideCollectionByCollection($currentCollection->getSlug());
+
+                $provider->setDefaultLookupHideCollection($defaultLookupHideCollection);
+            }
+            return $provider;
         }
 
-        return;
+        return null;
     }
 
     /**

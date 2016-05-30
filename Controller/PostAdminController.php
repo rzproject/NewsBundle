@@ -17,7 +17,6 @@ class PostAdminController extends CRUDController
      */
     public function listAction(Request $request = null)
     {
-
         #site TODO: should have check if pageBunlde is not available
         $siteManager = $this->get('sonata.page.manager.site');
         $sites = $siteManager->findBy(array());

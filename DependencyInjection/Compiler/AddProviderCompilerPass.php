@@ -84,7 +84,19 @@ class AddProviderCompilerPass implements CompilerPassInterface
 
         foreach ($collections as $name => $settings) {
             if($settings['post_sets']['provider']) {
-                $postSetsPool->addMethodCall('addCollection', array($name, $settings['post_sets']['provider']));
+
+                $loockupCollection = $container->getParameter('rz.news.post_sets.default_post_lookup_collection');
+                $hideCollection = $container->getParameter('rz.news.post_sets.default_post_lookup_hide_collection');
+
+                if(array_key_exists('collection', $settings['post_sets']['post_lookup_settings'])) {
+                    $loockupCollection =$settings['post_sets']['post_lookup_settings']['collection'];
+                }
+
+                if(array_key_exists('hide_collection', $settings['post_sets']['post_lookup_settings'])) {
+                    $hideCollection =$settings['post_sets']['post_lookup_settings']['hide_collection'];
+                }
+
+                $postSetsPool->addMethodCall('addCollection', array($name, $settings['post_sets']['provider'], $loockupCollection, $hideCollection));
             }
 
             if($settings['post_sets_has_posts']['provider']) {

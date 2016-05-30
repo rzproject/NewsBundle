@@ -12,6 +12,11 @@ use Rz\NewsBundle\Provider\BaseProvider;
 
 class PostSetsDefaultProvider extends BaseProvider
 {
+
+    protected $defaultLookupCollection;
+
+    protected $defaultLookupHideCollection;
+
     /**
      * {@inheritdoc}
      */
@@ -52,6 +57,38 @@ class PostSetsDefaultProvider extends BaseProvider
             }),
         );
         return $settings;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultLookupCollection()
+    {
+        return $this->defaultLookupCollection;
+    }
+
+    /**
+     * @param mixed $defaultLookupCollection
+     */
+    public function setDefaultLookupCollection($defaultLookupCollection)
+    {
+        $this->defaultLookupCollection = $defaultLookupCollection;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultLookupHideCollection()
+    {
+        return $this->defaultLookupHideCollection;
+    }
+
+    /**
+     * @param mixed $defaultLookupHideCollection
+     */
+    public function setDefaultLookupHideCollection($defaultLookupHideCollection)
+    {
+        $this->defaultLookupHideCollection = $defaultLookupHideCollection;
     }
 
     public function load(PostSetsInterface $object) {}

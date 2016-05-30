@@ -150,9 +150,6 @@ class RzNewsExtension extends Extension
      */
     public function configureProviders(ContainerBuilder $container, $config)
     {
-
-
-
         #Post Provider
         $postPool = $container->getDefinition('rz.news.post.pool');
         $postPool->replaceArgument(0, $config['post']['default_provider_collection']);
@@ -172,6 +169,9 @@ class RzNewsExtension extends Extension
 
         $container->setParameter('rz.news.post_sets.default_context',                       $config['post_sets']['default_context']);
         $container->setParameter('rz.news.post_sets.default_collection',                    $config['post_sets']['default_collection']);
+        $container->setParameter('rz.news.post_sets.default_post_lookup_collection',        $config['post_sets']['post_lookup_settings']['default_collection']);
+        $container->setParameter('rz.news.post_sets.default_post_lookup_hide_collection',   $config['post_sets']['post_lookup_settings']['hide_collection']);
+
         $container->setParameter('rz.news.post_sets.provider.default_provider_collection',  $config['post_sets']['default_provider_collection']);
         $container->setParameter('rz.news.post_sets.provider.collections',                  $config['post_sets']['collections']);
 

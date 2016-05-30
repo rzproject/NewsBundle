@@ -39,8 +39,6 @@ class PostAdmin extends Admin
 
     protected $securityTokenStorage;
 
-    const NEWS_DEFAULT_COLLECTION = 'article';
-
     protected $datagridValues = array(
         '_page'       => 1,
         '_per_page'   => 12,
@@ -65,31 +63,60 @@ class PostAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $formMapper
-            ->tab('tab.rz_news')
-                ->with('group_post', array('class' => 'col-md-8'))->end()
-                ->with('group_status', array('class' => 'col-md-4'))->end()
-                ->with('group_content', array('class' => 'col-md-12'))->end()
-            ->end()
-            ->tab('tab.rz_news_settings')
-                ->with('rz_news_settings', array('class' => 'col-md-12'))->end()
-            ->end()
-            ->tab('tab.rz_news_tags')
-                ->with('group_classification', array('class' => 'col-md-12'))->end()
-            ->end()
-            ->tab('tab.rz_news_category')
-                ->with('rz_news_category', array('class' => 'col-md-12'))->end()
-            ->end()
-            ->tab('tab.rz_news_media')
-                ->with('rz_news_media', array('class' => 'col-md-12'))->end()
-            ->end()
-            ->tab('tab.rz_news_related_articles')
-                ->with('rz_news_related_articles', array('class' => 'col-md-12'))->end()
-            ->end()
-            ->tab('tab.rz_news_suggested_articles')
-                ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
-            ->end()
-        ;
+
+        //POST PROVIDER
+        $provider = $this->getPoolProvider();
+
+        if($provider) {
+            $formMapper
+                ->tab('tab.rz_news')
+                    ->with('group_post', array('class' => 'col-md-8'))->end()
+                    ->with('group_status', array('class' => 'col-md-4'))->end()
+                    ->with('group_content', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_settings')
+                    ->with('rz_news_settings', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_tags')
+                    ->with('group_classification', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_category')
+                    ->with('rz_news_category', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_media')
+                    ->with('rz_news_media', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_related_articles')
+                    ->with('rz_news_related_articles', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_suggested_articles')
+                    ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
+                ->end()
+            ;
+        } else {
+            $formMapper
+                ->tab('tab.rz_news')
+                    ->with('group_post', array('class' => 'col-md-8'))->end()
+                    ->with('group_status', array('class' => 'col-md-4'))->end()
+                    ->with('group_content', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_tags')
+                    ->with('group_classification', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_category')
+                    ->with('rz_news_category', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_media')
+                    ->with('rz_news_media', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_related_articles')
+                    ->with('rz_news_related_articles', array('class' => 'col-md-12'))->end()
+                ->end()
+                ->tab('tab.rz_news_suggested_articles')
+                    ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
+                ->end()
+            ;
+        }
 
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
 
@@ -244,42 +271,43 @@ class PostAdmin extends Admin
             $formMapper->end()->end();
         }
 
-        //POST PROVIDER
-        $provider = $this->getPoolProvider();
 
-        if ($instance && $instance->getId()) {
-            $provider->load($instance);
-            $provider->buildEditForm($formMapper, $instance);
-        } else {
-            $provider->buildCreateForm($formMapper, $instance);
-        }
-
-        //ADD page template if news does not use controller
-        $formMapper->tab('tab.rz_news_settings')->with('rz_news_settings');
-        if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface') &&
-            $formMapper->has('settings') &&
-            !$this->getIsControllerEnabled()) {
-
-            $settingsField = $formMapper->get('settings');
-
-            if ($instance && $instance->getId() && $instance->getSetting('pageTemplateCode')) {
-                $settingsField->add('pageTemplateCode',
-                    'text',
-                    array('help_block' => $this->getTranslator()->trans('help.provider_page_template_code', array(), 'SonataNewsBundle'),
-                          'required' => true,
-                          'attr'=>array('readonly'=>'readonly')
-                    ));
+        if($provider) {
+            if ($instance && $instance->getId()) {
+                $provider->load($instance);
+                $provider->buildEditForm($formMapper, $instance);
             } else {
-                $settingsField->add('pageTemplateCode',
-                    'choice',
-                    array('choices'=>$this->getPageTemplates(),
-                          'help_block' => $this->getTranslator()->trans('help.provider_page_template_code_new', array(), 'SonataNewsBundle'),
-                          'required' => true
-                    ));
+                $provider->buildCreateForm($formMapper, $instance);
             }
-        }
 
-        $formMapper->end()->end();
+            //ADD page template if news does not use controller
+            $formMapper->tab('tab.rz_news_settings')->with('rz_news_settings');
+            if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface') &&
+                $formMapper->has('settings') &&
+                !$this->getIsControllerEnabled()
+            ) {
+
+                $settingsField = $formMapper->get('settings');
+
+                if ($instance && $instance->getId() && $instance->getSetting('pageTemplateCode')) {
+                    $settingsField->add('pageTemplateCode',
+                        'text',
+                        array('help_block' => $this->getTranslator()->trans('help.provider_page_template_code', array(), 'SonataNewsBundle'),
+                              'required'   => true,
+                              'attr'       => array('readonly' => 'readonly')
+                        ));
+                } else {
+                    $settingsField->add('pageTemplateCode',
+                        'choice',
+                        array('choices'    => $this->getPageTemplates(),
+                              'help_block' => $this->getTranslator()->trans('help.provider_page_template_code_new', array(), 'SonataNewsBundle'),
+                              'required'   => true
+                        ));
+                }
+            }
+
+            $formMapper->end()->end();
+        }
 
         //SEO PROVIDER
         $seoProvider = $this->getSeoProvider();
@@ -577,6 +605,10 @@ class PostAdmin extends Admin
             $providerName = $this->pool->getProviderNameByCollection($currentCollection->getSlug());
         } else {
             $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
+        }
+
+        if(!$providerName) {
+            return null;
         }
 
         $defaultTemplate = $this->pool->getDefaultTemplateByCollection($currentCollection->getSlug());
