@@ -13,7 +13,7 @@
     </parameters>
 
     <services>
-        <service id="rz_news.block.featured_post" class="%rz_news.block.featured_post.class%" scope="prototype">
+        <service id="rz_news.block.featured_post" class="%rz_news.block.featured_post.class%">
             <tag name="sonata.block"/>
             <argument>rz_news.block.featured_post</argument>
             <argument type="service" id="templating" />
@@ -22,14 +22,14 @@
             <argument>%rz_news.block.featured_post.templates%</argument>
             <argument>%rz_classification.enable_controllers%</argument>
         </service>
-        <service id="rz_news.block.tags" class="%rz_news.block.tags.class%"  scope="prototype">
+        <service id="rz_news.block.tags" class="%rz_news.block.tags.class%">
             <tag name="sonata.block"/>
             <argument>rz_news.block.tags</argument>
             <argument type="service" id="templating" />
             <argument type="service" id="sonata.news.manager.post" />
             <argument>%rz_news.block.tags.templates%</argument>
         </service>
-        <service id="rz_news.block.post_by_category" class="%rz_news.block.post_by_category.class%" scope="prototype">
+        <service id="rz_news.block.post_by_category" class="%rz_news.block.post_by_category.class%">
             <tag name="sonata.block"/>
             <argument>rz_news.block.post_by_category</argument>
             <argument type="service" id="templating" />
@@ -44,7 +44,7 @@
             <argument>%rz_classification.settings.category.enable_category_canonical_page%</argument>
         </service>
 
-        <service id="rz_news.block.related_post" class="%rz_news.block.related_post.class%" scope="prototype">
+        <service id="rz_news.block.related_post" class="%rz_news.block.related_post.class%">
             <tag name="sonata.block"/>
             <argument>rz_news.block.related_post</argument>
             <argument type="service" id="templating" />
@@ -56,12 +56,12 @@
             <argument>%rz_classification.enable_controllers%</argument>
         </service>
 
-		<service id="rz_news.block.all_time_popular_posts" class="%rz_news.block.all_time_popular_posts.class%" scope="prototype">
+		<service id="rz_news.block.all_time_popular_posts" class="%rz_news.block.all_time_popular_posts.class%">
             <tag name="sonata.block"/>
             <argument>rz_news.block.all_time_popular_posts</argument>
             <argument type="service" id="templating" />
             <argument type="service" id="sonata.news.manager.post" />
             <argument type="service" id="sonata.admin.pool" on-invalid="ignore" />
-        </service>        
+        </service>
     </services>
 </container>
