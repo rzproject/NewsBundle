@@ -78,7 +78,7 @@ class NewsPageDefaultPostBlockService extends BaseBlockService
     public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'postId'      => false,
+            'postId'      => null,
             'template'    => 'RzNewsBundle:Block:block_post_default.html.twig',
         ));
     }
