@@ -77,11 +77,13 @@ class Transformer implements TransformerInterface
         $emPostManager = $this->getPageManager()->getEntityManager();
         $emBlockManager = $this->getBlockManager()->getEntityManager();
         $emPostHasPageManager = $this->getPostHasPageManager()->getEntityManager();
+        $emPageManager = $this->getPageManager()->getEntityManager();
 
         //Begin Transaction
         $emPostManager->getConnection()->beginTransaction();
         $emBlockManager->getConnection()->beginTransaction();
-        $emBlockManager->getConnection()->beginTransaction();
+        $emPostHasPageManager->getConnection()->beginTransaction();
+        $emPageManager->getConnection()->beginTransaction();
 
         try {
 
@@ -119,8 +121,12 @@ class Transformer implements TransformerInterface
             ########################################
             # Create Post Has Page
             ########################################
-            if(count($newsCategoryPages) > 0 && ($newsCanonicalPage && isset($newsCanonicalPage['page'])) && $postBlock) {
-                $newsCategoryPages = array_merge(array($newsCanonicalPage['page']->getId() => $newsCanonicalPage), $newsCategoryPages);
+            if($newsCanonicalPage && isset($newsCanonicalPage['page']) && $postBlock) {
+                if(count($newsCategoryPages) > 0) {
+                    $newsCategoryPages = array_merge(array($newsCanonicalPage['page']->getId() => $newsCanonicalPage), $newsCategoryPages);
+                } else {
+                    $newsCategoryPages = array($newsCanonicalPage['page']->getId() => $newsCanonicalPage);
+                }
                 $this->createPostHasPage($newsCategoryPages, $post, $postBlock);
             }
 
@@ -137,13 +143,16 @@ class Transformer implements TransformerInterface
             //Rollback Transaction
             $emPostManager->getConnection()->commit();
             $emBlockManager->getConnection()->commit();
-            $emBlockManager->getConnection()->commit();
+            $emPostHasPageManager->getConnection()->commit();
+            $emPageManager->getConnection()->commit();
+
 
         } catch (\Exception $e) {
             //Rollback Transaction
             $emPostManager->getConnection()->rollback();
             $emBlockManager->getConnection()->rollback();
-            $emBlockManager->getConnection()->rollback();
+            $emPostHasPageManager->getConnection()->rollback();
+            $emPageManager->getConnection()->rollback();
         }
     }
 
@@ -289,9 +298,11 @@ class Transformer implements TransformerInterface
     protected function createCanonicalPage($post, $postBlock, $pageCanonicalDefaultCategory) {
         //check if canonical page exist
         $postHasPage = $this->getPostHasPageManager()->findOneByPageAndPageHasPost(array('post'=>$post, 'parent'=>$pageCanonicalDefaultCategory)) ?: null;
+
         if(!$postHasPage) {
             // create canonical page
             $newsCanonicalPage = $this->createPage($post, $pageCanonicalDefaultCategory, null, $post->getTitle(), Page::slugify($post->getId().' '.$post->getTitle()), $this->getPageService('post_canonical'));
+
             // create container block
             $newsCanonicalPage->addBlocks($contentContainer = $this->getBlockInteractor()->createNewContainer(array(
                 'enabled' => true,

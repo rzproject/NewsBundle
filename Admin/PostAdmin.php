@@ -604,7 +604,8 @@ class PostAdmin extends Admin
 
         $currentCollection = $this->fetchCurrentCollection();
 
-        if ($this->pool->hasCollection($currentCollection->getSlug())) {
+
+        if ($currentCollection && $this->pool->hasCollection($currentCollection->getSlug())) {
             $providerName = $this->pool->getProviderNameByCollection($currentCollection->getSlug());
         } else {
             $providerName = $this->pool->getProviderNameByCollection($this->pool->getDefaultCollection());
