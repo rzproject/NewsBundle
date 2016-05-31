@@ -88,7 +88,6 @@ class PostSetsAdmin extends Admin
         $postSetsHasPostDefaultCollection = ($provider && $provider->getDefaultLookupCollection()) ? $provider->getDefaultLookupCollection() : $this->getDefaultLookupCollection();
         $postSetsHasPostIsHideCollection = ($provider && ($provider->getDefaultLookupHideCollection() !== null)) ? $provider->getDefaultLookupHideCollection() : $this->getDefaultLookupHideCollection();
 
-        dump($postSetsHasPostIsHideCollection);
         if($childProvider = $this->getPoolProvider($this->childPool)) {
             $postSetsHasPostsFieldOptions = array(
                 'edit'            => 'inline',

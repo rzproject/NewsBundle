@@ -137,7 +137,7 @@ class Configuration implements ConfigurationInterface
                                                 ->end()
                                              ->end()
                                          ->end()
-                                          ->arrayNode('post_sets_has_posts')
+                                         ->arrayNode('post_sets_has_posts')
                                              ->addDefaultsIfNotSet()
                                              ->children()
                                                 ->scalarNode('provider')->end()
