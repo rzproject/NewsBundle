@@ -52,7 +52,6 @@ class PostHasCategoryAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $filter)
     {
         $filter
-            ->add('post.site', null, array('show_filter' => false))
             ->add('post.title')
             ->add('post.publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
             ->add('category', null, array('show_filter' => false,));

@@ -9,7 +9,7 @@
 		</div>
 	{% else %}
 		<div class="row">
-			<div class="col-md-9">
+			<div class="col-md-12">
 				<form
 						{% if admin_pool.getOption('form_type') == 'horizontal' %}class="form-horizontal"{% endif %}
 						role="form"
@@ -112,48 +112,48 @@
 					{% endblock formactions %}
 				</form>
 			</div>
-			<div class="col-md-3">
-				<div class="box box-widget widget-user-2">
-					<!-- Add the bg color to the header using any of the bg-* classes -->
-					<div class="widget-user-header bg-aqua-active">
-						<div class="widget-user-image">
-							<img class="img-circle" src="{{ asset('bundles/rzpage/images/page-preview.png') }}" alt="User Avatar">
-						</div>
-						<!-- /.widget-user-image -->
-						<h3 class="widget-user-username">{{ 'side_nav_title'|trans({}, 'SonataNewsBundle') }}</h3>
-						<h5 class="widget-user-desc">{{ 'side_nav_subtitle'|trans({}, 'SonataNewsBundle') }}</h5>
-					</div>
-					<div class="box-footer no-padding">
-						<div class="row rz-box-widget-info">
-							<div class="col-sm-6 border-right">
-								<div class="description-block">
-									<h5 class="description-header"><span class="badge bg-green"><i class="fa fa-fw fa-globe"></i></span></h5>
-									<span class="description-text">{{ 'side_nav_legend_1'|trans({}, 'SonataNewsBundle') }}</span>
-								</div>
-								<!-- /.description-block -->
-							</div>
-							<!-- /.col -->
-							<div class="col-sm-6">
-								<div class="description-block">
-									<h5 class="description-header"><span class="badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span></h5>
-									<span class="description-text">{{ 'side_nav_legend_2'|trans({}, 'SonataNewsBundle') }}</span>
-								</div>
-								<!-- /.description-block -->
-							</div>
-							<!-- /.col -->
-						</div>
-						<ul class="nav nav-stacked">
-						{% if object.getPostHasPage|length > 0 %}
-							{% for php in object.getPostHasPage %}
-								<li><a href="{{ path('admin_app_page_page_compose', {'id': php.page.id }) }}" data-toggle="tooltip" data-placement="top" title="{{  php.page.url }}" target="_blank"><div class="rz-ellipsis rz-nav-stacked-item">{{  php.page.url }}</div>{% if not php.page.canonicalPage %} <span class="pull-right badge bg-green"><i class="fa fa-fw fa-globe"></i></span>{% else %} <span class="pull-right badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span>{% endif %}</a></li>
-							{% endfor %}
-						{% else %}
-							<li><a href="#">{{ 'side_nav_no_record_found'|trans({}, 'SonataNewsBundle') }} <span class="pull-right badge bg-green"><i class="fa fa-fw fa-info-circle"></i></span></a></li>
-						{% endif %}
-						</ul>
-					</div>
-				</div>
-			</div>
+			{#<div class="col-md-3">#}
+				{#<div class="box box-widget widget-user-2">#}
+					{#<!-- Add the bg color to the header using any of the bg-* classes -->#}
+					{#<div class="widget-user-header bg-aqua-active">#}
+						{#<div class="widget-user-image">#}
+							{#<img class="img-circle" src="{{ asset('bundles/rzpage/images/page-preview.png') }}" alt="User Avatar">#}
+						{#</div>#}
+						{#<!-- /.widget-user-image -->#}
+						{#<h3 class="widget-user-username">{{ 'side_nav_title'|trans({}, 'SonataNewsBundle') }}</h3>#}
+						{#<h5 class="widget-user-desc">{{ 'side_nav_subtitle'|trans({}, 'SonataNewsBundle') }}</h5>#}
+					{#</div>#}
+					{#<div class="box-footer no-padding">#}
+						{#<div class="row rz-box-widget-info">#}
+							{#<div class="col-sm-6 border-right">#}
+								{#<div class="description-block">#}
+									{#<h5 class="description-header"><span class="badge bg-green"><i class="fa fa-fw fa-globe"></i></span></h5>#}
+									{#<span class="description-text">{{ 'side_nav_legend_1'|trans({}, 'SonataNewsBundle') }}</span>#}
+								{#</div>#}
+								{#<!-- /.description-block -->#}
+							{#</div>#}
+							{#<!-- /.col -->#}
+							{#<div class="col-sm-6">#}
+								{#<div class="description-block">#}
+									{#<h5 class="description-header"><span class="badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span></h5>#}
+									{#<span class="description-text">{{ 'side_nav_legend_2'|trans({}, 'SonataNewsBundle') }}</span>#}
+								{#</div>#}
+								{#<!-- /.description-block -->#}
+							{#</div>#}
+							{#<!-- /.col -->#}
+						{#</div>#}
+						{#<ul class="nav nav-stacked">#}
+						{#{% if object.getPostHasPage|length > 0 %}#}
+							{#{% for php in object.getPostHasPage %}#}
+								{#<li><a href="{{ path('admin_app_page_page_compose', {'id': php.page.id }) }}" data-toggle="tooltip" data-placement="top" title="{{  php.page.url }}" target="_blank"><div class="rz-ellipsis rz-nav-stacked-item">{{  php.page.url }}</div>{% if not php.page.canonicalPage %} <span class="pull-right badge bg-green"><i class="fa fa-fw fa-globe"></i></span>{% else %} <span class="pull-right badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span>{% endif %}</a></li>#}
+							{#{% endfor %}#}
+						{#{% else %}#}
+							{#<li><a href="#">{{ 'side_nav_no_record_found'|trans({}, 'SonataNewsBundle') }} <span class="pull-right badge bg-green"><i class="fa fa-fw fa-info-circle"></i></span></a></li>#}
+						{#{% endif %}#}
+						{#</ul>#}
+					{#</div>#}
+				{#</div>#}
+			{#</div>#}
 		</div>
 	{% endif%}
 

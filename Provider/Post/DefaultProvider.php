@@ -13,7 +13,14 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class DefaultProvider extends BaseProvider
 {
-    protected $isNew;
+    /**
+     * @param string                                           $name
+     */
+    public function __construct($name)
+    {
+        parent::__construct($name);
+        $this->templates = [];
+    }
 
     /**
      * {@inheritdoc}
@@ -45,21 +52,19 @@ class DefaultProvider extends BaseProvider
     {
         $settings = [];
 
-        if($this->getIsControllerEnabled() || $object->isNew() || !$object->getSetting('template')) {
-
-            $settings[] = array('template',
-                                'choice',
-                                array('choices'=>$this->getTemplates(),
-                                      'attr'=>array('class'=>'span4'),
-                                      'help_block' => $this->getTranslator()->trans('help.provider_block_template_new', array(), 'SonataNewsBundle'),
-                                      'preferred_choices' => $this->getPreferedChoice(),
-                                ));
-        } else {
-            $settings[] = array('template', 'text', array('help_block' => $this->getTranslator()->trans('help.provider_block_template', array(), 'SonataNewsBundle'),'attr'=>array('readonly'=>'readonly')));
-        }
+        $settings[] = array('template',
+            'choice',
+            array('choices'=>$this->getTemplateChoice(),
+                  'attr'=>array('class'=>'span4'),
+                  'help_block' => $this->getTranslator()->trans('help.provider_block_template', array(), 'SonataNewsBundle'),
+            ));
 
         return $settings;
     }
 
     public function load(PostInterface $object) {}
+
+    protected function getTemplateChoice() {
+        return  $this->getSetting('templates') ?: [];
+    }
 }

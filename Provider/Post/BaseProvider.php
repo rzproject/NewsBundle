@@ -4,14 +4,38 @@ namespace Rz\NewsBundle\Provider\Post;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\NewsBundle\Model\PostInterface;
+use Sonata\CoreBundle\Model\ManagerInterface;
 use Rz\NewsBundle\Provider\BaseProvider as Provider;
 
 abstract class BaseProvider extends Provider
 {
-    protected $templates = [];
-    protected $defaultTemplate;
+
     protected $postManager;
-    protected $isControllerEnabled;
+    protected $categoryManager;
+    protected $slugify;
+    protected $postHasMediaEnabled;
+    protected $suggestedArticleEnabled;
+    protected $relatedArticleEnabled;
+
+    /**
+     * @param string                                           $name
+     */
+    public function __construct($name)
+    {
+        parent::__construct($name);
+        $this->postHasMediaEnabled = true;
+        $this->suggestedArticleEnabled = true;
+        $this->relatedArticleEnabled = true;
+    }
+
+    /**
+     * @param mixed $rawSettings
+     */
+    public function setRawSettings($rawSettings)
+    {
+        parent::setRawSettings($rawSettings);
+        $this->setEnabledRelations();
+    }
 
     /**
      * {@inheritdoc}
@@ -29,7 +53,6 @@ abstract class BaseProvider extends Provider
     {
         $post->setUpdatedAt(new \Datetime());
     }
-
 
     /**
      * {@inheritdoc}
@@ -65,58 +88,130 @@ abstract class BaseProvider extends Provider
     }
 
     /**
-     * @return array
+     * @return mixed
      */
-    public function getTemplates()
+    public function getPostHasMediaEnabled()
     {
-        return $this->templates;
+        return $this->postHasMediaEnabled;
     }
 
     /**
-     * @param array $templates
+     * @param mixed $postHasMediaEnabled
      */
-    public function setTemplates($templates)
+    public function setPostHasMediaEnabled($postHasMediaEnabled)
     {
-        $this->templates = $templates;
+        $this->postHasMediaEnabled = $postHasMediaEnabled;
     }
 
     /**
      * @return mixed
      */
-    public function getIsControllerEnabled()
+    public function getRelatedArticleEnabled()
     {
-        return $this->isControllerEnabled;
+        return $this->relatedArticleEnabled;
     }
 
     /**
-     * @param mixed $isControllerEnabled
+     * @param mixed $relatedArticleEnabled
      */
-    public function setIsControllerEnabled($isControllerEnabled)
+    public function setRelatedArticleEnabled($relatedArticleEnabled)
     {
-        $this->isControllerEnabled = $isControllerEnabled;
+        $this->relatedArticleEnabled = $relatedArticleEnabled;
     }
 
     /**
      * @return mixed
      */
-    public function getDefaultTemplate()
+    public function getSuggestedArticleEnabled()
     {
-        return $this->defaultTemplate;
+        return $this->suggestedArticleEnabled;
     }
 
     /**
-     * @param mixed $defaultTemplate
+     * @param mixed $suggestedArticleEnabled
      */
-    public function setDefaultTemplate($defaultTemplate)
+    public function setSuggestedArticleEnabled($suggestedArticleEnabled)
     {
-        $this->defaultTemplate = $defaultTemplate;
+        $this->suggestedArticleEnabled = $suggestedArticleEnabled;
     }
 
-    public function getPreferedChoice() {
-        $template = $this->getDefaultTemplate() ?: null;
-        if($template) {
-            return array($template);
+    /**
+     * @return mixed
+     */
+    public function getCategoryManager()
+    {
+        return $this->categoryManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlugify()
+    {
+        return $this->slugify;
+    }
+
+    /**
+     * @param mixed $slugify
+     */
+    public function setSlugify($slugify)
+    {
+        $this->slugify = $slugify;
+    }
+
+    /**
+     * @param mixed $categoryManager
+     */
+    public function setCategoryManager($categoryManager)
+    {
+        $this->categoryManager = $categoryManager;
+    }
+
+    protected function setEnabledRelations() {
+
+        $params = $this->getSetting('post_has_media');
+        if($params){
+            $default = isset($this->defaultSettings['post_has_media']) && isset($this->defaultSettings['post_has_media']['enabled']) ? $this->defaultSettings['post_has_media']['enabled'] : true;
+            $this->postHasMediaEnabled = isset($params['enable']) ? $params['enable'] : $default;
         }
-        return [];
+
+        $params = $this->getSetting('related_articles');
+        if($params){
+            $default = isset($this->defaultSettings['related_articles']) && isset($this->defaultSettings['related_articles']['enabled']) ? $this->defaultSettings['related_articles']['enabled'] : true;
+            $this->relatedArticleEnabled = isset($params['enable']) ? $params['enable'] : $default;
+        }
+
+        $params = $this->getSetting('suggested_articles');
+        if($params){
+            $default = isset($this->defaultSettings['suggested_articles']) && isset($this->defaultSettings['suggested_articles']['enabled']) ? $this->defaultSettings['suggested_articles']['enabled'] : true;
+            $this->relatedArticleEnabled = isset($params['enable']) ? $params['enable'] : $default;
+        }
+    }
+
+    public function getPostHasMediaSettings() {
+        $params = $this->getSetting('post_has_media');
+        $settings = [];
+        if($params) {
+            $settings['context'] = isset($params['context']) && $params['context'] !== null ? $params['context'] : $this->getDefaultContext();
+            $settings['hide_context'] = isset($params['hide_context']) && $params['hide_context'] !== null ? $params['hide_context'] : false;
+
+            if(isset($params['category']) && $params['category'] !== null) {
+                $category = $this->categoryManager->findOneBy(array('slug'=>$this->getSlugify()->slugify($params['category']), 'context'=>$settings['context']));
+                if($category) {
+                    $settings['category'] = $category->getId();
+                }
+            }
+        }
+        return $settings;
+    }
+
+    public function getSuggetedArticleSettings() {
+        $params = $this->getSetting('suggested_articles');
+        $settings = [];
+        if($params) {
+            $settings['collection'] = isset($params['collection']) && $params['collection'] !== null ? $params['collection'] : null;
+            $settings['hide_collection'] = isset($params['hide_collection']) && $params['hide_collection'] !== null ? $params['hide_collection'] : false;
+        }
+        return $settings;
     }
 }

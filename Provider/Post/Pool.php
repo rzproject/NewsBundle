@@ -15,7 +15,7 @@ class Pool extends BasePool
      *
      * @return void
      */
-    public function addCollection($name, $provider = null, $defaultTemplate = null)
+    public function addCollection($name, $provider = null, $settings = null)
     {
         if($this->slugify) {
             $name = $this->slugify->slugify($name);
@@ -26,10 +26,10 @@ class Pool extends BasePool
         }
 
         $this->groups[$name]['provider'] = $provider;
-        $this->groups[$name]['default_template'] = $defaultTemplate;
+        $this->groups[$name]['settings'] = $settings;
     }
 
-    public function getDefaultTemplateByCollection($name)
+    public function getSettingsByCollection($name)
     {
         $group = $this->getGroup($name);
 
@@ -37,6 +37,6 @@ class Pool extends BasePool
             return null;
         }
 
-        return $group['default_template'];
+        return $group['settings'];
     }
 }

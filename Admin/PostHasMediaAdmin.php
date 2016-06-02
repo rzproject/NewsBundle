@@ -38,24 +38,15 @@ class PostHasMediaAdmin extends Admin
             ->end()
         ;
 
-        $formMapper
-
-        ;
-
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
            $formMapper
                 ->tab('tab.rz_news_post_has_media_media')
                     ->with('rz_news_post_has_media_media', array('class' => 'col-md-8'))
-                       ->add('media', 'sonata_type_model_list', array('btn_delete' => false), array(
-                           'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
-                       ))
+                       ->add('media', 'sonata_type_model_list', array('btn_delete' => false), array())
                     ->end()
                 ->end()
             ;
         }
-
-
-
 
         $formMapper
             ->tab('tab.rz_news_post_has_media_media')

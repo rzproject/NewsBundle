@@ -3,7 +3,7 @@
 namespace Rz\NewsBundle\Provider;
 
 use Sonata\AdminBundle\Form\FormMapper;
-use  Rz\CoreBundle\Provider\BaseProvider as Provider;
+use Rz\CoreBundle\Provider\BaseProvider as Provider;
 
 abstract class BaseProvider extends Provider
 {

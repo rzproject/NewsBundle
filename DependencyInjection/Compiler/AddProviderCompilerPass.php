@@ -33,35 +33,20 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $pool = $container->getDefinition('rz.news.post.pool');
         $pool->addMethodCall('setSlugify', array(new Reference($serviceId)));
 
-        if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface')) {
-            $blocks = $container->getParameter('sonata_block.blocks');
-            $blockService = $container->getParameter('rz.news.post_block_service');
-            if(isset($blocks[$blockService]) && isset($blocks[$blockService]['templates'])) {
-                $container->setParameter('rz.news.post_templates', $blocks[$blockService]['templates']);
-            }
-        }
-
-        $postTemplates = $container->getParameter('rz.news.post_templates');
-
         foreach ($container->findTaggedServiceIds('rz.news.post.provider') as $id => $attributes) {
             $pool->addMethodCall('addProvider', array($id, new Reference($id)));
         }
 
         $collections = $container->getParameter('rz.news.post.provider.collections');
 
-        $templates = [];
-        foreach ($postTemplates as $item) {
-            $templates[$item['template']] = $item['name'];
-        }
-
         foreach ($collections as $name => $settings) {
-            $pool->addMethodCall('addCollection', array($name, $settings['provider'], $settings['preferred_template']));
+            $pool->addMethodCall('addCollection', array($name, $settings['provider'], $settings['settings']));
             if($container->hasDefinition($settings['provider'])) {
                 $provider =$container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setPostManager', array(new Reference('sonata.news.manager.post')));
-                $provider->addMethodCall('setTemplates', array($templates));
-                $provider->addMethodCall('setIsControllerEnabled', array($container->getParameter('rz.news.enable_controller')));
-
+                $provider->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
+                $provider->addMethodCall('setDefaultSettings', array($container->getParameter('rz.news.settings')));
+                $provider->addMethodCall('setSlugify', array(new Reference($serviceId)));
             }
         }
 

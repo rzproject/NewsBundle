@@ -114,66 +114,7 @@
                 <source>label_suggested_articles</source>
                 <target>Post</target>
             </trans-unit>
-						<trans-unit id="filter.label_site">
-                <source>filter.label_site</source>
-                <target>Site</target>
-            </trans-unit>
-						<trans-unit id="form.label_site">
-                <source>form.label_site</source>
-                <target>Site</target>
-            </trans-unit>
-            <trans-unit id="rz.news.block.post">
-                <source>rz.news.block.post</source>
-                <target>Post Block (RZ)</target>
-            </trans-unit>
-            <trans-unit id="group_content">
-                <source>group_content</source>
-                <target>Content</target>
-            </trans-unit>
-            <trans-unit id="side_nav_title">
-                <source>side_nav_title</source>
-                <target>Post Page</target>
-            </trans-unit>
-            <trans-unit id="side_nav_subtitle">
-                <source>side_nav_subtitle</source>
-                <target>Auto Generated</target>
-            </trans-unit>
-            <trans-unit id="side_nav_legend_1">
-                <source>side_nav_legend_1</source>
-                <target>Page</target>
-            </trans-unit>
-            <trans-unit id="side_nav_legend_2">
-                <source>side_nav_legend_2</source>
-                <target>Canonical</target>
-            </trans-unit>
-            <trans-unit id="side_nav_no_record_found">
-                <source>side_nav_no_record_found</source>
-                <target>Pages will be generated on save.</target>
-            </trans-unit>
-            <trans-unit id="help.provider_page_template_code">
-                <source>help.provider_page_template_code</source>
-                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Page template code can be changed via Page Admin</em></p>]]></target>
-            </trans-unit>
-            <trans-unit id="help.provider_page_template_code_new">
-                <source>help.provider_page_template_code_new</source>
-                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Page template code will be the default post page template</em></p>]]></target>
-            </trans-unit>
-            <trans-unit id="help.provider_block_template">
-                <source>help.provider_block_template</source>
-                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Block template code can be changed via Page Admin</em></p>]]></target>
-            </trans-unit>
-            <trans-unit id="help.provider_block_template_new">
-                <source>help.provider_block_template_new</source>
-                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Block template  will be the default PostBlock template</em></p>]]></target>
-            </trans-unit>
-						<trans-unit id="tab.rz_news_seo_settings">
-                <source>tab.rz_news_seo_settings</source>
-                <target>SEO</target>
-            </trans-unit>
-						<trans-unit id="rz_news_seo_settings">
-                <source>rz_news_seo_settings</source>
-                <target>SEO</target>
-            </trans-unit>
+
             <trans-unit id="group_status">
                 <source>group_status</source>
                 <target>Details</target>
@@ -348,6 +289,14 @@
             <trans-unit id="show.label_publication_date_end">
                 <source>show.label_publication_date_end</source>
                 <target>Publication end date</target>
+            </trans-unit>
+            <trans-unit id="help.provider_block_template">
+                <source>help.provider_block_template</source>
+                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Template for rendering Post</em></p>]]></target>
+            </trans-unit>
+            <trans-unit id="group_content">
+                <source>group_content</source>
+                <target>Content</target>
             </trans-unit>
         </body>
     </file>

@@ -17,22 +17,6 @@ class PostAdminController extends CRUDController
      */
     public function listAction(Request $request = null)
     {
-        #site TODO: should have check if pageBunlde is not available
-        $siteManager = $this->get('sonata.page.manager.site');
-        $sites = $siteManager->findBy(array());
-        $currentSite = null;
-        $siteId = $request->get('site');
-        foreach ($sites as $site) {
-            if ($siteId && $site->getId() == $siteId) {
-                $currentSite = $site;
-            } elseif (!$siteId && $site->getIsDefault()) {
-                $currentSite = $site;
-            }
-        }
-        if (!$currentSite && count($sites) == 1) {
-            $currentSite = $sites[0];
-        }
-
         $this->admin->checkAccess('list');
 
         $preResponse = $this->preList($request);
@@ -46,13 +30,6 @@ class PostAdminController extends CRUDController
 
         $datagrid = $this->admin->getDatagrid();
 
-
-        if ($this->admin->getPersistentParameter('site')) {
-            $site = $siteManager->findOneBy(array('id'=>$this->admin->getPersistentParameter('site')));
-            $datagrid->setValue('site', null, $site->getId());
-        } else {
-            $datagrid->setValue('site', null, $currentSite->getId());
-        }
 
         $collectiontManager = $this->get('sonata.classification.manager.collection');
         $slugify = $this->get($this->container->getParameter('rz.news.slugify_service'));
@@ -111,8 +88,6 @@ class PostAdminController extends CRUDController
             'action'              => 'list',
             'current_collection'  => $currentCollection,
             'collections'         => $collections,
-            'sites'               => $sites,
-            'currentSite'         => $currentSite,
             'form'                => $formView,
             'datagrid'            => $datagrid,
             'csrf_token'          => $this->getCsrfToken('sonata.batch'),

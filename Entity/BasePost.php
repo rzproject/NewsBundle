@@ -8,21 +8,19 @@ use Rz\NewsBundle\Model\PostHasCategoryInterface;
 use Rz\NewsBundle\Model\PostHasMediaInterface;
 use Rz\NewsBundle\Model\RelatedArticlesInterface;
 use Rz\NewsBundle\Model\SuggestedArticlesInterface;
-use Rz\NewsBundle\Model\PostHasPageInterface;
+//use Rz\NewsBundle\Model\PostHasPageInterface;
 
 
 abstract class BasePost extends Post
 {
     protected $commentsDefaultStatus = true;
     protected $settings;
-    protected $seoSettings;
     protected $postHasCategory;
     protected $postHasMedia;
     protected $relatedArticles;
     protected $suggestedArticles;
-    protected $postHasPage;
-    protected $site;
     protected $publicationDateEnd;
+    protected $provider;
 
     /**
      * {@inheritdoc}
@@ -35,39 +33,6 @@ abstract class BasePost extends Post
         $this->postHasMedia = new ArrayCollection();
         $this->relatedArticles = new ArrayCollection();
         $this->suggestedArticles = new ArrayCollection();
-        $this->postHasPage = new ArrayCollection();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSeoSettings()
-    {
-        return $this->seoSettings;
-    }
-
-    /**
-     * @param mixed $settings
-     */
-    public function setSeoSettings($seoSettings)
-    {
-        $this->seoSettings = $seoSettings;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getSeoSetting($name, $default = null)
-    {
-        return isset($this->seoSettings[$name]) ? $this->seoSettings[$name] : $default;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setSeoSetting($name, $value)
-    {
-        $this->seoSettings[$name] = $value;
     }
 
     /**
@@ -289,75 +254,11 @@ abstract class BasePost extends Post
         }
     }
 
-    /**
-     * @param mixed $postHasPage
-     */
-    public function setPostHasPage($postHasPage)
-    {
-        $this->postHasPage = new ArrayCollection();
-        foreach ($postHasPage as $child) {
-            $this->addPostHasPage($child);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addPostHasPage(PostHasPageInterface $postHasPage)
-    {
-        $postHasPage->setPost($this);
-        $this->postHasPage[] = $postHasPage;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPostHasPage()
-    {
-        return $this->postHasPage;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removePostHasPage(PostHasPageInterface $childToDelete)
-    {
-        foreach ($this->getPostHasPage() as $pos => $child) {
-            if ($childToDelete->getId() && $child->getId() === $childToDelete->getId()) {
-                unset($this->postHasPage[$pos]);
-
-                return;
-            }
-
-            if (!$childToDelete->getId() && $child === $childToDelete) {
-                unset($this->postHasPage[$pos]);
-
-                return;
-            }
-        }
-    }
-
     public function isNew() {
         if ($this->getId()) {
             return false;
         }
         return true;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSite()
-    {
-        return $this->site;
-    }
-
-    /**
-     * @param mixed $site
-     */
-    public function setSite($site)
-    {
-        $this->site = $site;
     }
 
     /**
@@ -374,5 +275,21 @@ abstract class BasePost extends Post
     public function setPublicationDateEnd($publicationDateEnd)
     {
         $this->publicationDateEnd = $publicationDateEnd;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    /**
+     * @param mixed $provider
+     */
+    public function setProvider($provider)
+    {
+        $this->provider = $provider;
     }
 }

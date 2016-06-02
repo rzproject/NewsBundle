@@ -25,34 +25,33 @@ class RzNewsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('orm.xml');
         $loader->load('admin.xml');
+        $this->configureSettings($config, $container);
         $this->configureManagerClass($config, $container);
         $this->configureClass($config, $container);
         $this->configureAdminClass($config, $container);
         $this->configureController($config, $container);
         $this->configureTranslationDomain($config, $container);
 
-        $loader->load('permalink.xml');
-        $this->configurePermalinks($container, $config);
-
         $loader->load('post_provider.xml');
         $loader->load('post_sets_provider.xml');
-        $loader->load('seo_provider.xml');
         $this->configureProviders($container, $config['providers']);
 
-        $container->setParameter('rz.news.enable_controller',  $config['enable_controller']);
-        $container->setParameter('rz.news.slugify_service',    $config['slugify_service']);
-
-        if (interface_exists('Sonata\PageBundle\Model\PageInterface') && !$config['enable_controller']) {
-            $loader->load('orm_page.xml');
-            $loader->load('admin_page.xml');
-            $loader->load('transformer.xml');
-            $loader->load('news_page_twig.xml');
-            $loader->load('news_page_block.xml');
-            $loader->load('news_page_service.xml');
-            $this->configureNewsPage($container, $config);
-        }
-
         $this->registerDoctrineMapping($config);
+    }
+
+    /**
+     * @param array                                                   $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     *
+     * @return void
+     */
+    public function configureSettings($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz.news.slugify_service',                      $config['slugify_service']);
+        $container->setParameter('rz.news.settings',                             $config['settings']);
+//        $container->setParameter('rz.news.settings.related_articles.enabled',    $config['settings']['related_articles']['enabled']);
+//        $container->setParameter('rz.news.settings.suggested_articles.enabled',  $config['settings']['suggested_articles']['enabled']);
+//        $container->setParameter('rz.news.settings.post_has_media.enabled',      $config['settings']['post_has_media']['enabled']);
     }
 
     /**
@@ -174,56 +173,6 @@ class RzNewsExtension extends Extension
 
         $container->setParameter('rz.news.post_sets.provider.default_provider_collection',  $config['post_sets']['default_provider_collection']);
         $container->setParameter('rz.news.post_sets.provider.collections',                  $config['post_sets']['collections']);
-
-        # SEO Provider
-        $container->setParameter('rz.news.default_seo_provider',                            $config['seo']['default_provider']);
-    }
-
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param array                                                   $config
-     */
-    public function configurePermalinks(ContainerBuilder $container, $config)
-    {
-        //set default permalinks
-        $container->setParameter('rz.news.permalink.default_permalink', $config['permalink']['permalinks'][$config['permalink']['default_permalink']]['permalink']);
-        $container->setParameter('rz.news.permalink.default_category_permalink', $config['permalink']['permalinks'][$config['permalink']['default_category_permalink']]['permalink']);
-    }
-
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param array                                                   $config
-     */
-    public function configureNewsPage(ContainerBuilder $container, $config)
-    {
-        $container->setParameter('rz.news.news_page_parent_slug',   $config['news_page']['news_page_parent_slug']);
-        $container->setParameter('rz.news.transformer.class',       $config['news_page']['transformer']['class']);
-
-        #postHasPage Class
-        $container->setParameter('rz.news.admin.post_has_page.entity', $config['news_page']['class']['post_has_page']);
-        $container->setParameter('rz.news.post_has_page.entity',       $config['news_page']['class']['post_has_page']);
-
-        $container->setParameter('rz.news.entity.manager.post_has_page.class',     $config['news_page']['manager_class']['orm']['post_has_page']);
-        $container->setParameter('rz.news.admin.post_has_page.class',              $config['news_page']['admin']['post_has_page']['class']);
-        $container->setParameter('rz.news.admin.post_has_page.translation_domain', $config['news_page']['admin']['post_has_page']['translation']);
-        $container->setParameter('rz.news.admin.post_has_page.controller',         $config['news_page']['admin']['post_has_page']['controller']);
-
-
-        $container->setParameter('rz.news.default_post_block_template', $config['news_page']['default_post_block_template']);
-        $container->setParameter('rz.news.post_templates',              array($config['news_page']['default_post_block_template']));
-        $container->setParameter('rz.news.post_block_service',          $config['news_page']['post_block_service']);
-        $container->setParameter('rz.news.page.services',               $config['news_page']['page_services']);
-
-        if(!$config['news_page']['page_templates']) {
-            throw new \RuntimeException(sprintf('Please define a default `page_templates` value for the class `%s`', get_class($this)));
-        }
-
-        $pageTemplates = [];
-        foreach($config['news_page']['page_templates'] as $key=>$value) {
-            $pageTemplates[$value['template_code']] = $value['name'];
-        }
-
-        $container->setParameter('rz.news.page_templates',                         $pageTemplates);
 
     }
 
@@ -446,128 +395,128 @@ class RzNewsExtension extends Extension
         # Page
         ######################
 
-        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
-
-            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-                'fieldName' => 'post',
-                'targetEntity' => $config['class']['post'],
-                'cascade' => array(
-                    'persist',
-                ),
-                'mappedBy' => NULL,
-                'inversedBy' => 'postHasPage',
-                'joinColumns' => array(
-                    array(
-                        'name' => 'post_id',
-                        'referencedColumnName' => 'id',
-                    ),
-                ),
-                'orphanRemoval' => false,
-            ));
-
-            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-                'fieldName' => 'page',
-                'targetEntity' => $config['news_page']['class']['page'],
-                'cascade' => array(
-                    'persist',
-                ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'joinColumns' => array(
-                    array(
-                        'name' => 'page_id',
-                        'referencedColumnName' => 'id',
-                    ),
-                ),
-                'orphanRemoval' => false,
-            ));
-
-            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-                'fieldName' => 'block',
-                'targetEntity' => $config['news_page']['class']['block'],
-                'cascade' => array(
-                    'persist',
-                ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'joinColumns' => array(
-                    array(
-                        'name' => 'block_id',
-                        'referencedColumnName' => 'id',
-                    ),
-                ),
-                'orphanRemoval' => false,
-            ));
-
-            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-                'fieldName' => 'sharedBlock',
-                'targetEntity' => $config['news_page']['class']['block'],
-                'cascade' => array(
-                    'persist',
-                ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'joinColumns' => array(
-                    array(
-                        'name' => 'shared_block_id',
-                        'referencedColumnName' => 'id',
-                    ),
-                ),
-                'orphanRemoval' => false,
-            ));
-
-            $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
-                'fieldName' => 'postHasPage',
-                'targetEntity' => $config['news_page']['class']['post_has_page'],
-                'cascade' => array(
-                    'persist',
-                ),
-                'mappedBy' => 'post',
-                'orphanRemoval' => true,
-                'orderBy' => array(
-                    'position' => 'ASC',
-                ),
-            ));
-
-            $collector->addAssociation($config['class']['post'], 'mapManyToOne', array(
-                'fieldName'     => 'site',
-                'targetEntity'  => $config['news_page']['class']['site'],
-                'cascade'       => array(
-                    'persist',
-                ),
-                'mappedBy'      => null,
-                'inversedBy'    => null,
-                'joinColumns'   => array(
-                    array(
-                        'name'                 => 'site_id',
-                        'referencedColumnName' => 'id',
-                        'onDelete'             => 'CASCADE',
-                    ),
-                ),
-                'orphanRemoval' => false,
-            ));
-
-
-            if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
-
-                $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-                    'fieldName' => 'category',
-                    'targetEntity' => $config['class']['category'],
-                    'cascade' => array(
-                        'persist',
-                    ),
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
-                    'joinColumns' => array(
-                        array(
-                            'name' => 'category_id',
-                            'referencedColumnName' => 'id',
-                        ),
-                    ),
-                    'orphanRemoval' => false,
-                ));
-            }
-        }
+//        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+//
+//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
+//                'fieldName' => 'post',
+//                'targetEntity' => $config['class']['post'],
+//                'cascade' => array(
+//                    'persist',
+//                ),
+//                'mappedBy' => NULL,
+//                'inversedBy' => 'postHasPage',
+//                'joinColumns' => array(
+//                    array(
+//                        'name' => 'post_id',
+//                        'referencedColumnName' => 'id',
+//                    ),
+//                ),
+//                'orphanRemoval' => false,
+//            ));
+//
+//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
+//                'fieldName' => 'page',
+//                'targetEntity' => $config['news_page']['class']['page'],
+//                'cascade' => array(
+//                    'persist',
+//                ),
+//                'mappedBy' => NULL,
+//                'inversedBy' => NULL,
+//                'joinColumns' => array(
+//                    array(
+//                        'name' => 'page_id',
+//                        'referencedColumnName' => 'id',
+//                    ),
+//                ),
+//                'orphanRemoval' => false,
+//            ));
+//
+//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
+//                'fieldName' => 'block',
+//                'targetEntity' => $config['news_page']['class']['block'],
+//                'cascade' => array(
+//                    'persist',
+//                ),
+//                'mappedBy' => NULL,
+//                'inversedBy' => NULL,
+//                'joinColumns' => array(
+//                    array(
+//                        'name' => 'block_id',
+//                        'referencedColumnName' => 'id',
+//                    ),
+//                ),
+//                'orphanRemoval' => false,
+//            ));
+//
+//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
+//                'fieldName' => 'sharedBlock',
+//                'targetEntity' => $config['news_page']['class']['block'],
+//                'cascade' => array(
+//                    'persist',
+//                ),
+//                'mappedBy' => NULL,
+//                'inversedBy' => NULL,
+//                'joinColumns' => array(
+//                    array(
+//                        'name' => 'shared_block_id',
+//                        'referencedColumnName' => 'id',
+//                    ),
+//                ),
+//                'orphanRemoval' => false,
+//            ));
+//
+//            $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
+//                'fieldName' => 'postHasPage',
+//                'targetEntity' => $config['news_page']['class']['post_has_page'],
+//                'cascade' => array(
+//                    'persist',
+//                ),
+//                'mappedBy' => 'post',
+//                'orphanRemoval' => true,
+//                'orderBy' => array(
+//                    'position' => 'ASC',
+//                ),
+//            ));
+//
+//            $collector->addAssociation($config['class']['post'], 'mapManyToOne', array(
+//                'fieldName'     => 'site',
+//                'targetEntity'  => $config['news_page']['class']['site'],
+//                'cascade'       => array(
+//                    'persist',
+//                ),
+//                'mappedBy'      => null,
+//                'inversedBy'    => null,
+//                'joinColumns'   => array(
+//                    array(
+//                        'name'                 => 'site_id',
+//                        'referencedColumnName' => 'id',
+//                        'onDelete'             => 'CASCADE',
+//                    ),
+//                ),
+//                'orphanRemoval' => false,
+//            ));
+//
+//
+//            if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
+//
+//                $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
+//                    'fieldName' => 'category',
+//                    'targetEntity' => $config['class']['category'],
+//                    'cascade' => array(
+//                        'persist',
+//                    ),
+//                    'mappedBy' => NULL,
+//                    'inversedBy' => NULL,
+//                    'joinColumns' => array(
+//                        array(
+//                            'name' => 'category_id',
+//                            'referencedColumnName' => 'id',
+//                        ),
+//                    ),
+//                    'orphanRemoval' => false,
+//                ));
+//            }
+//        }
 
 
         ######################

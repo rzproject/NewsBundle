@@ -26,6 +26,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('sonata.news.admin.post');
         $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
+        $definition->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
         $definition->addMethodCall('setTagManager', array(new Reference('sonata.classification.manager.tag')));
         $definition->addMethodCall('setPool', array(new Reference('rz.news.post.pool')));
         $definition->addMethodCall('setSecurityTokenStorage', array(new Reference('security.token_storage')));
@@ -34,10 +35,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         #slugify context and collection
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.news.post.default_context')));
         $definition->addMethodCall('setDefaultCollection', array($container->getParameter('rz.news.post.default_collection')));
-        $definition->addMethodCall('setIsControllerEnabled', array($container->getParameter('rz.news.enable_controller')));
-        if(!$container->getParameter('rz.news.enable_controller')) {
-            $definition->addMethodCall('setPageTemplates', array($container->getParameter('rz.news.page_templates')));
-        }
+        $definition->addMethodCall('setSettings', array($container->getParameter('rz.news.settings')));
 
 
 
