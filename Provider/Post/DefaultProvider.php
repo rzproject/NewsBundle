@@ -19,7 +19,6 @@ class DefaultProvider extends BaseProvider
     public function __construct($name)
     {
         parent::__construct($name);
-        $this->templates = [];
     }
 
     /**
