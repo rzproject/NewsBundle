@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
+
+    <class name="Rz\NewsBundle\Entity\BasePostSets">
+        <property name="name">
+            <constraint name="NotBlank" />
+        </property>
+
+        <property name="description">
+            <constraint name="NotBlank" />
+        </property>
+
+        <property name="postSetsHasPosts">
+            <constraint name="Valid" />
+        </property>
+
+        <constraint name="Rz\NewsBundle\Validator\Constraints\PrePersistRelation" />
+    </class>
+    <class name="Rz\NewsBundle\Entity\BasePostSetsHasPosts">
+        <property name="post">
+           <constraint name="NotBlank" />
+        </property>
+    </class>
+</constraint-mapping>

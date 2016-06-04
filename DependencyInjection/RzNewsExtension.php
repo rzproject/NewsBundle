@@ -25,6 +25,7 @@ class RzNewsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('orm.xml');
         $loader->load('admin.xml');
+        $loader->load('validators.xml');
         $this->configureSettings($config, $container);
         $this->configureManagerClass($config, $container);
         $this->configureClass($config, $container);
@@ -34,6 +35,7 @@ class RzNewsExtension extends Extension
 
         $loader->load('post_provider.xml');
         $loader->load('post_sets_provider.xml');
+        $loader->load('post_sets_has_posts_provider.xml');
         $this->configureProviders($container, $config['providers']);
 
         $this->registerDoctrineMapping($config);
@@ -48,7 +50,8 @@ class RzNewsExtension extends Extension
     public function configureSettings($config, ContainerBuilder $container)
     {
         $container->setParameter('rz.news.slugify_service',                      $config['slugify_service']);
-        $container->setParameter('rz.news.settings',                             $config['settings']);
+        $container->setParameter('rz.news.settings.post',                        $config['settings']['post']);
+        $container->setParameter('rz.news.settings.post_sets_has_posts',         $config['settings']['post_sets_has_posts']);
     }
 
     /**
@@ -148,28 +151,25 @@ class RzNewsExtension extends Extension
     {
         #Post Provider
         $postPool = $container->getDefinition('rz.news.post.pool');
-        $postPool->replaceArgument(0, $config['post']['default_provider_collection']);
+        $postPool->replaceArgument(0, $config['post']['default_collection']);
 
         $container->setParameter('rz.news.post.default_context',                        $config['post']['default_context']);
         $container->setParameter('rz.news.post.default_collection',                     $config['post']['default_collection']);
-        $container->setParameter('rz.news.post.provider.default_provider_collection',   $config['post']['default_provider_collection']);
         $container->setParameter('rz.news.post.provider.collections',                   $config['post']['collections']);
 
 
         #Post Sets Provider
         $postSetsPool = $container->getDefinition('rz.news.post_sets.pool');
-        $postSetsPool->replaceArgument(0, $config['post_sets']['default_provider_collection']);
+        $postSetsPool->replaceArgument(0, $config['post_sets']['default_collection']);
 
         $postSetsPool = $container->getDefinition('rz.news.post_sets_has_posts.pool');
-        $postSetsPool->replaceArgument(0, $config['post_sets']['default_provider_collection']);
+        $postSetsPool->replaceArgument(0, $config['post_sets']['default_collection']);
 
         $container->setParameter('rz.news.post_sets.default_context',                       $config['post_sets']['default_context']);
         $container->setParameter('rz.news.post_sets.default_collection',                    $config['post_sets']['default_collection']);
-        $container->setParameter('rz.news.post_sets.default_post_lookup_collection',        $config['post_sets']['post_lookup_settings']['default_collection']);
-        $container->setParameter('rz.news.post_sets.default_post_lookup_hide_collection',   $config['post_sets']['post_lookup_settings']['hide_collection']);
-
-        $container->setParameter('rz.news.post_sets.provider.default_provider_collection',  $config['post_sets']['default_provider_collection']);
         $container->setParameter('rz.news.post_sets.provider.collections',                  $config['post_sets']['collections']);
+
+
 
     }
 

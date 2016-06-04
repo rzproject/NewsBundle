@@ -1,6 +1,6 @@
 <?php
 
-namespace Rz\NewsBundle\Provider\PostSets;
+namespace Rz\NewsBundle\Provider\PostSetsHasPosts;
 
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
@@ -8,9 +8,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Rz\NewsBundle\Model\PostSetsHasPostsInterface;
-use Rz\NewsBundle\Provider\BaseProvider;
 
-class PostSetsHasPostsDefaultProvider extends BaseProvider
+class DefaultProvider extends BaseProvider
 {
     /**
      * {@inheritdoc}

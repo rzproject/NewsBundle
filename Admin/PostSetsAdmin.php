@@ -1,33 +1,26 @@
 <?php
 
-
 namespace Rz\NewsBundle\Admin;
 
-use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Rz\CoreBundle\Provider\PoolInterface;
 
-class PostSetsAdmin extends Admin
+class PostSetsAdmin extends AbstractPostSetsAdmin
 {
-    protected $pool;
+    protected $formOptions = array('cascade_validation'=>true);
 
-    protected $childPool;
-
-    protected $defaultContext;
-
-    protected $defaultCollection;
-
-    protected $defaultLookupCollection;
-
-    protected $defaultLookupHideCollection;
-
-    protected $collectionManager;
-
-    protected $contextManager;
-
-    protected $slugify;
+    /**
+     * {@inheritdoc}
+     */
+    public function setSubject($subject)
+    {
+        parent::setSubject($subject);
+        $this->provider = $this->getPoolProvider($this->getPool());
+        $this->childeProvider = $this->getPoolProvider($this->getChildPool());
+    }
 
     /**
      * {@inheritdoc}
@@ -75,8 +68,6 @@ class PostSetsAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $provider = $this->getPoolProvider($this->pool);
-
         $formMapper
             ->tab('tab.rz_news_post_sets')
                 ->with('tab.group.rz_news_post', array('class' => 'col-md-12'))->end()
@@ -85,17 +76,14 @@ class PostSetsAdmin extends Admin
                 ->with('tab.group.rz_news_post_sets_has_posts', array('class' => 'col-md-12'))->end()
             ->end();
 
-        $postSetsHasPostDefaultCollection = ($provider && $provider->getDefaultLookupCollection()) ? $provider->getDefaultLookupCollection() : $this->getDefaultLookupCollection();
-        $postSetsHasPostIsHideCollection = ($provider && ($provider->getDefaultLookupHideCollection() !== null)) ? $provider->getDefaultLookupHideCollection() : $this->getDefaultLookupHideCollection();
 
-        if($childProvider = $this->getPoolProvider($this->childPool)) {
+        if($this->hasChildProvider()) {
             $postSetsHasPostsFieldOptions = array(
                 'edit'            => 'inline',
                 'inline'          => 'standard',
                 'sortable'        => 'position',
                 'admin_code'      => 'rz.news.admin.post_sets_has_posts',
-                'link_parameters' => array('collection'=> $postSetsHasPostDefaultCollection,
-                                           'hide_collection'=>$postSetsHasPostIsHideCollection),
+                'link_parameters' => $this->getPostSetsHasPostsSettings(),
             );
             $postSetsHasPostsTabSettings = array('class' => 'col-md-8');
         } else {
@@ -104,13 +92,12 @@ class PostSetsAdmin extends Admin
                 'inline'          => 'table',
                 'sortable'        => 'position',
                 'admin_code'      => 'rz.news.admin.post_sets_has_posts',
-                'link_parameters' => array('collection'=> $postSetsHasPostDefaultCollection,
-                                           'hide_collection'=>$postSetsHasPostIsHideCollection),
+                'link_parameters' => $this->getPostSetsHasPostsSettings(),
             );
             $postSetsHasPostsTabSettings = array('class' => 'col-md-12');
         }
 
-        if($provider){
+        if($this->hasProvider()){
             $postSetsTabSettings = array('class' => 'col-md-6');
         } else {
             $postSetsTabSettings = array('class' => 'col-md-12');
@@ -127,163 +114,23 @@ class PostSetsAdmin extends Admin
             ->end()
             ->tab('tab.rz_news_post_sets_has_posts')
                 ->with('tab.group.rz_news_post_sets_has_posts', $postSetsHasPostsTabSettings)
-                    ->add('postSetsHasPosts', 'sonata_type_collection', array('cascade_validation' => true, 'required' => false), $postSetsHasPostsFieldOptions)
+                    ->add('postSetsHasPosts',
+                          'sonata_type_collection',
+                          array('cascade_validation' => true,
+                                'required' => false),
+                          $postSetsHasPostsFieldOptions)
                 ->end()
             ->end();
 
-        if($provider) {
+        if($this->hasProvider()) {
             $instance = $this->getSubject();
             if ($instance && $instance->getId()) {
-                $provider->load($instance);
-                $provider->buildEditForm($formMapper);
+                $this->provider->load($instance);
+                $this->provider->buildEditForm($formMapper);
             } else {
-                $provider->buildCreateForm($formMapper);
+                $this->provider->buildCreateForm($formMapper);
             }
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSlugify()
-    {
-        return $this->slugify;
-    }
-
-    /**
-     * @param mixed $slugify
-     */
-    public function setSlugify($slugify)
-    {
-        $this->slugify = $slugify;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPool()
-    {
-        return $this->pool;
-    }
-
-    /**
-     * @param mixed $pool
-     */
-    public function setPool($pool)
-    {
-        $this->pool = $pool;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultContext()
-    {
-        return $this->defaultContext;
-    }
-
-    /**
-     * @param mixed $defaultContext
-     */
-    public function setDefaultContext($defaultContext)
-    {
-        $this->defaultContext = $defaultContext;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultCollection()
-    {
-        return $this->defaultCollection;
-    }
-
-    /**
-     * @param mixed $defaultCollection
-     */
-    public function setDefaultCollection($defaultCollection)
-    {
-        $this->defaultCollection = $defaultCollection;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCollectionManager()
-    {
-        return $this->collectionManager;
-    }
-
-    /**
-     * @param mixed $collectionManager
-     */
-    public function setCollectionManager($collectionManager)
-    {
-        $this->collectionManager = $collectionManager;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContextManager()
-    {
-        return $this->contextManager;
-    }
-
-    /**
-     * @param mixed $contextManager
-     */
-    public function setContextManager($contextManager)
-    {
-        $this->contextManager = $contextManager;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getChildPool()
-    {
-        return $this->childPool;
-    }
-
-    /**
-     * @param mixed $childPool
-     */
-    public function setChildPool($childPool)
-    {
-        $this->childPool = $childPool;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultLookupCollection()
-    {
-        return $this->defaultLookupCollection;
-    }
-
-    /**
-     * @param mixed $defaultLookupCollection
-     */
-    public function setDefaultLookupCollection($defaultLookupCollection)
-    {
-        $this->defaultLookupCollection = $defaultLookupCollection;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultLookupHideCollection()
-    {
-        return $this->defaultLookupHideCollection;
-    }
-
-    /**
-     * @param mixed $defaultLookupHideCollection
-     */
-    public function setDefaultLookupHideCollection($defaultLookupHideCollection)
-    {
-        $this->defaultLookupHideCollection = $defaultLookupHideCollection;
     }
 
     /**
@@ -293,6 +140,9 @@ class PostSetsAdmin extends Admin
     {
         parent::prePersist($object);
         $object->setPostSetsHasPosts($object->getPostSetsHasPosts());
+        if($this->hasProvider()) {
+            $this->provider->prePersist($object);
+        }
     }
 
     /**
@@ -302,10 +152,12 @@ class PostSetsAdmin extends Admin
     {
         parent::preUpdate($object);
         $object->setPostSetsHasPosts($object->getPostSetsHasPosts());
+        if($this->hasProvider()) {
+            $this->provider->preUpdate($object);
+        }
     }
 
-    protected function fetchCurrentCollection() {
-
+    public function fetchProviderKey() {
         $collectionSlug = $this->getPersistentParameter('collection');
         $collection = null;
         if($collectionSlug) {
@@ -313,7 +165,6 @@ class PostSetsAdmin extends Admin
         } else {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$this->getDefaultCollection()));
         }
-
         if($collection) {
             return $collection;
         } else {
@@ -321,8 +172,8 @@ class PostSetsAdmin extends Admin
         }
     }
 
-    protected function getPoolProvider($pool) {
-        $currentCollection = $this->fetchCurrentCollection();
+    public function getPoolProvider(PoolInterface $pool) {
+        $currentCollection = $this->fetchProviderKey();
 
         if ($pool->hasCollection($currentCollection->getSlug())) {
             $providerName = $pool->getProviderNameByCollection($currentCollection->getSlug());
@@ -330,17 +181,25 @@ class PostSetsAdmin extends Admin
             if(!$providerName) {
                 return null;
             }
-
             $provider = $pool->getProvider($providerName);
-
-            if($pool instanceof \Rz\NewsBundle\Provider\PostSets\PostSetsPool) {
-                $defaultPostLookupCollection = $pool->getPostLookupCollectionByCollection($currentCollection->getSlug());
-                $provider->setDefaultLookupCollection($defaultPostLookupCollection);
-                $defaultLookupHideCollection = $pool->getPostLookupHideCollectionByCollection($currentCollection->getSlug());
-
-                $provider->setDefaultLookupHideCollection($defaultLookupHideCollection);
-            }
+            $params = $pool->getSettingsByCollection($currentCollection->getSlug());
+            $provider = $pool->getProvider($providerName);
+            ###############################
+            # Load provoder levelsettings
+            ###############################
+            $provider->setRawSettings($params);
             return $provider;
+        }
+        return null;
+    }
+
+    public function getProviderName(PoolInterface $pool, $providerKey = null) {
+        if(!$providerKey) {
+            $providerKey = $this->fetchProviderKey();
+        }
+
+        if ($providerKey && $pool->hasCollection($providerKey->getSlug())) {
+            return $pool->getProviderNameByCollection($providerKey->getSlug());
         }
 
         return null;
@@ -352,12 +211,15 @@ class PostSetsAdmin extends Admin
     public function getPersistentParameters()
     {
         $parameters = parent::getPersistentParameters();
-        $collectionSlug = $this->getSlugify()->slugify($this->getDefaultCollection());
-        if(is_array($parameters)) {
-            $parameters = array_merge($parameters, array(
-                'collection'      => $collectionSlug,
-                'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0));
+
+        if ($this->hasRequest() && $this->getRequest()->get('collection')) {
+            $parameters['collection'] = $this->getRequest()->get('collection');
+        }
+
+        if(is_array($parameters) && isset($parameters['collection'])) {
+            $parameters = array_merge($parameters, array('hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0));
         } else {
+            $collectionSlug = $this->getSlugify()->slugify($this->getDefaultCollection());
             $parameters = array(
                 'collection'      => $collectionSlug,
                 'hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0);
@@ -366,10 +228,6 @@ class PostSetsAdmin extends Admin
         if ($this->getSubject()) {
             $parameters['collection'] = $this->getSubject()->getCollection() ? $this->getSubject()->getCollection()->getSlug() : $collectionSlug;
             return $parameters;
-        }
-
-        if ($this->hasRequest() && $this->getRequest()->get('collection')) {
-            $parameters['collection'] = $this->getRequest()->get('collection');
         }
 
         return $parameters;
@@ -391,13 +249,22 @@ class PostSetsAdmin extends Admin
         $collectionSlug = $this->getPersistentParameter('collection') ?: $this->getSlugify()->slugify($this->getDefaultCollection());
         $collections = $this->collectionManager->findBy(array('context'=>$context));
         $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug, 'context'=>$context));
-
         if (!$collections && !$collection && !$collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
             $collection = $this->collectionManager->generateDefaultCollection($context, $this->getDefaultCollection());
+        }
+
+        if(!$collection) {
+            $collection = current($collections);
         }
 
         $instance->setCollection($collection);
 
         return $instance;
+    }
+
+    public function getPostSetsHasPostsSettings() {
+        $settings = [];
+        $settings['collection'] = $this->getPersistentParameter('collection');
+        return $settings;
     }
 }

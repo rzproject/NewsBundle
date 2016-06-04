@@ -1,6 +1,6 @@
 <?php
 
-namespace Rz\NewsBundle\Provider\Post;
+namespace Rz\NewsBundle\Provider;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Rz\NewsBundle\Provider\BasePool;

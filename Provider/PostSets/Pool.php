@@ -2,9 +2,9 @@
 
 namespace Rz\NewsBundle\Provider\PostSets;
 
+use Rz\NewsBundle\Provider\Pool as BasePool;
 use Sonata\CoreBundle\Validator\ErrorElement;
-use Rz\NewsBundle\Provider\BasePool;
 
-class PostSetsHasPostsPool extends BasePool
+class Pool extends BasePool
 {
 }

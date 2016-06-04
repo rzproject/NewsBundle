@@ -45,7 +45,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 $provider =$container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setPostManager', array(new Reference('sonata.news.manager.post')));
                 $provider->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
-                $provider->addMethodCall('setDefaultSettings', array($container->getParameter('rz.news.settings')));
+                $provider->addMethodCall('setDefaultSettings', array($container->getParameter('rz.news.settings.post')));
                 $provider->addMethodCall('setSlugify', array(new Reference($serviceId)));
             }
         }
@@ -68,24 +68,23 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $collections = $container->getParameter('rz.news.post_sets.provider.collections');
 
         foreach ($collections as $name => $settings) {
+
             if($settings['post_sets']['provider']) {
-
-                $loockupCollection = $container->getParameter('rz.news.post_sets.default_post_lookup_collection');
-                $hideCollection = $container->getParameter('rz.news.post_sets.default_post_lookup_hide_collection');
-
-                if(array_key_exists('collection', $settings['post_sets']['post_lookup_settings'])) {
-                    $loockupCollection =$settings['post_sets']['post_lookup_settings']['collection'];
+                $postSetsPool->addMethodCall('addCollection', array($name, $settings['post_sets']['provider'], array()));
+                if($container->hasDefinition($settings['post_sets']['provider'])) {
+                    $provider =$container->getDefinition($settings['post_sets']['provider']);
+//                    $provider->addMethodCall('setDefaultSettings', array($container->getParameter('rz.news.settings.post_sets')));
+                    $provider->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
                 }
-
-                if(array_key_exists('hide_collection', $settings['post_sets']['post_lookup_settings'])) {
-                    $hideCollection =$settings['post_sets']['post_lookup_settings']['hide_collection'];
-                }
-
-                $postSetsPool->addMethodCall('addCollection', array($name, $settings['post_sets']['provider'], $loockupCollection, $hideCollection));
             }
 
             if($settings['post_sets_has_posts']['provider']) {
-                $postSetsHasPostsPool->addMethodCall('addCollection', array($name, $settings['post_sets_has_posts']['provider']));
+                $postSetsHasPostsPool->addMethodCall('addCollection', array($name, $settings['post_sets_has_posts']['provider'], $settings['post_sets_has_posts']['settings']));
+                if($container->hasDefinition($settings['post_sets_has_posts']['provider'])) {
+                    $provider =$container->getDefinition($settings['post_sets_has_posts']['provider']);
+                    $provider->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
+                    $provider->addMethodCall('setDefaultSettings', array($container->getParameter('rz.news.settings.post_sets_has_posts')));
+                }
             }
         }
     }

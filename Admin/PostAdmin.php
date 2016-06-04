@@ -34,13 +34,10 @@ class PostAdmin extends AbstractPostAdmin
         parent::__construct($code, $class, $baseControllerName);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getForm()
+    public function setSubject($subject)
     {
+        parent::setSubject($subject);
         $this->provider = $this->getPoolProvider($this->getPool());
-        return parent::getForm();
     }
 
     /**

@@ -35,7 +35,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         #slugify context and collection
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.news.post.default_context')));
         $definition->addMethodCall('setDefaultCollection', array($container->getParameter('rz.news.post.default_collection')));
-        $definition->addMethodCall('setSettings', array($container->getParameter('rz.news.settings')));
+        $definition->addMethodCall('setSettings', array($container->getParameter('rz.news.settings.post')));
 
 
 
@@ -47,16 +47,16 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('setChildPool', array(new Reference('rz.news.post_sets_has_posts.pool')));
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.news.post_sets.default_context')));
         $definition->addMethodCall('setDefaultCollection', array($container->getParameter('rz.news.post_sets.default_collection')));
-        $definition->addMethodCall('setDefaultLookupCollection', array($container->getParameter('rz.news.post_sets.default_post_lookup_collection')));
-        $definition->addMethodCall('setDefaultLookupHideCollection', array($container->getParameter('rz.news.post_sets.default_post_lookup_hide_collection')));
         $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
         $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
+//        $definition->addMethodCall('setSettings', array($container->getParameter('rz.news.settings.post_sets')));
 
         $definition = $container->getDefinition('rz.news.admin.post_sets_has_posts');
         $definition->addMethodCall('setPool', array(new Reference('rz.news.post_sets_has_posts.pool')));
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.news.post_sets.default_context')));
         $definition->addMethodCall('setDefaultCollection', array($container->getParameter('rz.news.post_sets.default_collection')));
         $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
+        $definition->addMethodCall('setSettings', array($container->getParameter('rz.news.settings.post_sets_has_posts')));
     }
 }

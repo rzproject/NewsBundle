@@ -42,8 +42,6 @@ abstract class BaseProvider extends Provider
      */
     public function prePersist(PostInterface $post)
     {
-        $post->setCreatedAt(new \Datetime());
-        $post->setUpdatedAt(new \Datetime());
     }
 
     /**
@@ -51,7 +49,6 @@ abstract class BaseProvider extends Provider
      */
     public function preUpdate(PostInterface $post)
     {
-        $post->setUpdatedAt(new \Datetime());
     }
 
     /**

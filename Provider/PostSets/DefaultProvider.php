@@ -8,15 +8,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Rz\NewsBundle\Model\PostSetsInterface;
-use Rz\NewsBundle\Provider\BaseProvider;
 
-class PostSetsDefaultProvider extends BaseProvider
+class DefaultProvider extends BaseProvider
 {
-
-    protected $defaultLookupCollection;
-
-    protected $defaultLookupHideCollection;
-
     /**
      * {@inheritdoc}
      */
@@ -57,38 +51,6 @@ class PostSetsDefaultProvider extends BaseProvider
             }),
         );
         return $settings;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultLookupCollection()
-    {
-        return $this->defaultLookupCollection;
-    }
-
-    /**
-     * @param mixed $defaultLookupCollection
-     */
-    public function setDefaultLookupCollection($defaultLookupCollection)
-    {
-        $this->defaultLookupCollection = $defaultLookupCollection;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultLookupHideCollection()
-    {
-        return $this->defaultLookupHideCollection;
-    }
-
-    /**
-     * @param mixed $defaultLookupHideCollection
-     */
-    public function setDefaultLookupHideCollection($defaultLookupHideCollection)
-    {
-        $this->defaultLookupHideCollection = $defaultLookupHideCollection;
     }
 
     public function load(PostSetsInterface $object) {}

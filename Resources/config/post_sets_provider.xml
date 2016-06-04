@@ -4,10 +4,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="rz.news.post_sets.pool.class">Rz\NewsBundle\Provider\PostSets\PostSetsPool</parameter>
-        <parameter key="rz.news.post_sets_has_posts.pool.class">Rz\NewsBundle\Provider\PostSets\PostSetsHasPostsPool</parameter>
-        <parameter key="rz.news.post_sets.provider.default.class">Rz\NewsBundle\Provider\PostSets\PostSetsDefaultProvider</parameter>
-        <parameter key="rz.news.post_sets_has_posts.provider.default.class">Rz\NewsBundle\Provider\PostSets\PostSetsHasPostsDefaultProvider</parameter>
+        <parameter key="rz.news.post_sets.pool.class">Rz\NewsBundle\Provider\PostSets\Pool</parameter>
+        <parameter key="rz.news.post_sets.provider.default.class">Rz\NewsBundle\Provider\PostSets\DefaultProvider</parameter>
     </parameters>
 
     <services>
@@ -15,22 +13,9 @@
             <argument />
         </service>
 
-        <service id="rz.news.post_sets_has_posts.pool" class="%rz.news.post_sets_has_posts.pool.class%" shared="true">
-            <argument />
-        </service>
-
-
         <service id="rz.news.post_sets.provider.default" class="%rz.news.post_sets.provider.default.class%" shared="true">
             <tag name="rz.news.post_sets.provider" />
             <argument>rz.news.post_sets.provider.default</argument>
-            <call method="setTranslator">
-                <argument type="service" id="translator" />
-            </call>
-        </service>
-
-        <service id="rz.news.post_sets_has_posts.provider.default" class="%rz.news.post_sets_has_posts.provider.default.class%" shared="true">
-            <tag name="rz.news.post_sets_has_posts.provider" />
-            <argument>rz.news.post_sets_has_posts.provider.default</argument>
             <call method="setTranslator">
                 <argument type="service" id="translator" />
             </call>
