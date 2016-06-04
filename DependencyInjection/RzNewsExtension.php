@@ -49,9 +49,6 @@ class RzNewsExtension extends Extension
     {
         $container->setParameter('rz.news.slugify_service',                      $config['slugify_service']);
         $container->setParameter('rz.news.settings',                             $config['settings']);
-//        $container->setParameter('rz.news.settings.related_articles.enabled',    $config['settings']['related_articles']['enabled']);
-//        $container->setParameter('rz.news.settings.suggested_articles.enabled',  $config['settings']['suggested_articles']['enabled']);
-//        $container->setParameter('rz.news.settings.post_has_media.enabled',      $config['settings']['post_has_media']['enabled']);
     }
 
     /**

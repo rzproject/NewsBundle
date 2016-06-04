@@ -112,12 +112,7 @@ class PostAdmin extends AbstractPostAdmin
                         'class' => 'col-md-8',
                     ))
                     ->add('title')
-                    ->add('image', 'sonata_type_model_list', array('required' => false), array(
-                        'link_parameters' => array(
-                            'context'      => $this->getDefaultContext(),
-                            'hide_context' => true,
-                        ),
-                    ))
+                    ->add('image', 'sonata_type_model_list', array('required' => false), array('link_parameters' => $this->getMediaSettings()))
                     ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->end()
                 ->with('group_status', array('class' => 'col-md-4',))
@@ -152,10 +147,8 @@ class PostAdmin extends AbstractPostAdmin
                         'multiple' => 'true',
                         'required' => false,
                         'expanded' => true,
-                        'query'    => $this->getTagManager()->geTagQueryForDatagrid(array($this->getDefaultContext()))),
-                        array('link_parameters' => array(
-                              'context'      => $this->getDefaultContext(),
-                              'hide_context' => true)))
+                        'query'    => $this->getTagManager()->geTagQueryForDatagrid(array($this->getTagsSettingsForQuery()))),
+                        array('link_parameters' => $this->getTagsSettings()))
                 ->end()
             ->end();
 
@@ -173,7 +166,7 @@ class PostAdmin extends AbstractPostAdmin
                                 'edit'              => 'inline',
                                 'inline'            => 'table',
                                 'sortable'          => 'position',
-                                'link_parameters'   => array('context' => $this->getDefaultContext()),
+                                'link_parameters'   => $this->getPostHasCagegorySettings(),
                                 'admin_code'        => 'rz.news.admin.post_has_category',
                             ))
                 ->end()
@@ -431,7 +424,9 @@ class PostAdmin extends AbstractPostAdmin
         $params = $pool->getSettingsByCollection($currentCollection->getSlug());
 
         $provider = $pool->getProvider($providerName);
-        //load settings
+        ###############################
+        # Load provoder levelsettings
+        ###############################
         $provider->setRawSettings($params);
         return $provider;
     }
@@ -539,15 +534,15 @@ class PostAdmin extends AbstractPostAdmin
 
         $settings = parent::getPostHasMediaSettings();
 
-        $providerSettings = [];
-        if($this->hasProvider()) {
-            $providerSettings = $this->getProvider()->getPostHasMediaSettings();
+        if(!$this->hasProvider()) {
+            return $settings;
         }
 
+        $providerSettings = [];
+        $providerSettings = $this->getProvider()->getPostHasMediaSettings();
         if($providerSettings) {
             $settings = array_merge($settings, $providerSettings);
         }
-
         return $settings;
     }
 
@@ -555,10 +550,65 @@ class PostAdmin extends AbstractPostAdmin
 
         $settings = parent::getSuggetedArticleSettings();
 
-        $providerSettings = [];
-        if($this->hasProvider()) {
-            $providerSettings = $this->getProvider()->getSuggetedArticleSettings();
+        if(!$this->hasProvider()) {
+            return $settings;
         }
+
+        $providerSettings = [];
+        $providerSettings = $this->getProvider()->getSuggetedArticleSettings();
+        if($providerSettings) {
+            $settings = array_merge($settings, $providerSettings);
+        }
+        return $settings;
+    }
+
+    public function getPostHasCagegorySettings() {
+
+        $settings = parent::getPostHasCagegorySettings();
+
+        if(!$this->hasProvider()) {
+            return $settings;
+        }
+
+        $providerSettings = [];
+        $providerSettings = $this->getProvider()->getPostHasCagegorySettings();
+        if($providerSettings) {
+            $settings = array_merge($settings, $providerSettings);
+        }
+        return $settings;
+    }
+
+    public function getTagsSettingsForQuery() {
+        $settings = $this->getTagsSettings();
+        return isset($settings['context']) ? $settings['context'] : $this->getDefaultContext();
+    }
+
+    public function getTagsSettings() {
+
+        $settings = parent::getTagsSettings();
+
+        if(!$this->hasProvider()) {
+            return $settings;
+        }
+
+        $providerSettings = [];
+        $providerSettings = $this->getProvider()->getTagsSettings();
+        if($providerSettings) {
+            $settings = array_merge($settings, $providerSettings);
+        }
+        return $settings;
+    }
+
+    public function getMediaSettings() {
+
+        $settings = parent::getMediaSettings();
+
+        if(!$this->hasProvider()) {
+            return $settings;
+        }
+
+        $providerSettings = [];
+        $providerSettings = $this->getProvider()->getMediaSettings();
 
         if($providerSettings) {
             $settings = array_merge($settings, $providerSettings);

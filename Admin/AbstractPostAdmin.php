@@ -340,8 +340,41 @@ abstract class AbstractPostAdmin extends Admin implements AdminProviderInterface
         $params = $this->getSetting('suggested_articles');
         $settings = [];
         if($params) {
-            $settings['collection'] = isset($params['collection']) && $params['collection'] !== null ? $params['collection'] : null;
+            $settings['collection'] = isset($params['default_collection']) && $params['default_collection'] !== null ? $params['default_collection'] : null;
             $settings['hide_collection'] = isset($params['hide_collection']) && $params['hide_collection'] !== null ? $params['hide_collection'] : false;
+        }
+        return $settings;
+    }
+
+    public function getPostHasCagegorySettings() {
+        $params = $this->getSetting('post_has_category');
+        $settings = [];
+        if($params) {
+            $settings['context'] = isset($params['default_context']) && $params['default_context'] !== null ? $params['default_context'] : $this->getDefaultContext();
+        }
+        return $settings;
+    }
+
+    public function getTagsSettings() {
+        $params = $this->getSetting('tags');
+        $settings = [];
+        if($params) {
+            $settings['context'] = isset($params['default_context']) && $params['default_context'] !== null ? $params['default_context'] : $this->getDefaultContext();
+        }
+        return $settings;
+    }
+
+    public function getMediaSettings() {
+        $params = $this->getSetting('media');
+        $settings = [];
+        $settings['context'] = isset($params['default_context']) && $params['default_context'] !== null ? $params['default_context'] : $this->getDefaultContext();
+        $settings['hide_context'] = isset($params['hide_context']) && $params['hide_context'] !== null ? $params['hide_context'] : false;
+
+        if(isset($params['default_category']) && $params['default_category'] !== null) {
+            $category = $this->categoryManager->findOneBy(array('slug'=>$this->getSlugify()->slugify($params['default_category']), 'context'=>$settings['context']));
+            if($category) {
+                $settings['category'] = $category->getId();
+            }
         }
         return $settings;
     }
