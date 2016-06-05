@@ -168,9 +168,6 @@ class RzNewsExtension extends Extension
         $container->setParameter('rz.news.post_sets.default_context',                       $config['post_sets']['default_context']);
         $container->setParameter('rz.news.post_sets.default_collection',                    $config['post_sets']['default_collection']);
         $container->setParameter('rz.news.post_sets.provider.collections',                  $config['post_sets']['collections']);
-
-
-
     }
 
     /**
