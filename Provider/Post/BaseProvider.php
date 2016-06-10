@@ -181,7 +181,7 @@ abstract class BaseProvider extends Provider
         $params = $this->getSetting('suggested_articles');
         if($params){
             $default = isset($this->defaultSettings['suggested_articles']) && isset($this->defaultSettings['suggested_articles']['enabled']) ? $this->defaultSettings['suggested_articles']['enabled'] : true;
-            $this->relatedArticleEnabled = isset($params['enable']) ? $params['enable'] : $default;
+            $this->suggestedArticleEnabled = isset($params['enable']) ? $params['enable'] : $default;
         }
     }
 
