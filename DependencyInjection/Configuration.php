@@ -43,6 +43,8 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('post')
                             ->addDefaultsIfNotSet()
                             ->children()
+                                ->scalarNode('default_context')->isRequired()->end()
+                                ->scalarNode('default_collection')->isRequired()->end()
                                 ->arrayNode('media')
                                     ->addDefaultsIfNotSet()
                                     ->children()
@@ -91,6 +93,14 @@ class Configuration implements ConfigurationInterface
                                 ->end()  #--end tags
                             ->end()  #--end post children
                         ->end() #--end post
+                        ->arrayNode('post_sets')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->isRequired()->end()
+                                ->scalarNode('default_collection')->isRequired()->end()
+                            ->end()  #--end post children
+                        ->end() #--end post_sets
+
                         ->arrayNode('post_sets_has_posts')
                             ->addDefaultsIfNotSet()
                             ->children()
@@ -152,11 +162,30 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('providers')
                     ->addDefaultsIfNotSet()
                     ->children()
+                    ->arrayNode('class')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->arrayNode('pool')
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->scalarNode('post')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Provider\\Pool')->end()
+                                    ->scalarNode('post_sets')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Provider\\PostSets\\Pool')->end()
+                                    ->scalarNode('post_sets_has_posts')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Provider\\PostSetsHasPosts\\Pool')->end()
+                                ->end()
+                            ->end()#--> end pool
+                            ->arrayNode('default_provider')
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->scalarNode('post')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Provider\\Post\\DefaultProvider')->end()
+                                    ->scalarNode('post_sets')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Provider\\PostSets\\DefaultProvider')->end()
+                                    ->scalarNode('post_sets_has_posts')->cannotBeEmpty()->defaultValue('Rz\\NewsBundle\\Provider\\PostSetsHasPosts\\DefaultProvider')->end()
+                                ->end()
+                            ->end()#--> end addDefaultsIfNotSet
+                        ->end()#--> end class children
+                    ->end()#--> end class
                     ->arrayNode('post')
                         ->addDefaultsIfNotSet()
                         ->children()
-                            ->scalarNode('default_context')->isRequired()->end()
-                            ->scalarNode('default_collection')->isRequired()->end()
                             ->arrayNode('collections')
                                 ->useAttributeAsKey('id')
                                 ->isRequired()
@@ -186,8 +215,6 @@ class Configuration implements ConfigurationInterface
                     ->arrayNode('post_sets')
                         ->addDefaultsIfNotSet()
                         ->children()
-                            ->scalarNode('default_context')->isRequired()->end()
-                            ->scalarNode('default_collection')->isRequired()->end()
                             ->arrayNode('collections')
                                 ->useAttributeAsKey('id')
                                 ->prototype('array')

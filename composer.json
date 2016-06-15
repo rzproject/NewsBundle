@@ -15,6 +15,7 @@
     "minimum-stability": "dev",
     "require": {
         "rmzamora/news-bundle": "2.5.0.*",
+        "rz/core-bundle": "2.0.0.*",
         "rz/admin-bundle": "2.0.0.*",
         "rz/user-bundle":  "2.0.0.*",
         "rz/media-bundle": "2.0.0.*",

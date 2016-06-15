@@ -9,8 +9,10 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Rz\CoreBundle\Provider\PoolInterface;
+use Rz\CoreBundle\Admin\AdminProviderInterface;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
-class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin
+class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements AdminProviderInterface
 {
     protected $parentAssociationMapping = 'postSets';
     protected $formOptions = array('cascade_validation'=>true);
@@ -110,6 +112,39 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin
         parent::preUpdate($object);
         if($this->hasProvider()) {
             $this->provider->preUpdate($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($object)
+    {
+        parent::postUpdate($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postUpdate($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postPersist($object)
+    {
+        parent::postPersist($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postPersist($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate(ErrorElement $errorElement, $object)
+    {
+        parent::validate($errorElement, $object);
+        if($this->hasProvider()) {
+            $this->getProvider()->validate($errorElement, $object);
         }
     }
 

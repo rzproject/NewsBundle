@@ -36,7 +36,7 @@ class RzNewsExtension extends Extension
         $loader->load('post_provider.xml');
         $loader->load('post_sets_provider.xml');
         $loader->load('post_sets_has_posts_provider.xml');
-        $this->configureProviders($container, $config['providers']);
+        $this->configureProviders($container, $config);
 
         $this->registerDoctrineMapping($config);
     }
@@ -50,7 +50,15 @@ class RzNewsExtension extends Extension
     public function configureSettings($config, ContainerBuilder $container)
     {
         $container->setParameter('rz.news.slugify_service',                      $config['slugify_service']);
+
         $container->setParameter('rz.news.settings.post',                        $config['settings']['post']);
+        $container->setParameter('rz.news.post.default_context',                 $config['settings']['post']['default_context']);
+        $container->setParameter('rz.news.post.default_collection',              $config['settings']['post']['default_collection']);
+
+        $container->setParameter('rz.news.settings.post_sets',                   $config['settings']['post_sets']);
+        $container->setParameter('rz.news.post_sets.default_context',            $config['settings']['post_sets']['default_context']);
+        $container->setParameter('rz.news.post_sets.default_collection',         $config['settings']['post_sets']['default_collection']);
+
         $container->setParameter('rz.news.settings.post_sets_has_posts',         $config['settings']['post_sets_has_posts']);
     }
 
@@ -151,23 +159,19 @@ class RzNewsExtension extends Extension
     {
         #Post Provider
         $postPool = $container->getDefinition('rz.news.post.pool');
-        $postPool->replaceArgument(0, $config['post']['default_collection']);
+        $postPool->replaceArgument(0, $config['settings']['post']['default_collection']);
 
-        $container->setParameter('rz.news.post.default_context',                        $config['post']['default_context']);
-        $container->setParameter('rz.news.post.default_collection',                     $config['post']['default_collection']);
-        $container->setParameter('rz.news.post.provider.collections',                   $config['post']['collections']);
+        $container->setParameter('rz.news.post.provider.collections',                   $config['providers']['post']['collections']);
 
 
         #Post Sets Provider
         $postSetsPool = $container->getDefinition('rz.news.post_sets.pool');
-        $postSetsPool->replaceArgument(0, $config['post_sets']['default_collection']);
+        $postSetsPool->replaceArgument(0, $config['settings']['post_sets']['default_collection']);
 
         $postSetsPool = $container->getDefinition('rz.news.post_sets_has_posts.pool');
-        $postSetsPool->replaceArgument(0, $config['post_sets']['default_collection']);
+        $postSetsPool->replaceArgument(0, $config['settings']['post_sets']['default_collection']);
 
-        $container->setParameter('rz.news.post_sets.default_context',                       $config['post_sets']['default_context']);
-        $container->setParameter('rz.news.post_sets.default_collection',                    $config['post_sets']['default_collection']);
-        $container->setParameter('rz.news.post_sets.provider.collections',                  $config['post_sets']['collections']);
+        $container->setParameter('rz.news.post_sets.provider.collections',             $config['providers']['post_sets']['collections']);
     }
 
     /**
@@ -384,134 +388,6 @@ class RzNewsExtension extends Extension
                 'position' => 'ASC',
             ),
         ));
-
-        ######################
-        # Page
-        ######################
-
-//        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
-//
-//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-//                'fieldName' => 'post',
-//                'targetEntity' => $config['class']['post'],
-//                'cascade' => array(
-//                    'persist',
-//                ),
-//                'mappedBy' => NULL,
-//                'inversedBy' => 'postHasPage',
-//                'joinColumns' => array(
-//                    array(
-//                        'name' => 'post_id',
-//                        'referencedColumnName' => 'id',
-//                    ),
-//                ),
-//                'orphanRemoval' => false,
-//            ));
-//
-//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-//                'fieldName' => 'page',
-//                'targetEntity' => $config['news_page']['class']['page'],
-//                'cascade' => array(
-//                    'persist',
-//                ),
-//                'mappedBy' => NULL,
-//                'inversedBy' => NULL,
-//                'joinColumns' => array(
-//                    array(
-//                        'name' => 'page_id',
-//                        'referencedColumnName' => 'id',
-//                    ),
-//                ),
-//                'orphanRemoval' => false,
-//            ));
-//
-//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-//                'fieldName' => 'block',
-//                'targetEntity' => $config['news_page']['class']['block'],
-//                'cascade' => array(
-//                    'persist',
-//                ),
-//                'mappedBy' => NULL,
-//                'inversedBy' => NULL,
-//                'joinColumns' => array(
-//                    array(
-//                        'name' => 'block_id',
-//                        'referencedColumnName' => 'id',
-//                    ),
-//                ),
-//                'orphanRemoval' => false,
-//            ));
-//
-//            $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-//                'fieldName' => 'sharedBlock',
-//                'targetEntity' => $config['news_page']['class']['block'],
-//                'cascade' => array(
-//                    'persist',
-//                ),
-//                'mappedBy' => NULL,
-//                'inversedBy' => NULL,
-//                'joinColumns' => array(
-//                    array(
-//                        'name' => 'shared_block_id',
-//                        'referencedColumnName' => 'id',
-//                    ),
-//                ),
-//                'orphanRemoval' => false,
-//            ));
-//
-//            $collector->addAssociation($config['class']['post'], 'mapOneToMany', array(
-//                'fieldName' => 'postHasPage',
-//                'targetEntity' => $config['news_page']['class']['post_has_page'],
-//                'cascade' => array(
-//                    'persist',
-//                ),
-//                'mappedBy' => 'post',
-//                'orphanRemoval' => true,
-//                'orderBy' => array(
-//                    'position' => 'ASC',
-//                ),
-//            ));
-//
-//            $collector->addAssociation($config['class']['post'], 'mapManyToOne', array(
-//                'fieldName'     => 'site',
-//                'targetEntity'  => $config['news_page']['class']['site'],
-//                'cascade'       => array(
-//                    'persist',
-//                ),
-//                'mappedBy'      => null,
-//                'inversedBy'    => null,
-//                'joinColumns'   => array(
-//                    array(
-//                        'name'                 => 'site_id',
-//                        'referencedColumnName' => 'id',
-//                        'onDelete'             => 'CASCADE',
-//                    ),
-//                ),
-//                'orphanRemoval' => false,
-//            ));
-//
-//
-//            if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
-//
-//                $collector->addAssociation($config['news_page']['class']['post_has_page'], 'mapManyToOne', array(
-//                    'fieldName' => 'category',
-//                    'targetEntity' => $config['class']['category'],
-//                    'cascade' => array(
-//                        'persist',
-//                    ),
-//                    'mappedBy' => NULL,
-//                    'inversedBy' => NULL,
-//                    'joinColumns' => array(
-//                        array(
-//                            'name' => 'category_id',
-//                            'referencedColumnName' => 'id',
-//                        ),
-//                    ),
-//                    'orphanRemoval' => false,
-//                ));
-//            }
-//        }
-
 
         ######################
         # PostSets Has Post

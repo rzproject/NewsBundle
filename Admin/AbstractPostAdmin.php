@@ -9,7 +9,7 @@ use Rz\CoreBundle\Provider\PoolInterface;
 use Rz\CoreBundle\Admin\AdminProviderInterface;
 
 
-abstract class AbstractPostAdmin extends Admin implements AdminProviderInterface
+abstract class AbstractPostAdmin extends Admin
 {
     protected $collectionManager;
     protected $contextManager;

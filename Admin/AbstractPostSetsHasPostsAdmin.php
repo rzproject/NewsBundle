@@ -6,10 +6,8 @@ use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Rz\CoreBundle\Provider\PoolInterface;
-use Rz\CoreBundle\Admin\AdminProviderInterface;
 
-
-abstract class AbstractPostSetsHasPostsAdmin extends Admin implements AdminProviderInterface
+abstract class AbstractPostSetsHasPostsAdmin extends Admin
 {
     protected $pool;
     protected $defaultContext;

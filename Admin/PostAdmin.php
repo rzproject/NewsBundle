@@ -12,8 +12,7 @@ use Sonata\CoreBundle\Validator\ErrorElement;
 use Rz\CoreBundle\Provider\PoolInterface;
 use Rz\CoreBundle\Admin\AdminProviderInterface;
 
-
-class PostAdmin extends AbstractPostAdmin
+class PostAdmin extends AbstractPostAdmin implements AdminProviderInterface
 {
     protected $datagridValues = array(
         '_page'       => 1,
