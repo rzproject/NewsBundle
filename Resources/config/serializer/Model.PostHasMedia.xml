@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Rz\NewsBundle\Model\PostHasMedia" exclusion-policy="all" xml-root-name="post_has_media">
+
+        <property name="title"                type="string"    expose="true"  since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+        <property name="abstract"             type="string"    expose="true"  since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+        <property name="enabled"              type="boolean"   expose="true"  since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+        <property name="position"             type="integer"   expose="true"  since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+        <property name="createdAt"            type="DateTime"  expose="true"  since-version="1.0" groups="sonata_api_read,sonata_search,sonata_search" />
+        <property name="updatedAt"            type="DateTime"  expose="true"  since-version="1.0" groups="sonata_api_read,sonata_search,sonata_search" />
+        <property name="content"              type="string"    expose="true"  since-version="1.0" groups="sonata_api_read,sonata_search" />
+        <property name="rawContent"           type="string"    expose="true"  since-version="1.0" groups="sonata_api_write" />
+        <property name="contentFormatter"     type="string"    expose="true"  since-version="1.0" groups="sonata_api_write" />
+        <property name="media"                serialized-name="media_id"      type="sonata_media_media_id"        expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+        <property name="post"                 serialized-name="post_id"       type="sonata_news_post_id"          expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+
+    </class>
+</serializer>

@@ -11,6 +11,10 @@ abstract class RelatedArticles extends NewsRelationModel implements RelatedArtic
 {
     protected $post;
     protected $relatedArticle;
+    protected $position;
+    protected $updatedAt;
+    protected $createdAt;
+    protected $enabled;
 
     public function __construct()
     {

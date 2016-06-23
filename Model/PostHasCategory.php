@@ -9,8 +9,11 @@ use Sonata\NewsBundle\Model\PostInterface;
 
 abstract class PostHasCategory extends NewsRelationModel implements PostHasCategoryInterface
 {
+    protected $position;
+    protected $updatedAt;
+    protected $createdAt;
+    protected $enabled;
     protected $category;
-
     protected $post;
 
     public function __construct()

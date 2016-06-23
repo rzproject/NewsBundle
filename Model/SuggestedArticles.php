@@ -9,6 +9,10 @@ use Sonata\NewsBundle\Model\PostInterface;
 
 abstract class SuggestedArticles extends NewsRelationModel implements SuggestedArticlesInterface
 {
+    protected $position;
+    protected $updatedAt;
+    protected $createdAt;
+    protected $enabled;
     protected $post;
     protected $suggestedArticle;
 

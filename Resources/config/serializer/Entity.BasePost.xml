@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Rz\NewsBundle\Entity\BasePost" exclusion-policy="all" xml-root-name="post">
+
+        <property name="publicationDateEnd" type="DateTime"  expose="true"  since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+
+        <property name="postHasCategory"    expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search">
+            <type><![CDATA[ArrayCollection<Rz\NewsBundle\Model\PostHasCategory>]]></type>
+            <xml-list inline="false" entry-name="post_has_category" />
+        </property>
+
+        <property name="postHasMedia"    expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search">
+            <type><![CDATA[ArrayCollection<Rz\NewsBundle\Model\PostHasMedia>]]></type>
+            <xml-list inline="false" entry-name="post_has_media" />
+        </property>
+
+        <property name="relatedArticles"    expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search">
+            <type><![CDATA[ArrayCollection<Rz\NewsBundle\Model\RelatedArticles>]]></type>
+            <xml-list inline="false" entry-name="related_article" />
+        </property>
+
+        <property name="suggestedArticles"    expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search">
+            <type><![CDATA[ArrayCollection<Rz\NewsBundle\Model\SuggestedArticles>]]></type>
+            <xml-list inline="false" entry-name="suggested_article" />
+        </property>
+
+    </class>
+</serializer>

@@ -23,9 +23,11 @@ class RzNewsExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+
         $loader->load('orm.xml');
         $loader->load('admin.xml');
         $loader->load('validators.xml');
+        $loader->load('serializer.xml');
         $this->configureSettings($config, $container);
         $this->configureManagerClass($config, $container);
         $this->configureClass($config, $container);

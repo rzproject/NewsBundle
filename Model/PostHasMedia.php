@@ -9,6 +9,10 @@ use Sonata\NewsBundle\Model\PostInterface;
 
 abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInterface
 {
+    protected $position;
+    protected $updatedAt;
+    protected $createdAt;
+    protected $enabled;
     protected $media;
     protected $post;
     protected $title;
@@ -16,6 +20,7 @@ abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInt
     protected $content;
     protected $rawContent;
     protected $contentFormatter;
+
 
     public function __construct()
     {
