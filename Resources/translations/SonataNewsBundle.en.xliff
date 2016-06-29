@@ -170,6 +170,10 @@
                 <source>breadcrumb.link_post_has_category_list</source>
                 <target>Posts By Category List</target>
             </trans-unit>
+            <trans-unit id="breadcrumb.link_post_has_category_create">
+                <source>breadcrumb.link_post_has_category_create</source>
+                <target>Posts By Category Create</target>
+            </trans-unit>
             <trans-unit id="tab_nav_post">
                 <source>tab_nav_post</source>
                 <target>POST</target>
@@ -297,6 +301,10 @@
             <trans-unit id="group_content">
                 <source>group_content</source>
                 <target>Content</target>
+            </trans-unit>
+            <trans-unit id="group_relation">
+                <source>group_relation</source>
+                <target>Details</target>
             </trans-unit>
         </body>
     </file>

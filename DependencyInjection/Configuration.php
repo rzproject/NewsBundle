@@ -100,7 +100,6 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('default_collection')->isRequired()->end()
                             ->end()  #--end post children
                         ->end() #--end post_sets
-
                         ->arrayNode('post_sets_has_posts')
                             ->addDefaultsIfNotSet()
                             ->children()
@@ -113,6 +112,17 @@ class Configuration implements ConfigurationInterface
                                 ->end()  #--end default
                             ->end()  #--end post children
                         ->end() #--end post_sets
+                        ->arrayNode('post_has_category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->arrayNode('category')
+                                    ->isRequired()
+                                    ->children()
+                                        ->scalarNode('default_context')->cannotBeEmpty()->end()
+                                    ->end()
+                                ->end()  #--end category
+                            ->end()
+                        ->end() #--end post_has_category
                     ->end()
                 ->end()
             ->end();

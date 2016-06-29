@@ -23,22 +23,6 @@ class PostHasCategoryAdminController extends Controller
             $this->admin->setListMode($listMode);
         }
 
-        #site TODO: should have check if pageBunlde is not available
-        $siteManager = $this->get('sonata.page.manager.site');
-        $sites = $siteManager->findBy(array());
-        $currentSite = null;
-        $siteId = $request->get('site');
-        foreach ($sites as $site) {
-            if ($siteId && $site->getId() == $siteId) {
-                $currentSite = $site;
-            } elseif (!$siteId && $site->getIsDefault()) {
-                $currentSite = $site;
-            }
-        }
-        if (!$currentSite && count($sites) == 1) {
-            $currentSite = $sites[0];
-        }
-
         $datagrid = $this->admin->getDatagrid();
         $filters = $request->get('filter');
         $postHasCategoryManager = $this->get('rz.news.manager.post_has_category');
@@ -59,7 +43,6 @@ class PostHasCategoryAdminController extends Controller
         }
 
         $datagrid->setValue('category', null, $currentCategory['id']);
-        $datagrid->setValue('post__site', null, $currentSite->getId());
 
         $formView = $datagrid->getForm()->createView();
 
@@ -72,8 +55,6 @@ class PostHasCategoryAdminController extends Controller
             'datagrid'              => $datagrid,
             'categories'            => $categories,
             'current_category'      => $currentCategory,
-            'sites'                 => $sites,
-            'currentSite'           => $currentSite,
             'csrf_token'            => $this->getCsrfToken('sonata.batch'),
         ));
     }
