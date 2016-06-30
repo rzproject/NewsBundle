@@ -224,6 +224,20 @@ abstract class BaseProvider extends Provider
         return $settings;
     }
 
+    public function getRelatedArticleSettings() {
+        $params = $this->getSetting('related_articles');
+        $settings = [];
+        if($params) {
+
+            $default = isset($this->defaultSettings['related_articles']) && isset($this->defaultSettings['related_articles']['default_collection']) ? $this->defaultSettings['related_articles']['default_collection'] : null;
+            $settings['collection'] = isset($params['collection']) && $params['collection'] !== null ? $params['collection'] : $default;
+
+            $default = isset($this->defaultSettings['related_articles']) && isset($this->defaultSettings['related_articles']['hide_collection']) ? $this->defaultSettings['related_articles']['hide_collection'] : false;
+            $settings['hide_collection'] = isset($params['hide_collection']) && $params['hide_collection'] !== null ? $params['hide_collection'] : $default;
+        }
+        return $settings;
+    }
+
     public function getPostHasCagegorySettings() {
         $params = $this->getSetting('post_has_category');
         $settings = [];

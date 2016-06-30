@@ -548,6 +548,23 @@ class PostAdmin extends AbstractPostAdmin implements AdminProviderInterface
         return $settings;
     }
 
+    public function getRelatedArticleSettings() {
+
+        $settings = parent::getRelatedArticleSettings();
+
+        if(!$this->hasProvider()) {
+            return $settings;
+        }
+
+        $providerSettings = [];
+        $providerSettings = $this->getProvider()->getRelatedArticleSettings();
+        if($providerSettings) {
+            $settings = array_merge($settings, $providerSettings);
+        }
+
+        return $settings;
+    }
+
     public function getSuggetedArticleSettings() {
 
         $settings = parent::getSuggetedArticleSettings();
@@ -561,6 +578,7 @@ class PostAdmin extends AbstractPostAdmin implements AdminProviderInterface
         if($providerSettings) {
             $settings = array_merge($settings, $providerSettings);
         }
+
         return $settings;
     }
 

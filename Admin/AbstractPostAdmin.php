@@ -346,6 +346,16 @@ abstract class AbstractPostAdmin extends Admin
         return $settings;
     }
 
+    public function getRelatedArticleSettings() {
+        $params = $this->getSetting('related_articles');
+        $settings = [];
+        if($params) {
+            $settings['collection'] = isset($params['default_collection']) && $params['default_collection'] !== null ? $params['default_collection'] : null;
+            $settings['hide_collection'] = isset($params['hide_collection']) && $params['hide_collection'] !== null ? $params['hide_collection'] : false;
+        }
+        return $settings;
+    }
+
     public function getPostHasCagegorySettings() {
         $params = $this->getSetting('post_has_category');
         $settings = [];
