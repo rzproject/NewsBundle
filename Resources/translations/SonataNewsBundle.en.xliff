@@ -30,7 +30,7 @@
                 <source>label_post_has_category</source>
                 <target>Posts by Category</target>
             </trans-unit>
-						<trans-unit id="form.label_category">
+            <trans-unit id="form.label_category">
                 <source>form.label_category</source>
                 <target>Category</target>
             </trans-unit>
@@ -54,63 +54,63 @@
                 <source>rz_news_media</source>
                 <target>Media Collection</target>
             </trans-unit>
-						<trans-unit id="form.label_post_has_media">
+            <trans-unit id="form.label_post_has_media">
                 <source>form.label_post_has_media</source>
                 <target></target>
             </trans-unit>
-						<trans-unit id="form.label_post_has_media_header">
+            <trans-unit id="form.label_post_has_media_header">
                 <source>form.label_post_has_media_header</source>
                 <target>Media Item #</target>
             </trans-unit>
-						<trans-unit id="label_post_has_media">
+            <trans-unit id="label_post_has_media">
                 <source>label_post_has_media</source>
                 <target>Post Media Details</target>
             </trans-unit>
-						<trans-unit id="form.label_media">
+            <trans-unit id="form.label_media">
                 <source>form.label_media</source>
                 <target>Media</target>
             </trans-unit>
-						<trans-unit id="tab.rz_news_related_articles">
+            <trans-unit id="tab.rz_news_related_articles">
                 <source>tab.rz_news_related_articles</source>
                 <target>Related Post</target>
             </trans-unit>
-						<trans-unit id="rz_news_related_articles">
+            <trans-unit id="rz_news_related_articles">
                 <source>rz_news_related_articles</source>
                 <target>Related Posts</target>
             </trans-unit>
-						<trans-unit id="form.label_related_articles">
+            <trans-unit id="form.label_related_articles">
                 <source>form.label_related_articles</source>
                 <target></target>
             </trans-unit>
-						<trans-unit id="form.label_related_article">
+            <trans-unit id="form.label_related_article">
                 <source>form.label_related_article</source>
                 <target>Post</target>
             </trans-unit>
-						<trans-unit id="label_related_articles">
+            <trans-unit id="label_related_articles">
                 <source>label_related_articles</source>
                 <target>Post</target>
             </trans-unit>
-						<trans-unit id="form.label_position">
+            <trans-unit id="form.label_position">
                 <source>form.label_position</source>
                 <target>Position</target>
             </trans-unit>
-					<trans-unit id="tab.rz_news_suggested_articles">
+          <trans-unit id="tab.rz_news_suggested_articles">
                 <source>tab.rz_news_suggested_articles</source>
                 <target>Suggested Post</target>
             </trans-unit>
-						<trans-unit id="rz_news_suggested_articles">
+            <trans-unit id="rz_news_suggested_articles">
                 <source>rz_news_suggested_articles</source>
                 <target>Suggested Posts</target>
             </trans-unit>
-						<trans-unit id="form.label_suggested_articles">
+            <trans-unit id="form.label_suggested_articles">
                 <source>form.label_suggested_articles</source>
                 <target></target>
             </trans-unit>
-						<trans-unit id="form.label_suggested_article">
+            <trans-unit id="form.label_suggested_article">
                 <source>form.label_suggested_article</source>
                 <target>Post</target>
             </trans-unit>
-						<trans-unit id="label_suggested_articles">
+            <trans-unit id="label_suggested_articles">
                 <source>label_suggested_articles</source>
                 <target>Post</target>
             </trans-unit>
@@ -119,23 +119,23 @@
                 <source>group_status</source>
                 <target>Details</target>
             </trans-unit>
-						<trans-unit id="tab.rz_news">
+            <trans-unit id="tab.rz_news">
                 <source>tab.rz_news</source>
                 <target>News</target>
             </trans-unit>
-						<trans-unit id="tab.rz_news_settings">
+            <trans-unit id="tab.rz_news_settings">
                 <source>tab.rz_news_settings</source>
                 <target>Settings</target>
             </trans-unit>
-						<trans-unit id="tab.rz_news_tags">
+            <trans-unit id="tab.rz_news_tags">
                 <source>tab.rz_news_tags</source>
                 <target>Tags</target>
             </trans-unit>
-						<trans-unit id="tab.rz_news_category">
+            <trans-unit id="tab.rz_news_category">
                 <source>tab.rz_news_category</source>
                 <target>Category</target>
             </trans-unit>
-						<trans-unit id="tab.rz_news_media">
+            <trans-unit id="tab.rz_news_media">
                 <source>tab.rz_news_media</source>
                 <target>Gallery</target>
             </trans-unit>
@@ -274,7 +274,7 @@
                 <source>tab.rz_news_post_sets_has_posts.tab.group.rz_news_post_sets_has_posts</source>
                 <target>Post</target>
             </trans-unit>
-						<trans-unit id="tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings">
+            <trans-unit id="tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings">
                 <source>tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings</source>
                 <target>Settings</target>
             </trans-unit>
@@ -305,6 +305,10 @@
             <trans-unit id="group_relation">
                 <source>group_relation</source>
                 <target>Details</target>
+            </trans-unit>
+            <trans-unit id="sidemenu.link_clone_post">
+                <source>sidemenu.link_clone_post</source>
+                <target>Clone</target>
             </trans-unit>
         </body>
     </file>

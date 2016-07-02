@@ -292,4 +292,14 @@ abstract class BasePost extends Post
     {
         $this->provider = $provider;
     }
+
+    public function __clone() {
+        $this->id = null;
+        $this->settings = null;
+        $this->tags = [];
+        $this->postHasCategory = new ArrayCollection();
+        $this->postHasMedia = new ArrayCollection();
+        $this->relatedArticles = new ArrayCollection();
+        $this->suggestedArticles = new ArrayCollection();
+    }
 }

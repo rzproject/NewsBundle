@@ -5,10 +5,11 @@ namespace Rz\NewsBundle\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Knp\Menu\ItemInterface as MenuItemInterface;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Sonata\CoreBundle\Validator\ErrorElement;
+use Knp\Menu\ItemInterface as MenuItemInterface;
 use Rz\CoreBundle\Provider\PoolInterface;
 use Rz\CoreBundle\Admin\AdminProviderInterface;
 
@@ -285,8 +286,8 @@ class PostAdmin extends AbstractPostAdmin implements AdminProviderInterface
         $id = $admin->getRequest()->get('id');
 
         $menu->addChild(
-            $this->trans('sidemenu.link_edit_post'),
-            array('uri' => $admin->generateUrl('edit', array('id' => $id)))
+            $this->trans('sidemenu.link_clone_post'),
+            array('uri' => $admin->generateUrl('clone', array('id' => $id)))
         );
     }
 
@@ -315,6 +316,10 @@ class PostAdmin extends AbstractPostAdmin implements AdminProviderInterface
         ;
     }
 
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        $collection->add('clone', $this->getRouterIdParameter().'/clone');
+    }
 
 
     /**
