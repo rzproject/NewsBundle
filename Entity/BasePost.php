@@ -296,7 +296,7 @@ abstract class BasePost extends Post
     public function __clone() {
         $this->id = null;
         $this->settings = null;
-        $this->tags = [];
+        $this->tags = new ArrayCollection();
         $this->postHasCategory = new ArrayCollection();
         $this->postHasMedia = new ArrayCollection();
         $this->relatedArticles = new ArrayCollection();
