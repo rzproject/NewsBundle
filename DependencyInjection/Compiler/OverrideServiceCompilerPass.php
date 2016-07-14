@@ -57,6 +57,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.news.post_sets.default_context')));
         $definition->addMethodCall('setDefaultCollection', array($container->getParameter('rz.news.post_sets.default_collection')));
         $definition->addMethodCall('setCollectionManager', array(new Reference('sonata.classification.manager.collection')));
+        $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
         $definition->addMethodCall('setSettings', array($container->getParameter('rz.news.settings.post_sets_has_posts')));
 
 
