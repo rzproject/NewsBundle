@@ -5,8 +5,6 @@ namespace Rz\NewsBundle\Model;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\NewsBundle\Model\PostInterface;
 
-
-
 abstract class PostHasCategory extends NewsRelationModel implements PostHasCategoryInterface
 {
     protected $position;

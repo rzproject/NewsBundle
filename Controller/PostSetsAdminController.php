@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 
-
 class PostSetsAdminController extends Controller
 {
     /**
@@ -40,7 +39,7 @@ class PostSetsAdminController extends Controller
         $defaultContext = $this->container->getParameter('rz.news.post_sets.default_context');
         $context = $contextManager->findOneBy(array('id'=>$slugify->slugify($defaultContext)));
 
-        if(!$context && !$context instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
+        if (!$context && !$context instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
             $context = $contextManager->generateDefaultContext($defaultContext);
         }
 
@@ -54,22 +53,21 @@ class PostSetsAdminController extends Controller
 
         $collections = $collectiontManager->findBy(array('context'=>$context));
 
-        if(!$currentCollection &&
+        if (!$currentCollection &&
            !$currentCollection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface &&
             count($collections) === 0) {
             $currentCollection = $collectiontManager->generateDefaultCollection($context, $defaultCollection);
             $collections = $collectiontManager->findBy(array('context'=>$context));
         }
 
-        if(count($collections)>0) {
-
+        if (count($collections)>0) {
             if (!$currentCollection) {
                 $currentCollection = current(array_shift($collections));
             }
 
             if ($this->admin->getPersistentParameter('collection')) {
                 $collection = $collectiontManager->findOneBy(array('context'=>$context, 'slug'=>$this->admin->getPersistentParameter('collection')));
-                if($collection && $collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
+                if ($collection && $collection instanceof \Sonata\ClassificationBundle\Model\CollectionInterface) {
                     $datagrid->setValue('collection', null, $collection->getId());
                 } else {
                     throw $this->createNotFoundException($this->get('translator')->trans('page_not_found', array(), 'SonataAdminBundle'));

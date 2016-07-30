@@ -119,11 +119,11 @@ abstract class AbstractPostSetsHasPostsAdmin extends Admin
      */
     public function hasProvider($interface = null)
     {
-        if(!$interface) {
+        if (!$interface) {
             return isset($this->provider);
         }
 
-        if($this->provider instanceof $interface) {
+        if ($this->provider instanceof $interface) {
             return true;
         }
 
@@ -178,10 +178,11 @@ abstract class AbstractPostSetsHasPostsAdmin extends Admin
         $this->settings[$name] = $value;
     }
 
-    public function getPostSettings() {
+    public function getPostSettings()
+    {
         $params = $this->getSetting('post');
         $settings = [];
-        if($params) {
+        if ($params) {
             $settings['collection'] = isset($params['default_collection']) && $params['default_collection'] !== null ? $params['default_collection'] : null;
             $settings['hide_collection'] = isset($params['hide_collection']) && $params['hide_collection'] !== null ? $params['hide_collection'] : false;
         }

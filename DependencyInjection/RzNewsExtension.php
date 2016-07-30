@@ -192,14 +192,13 @@ class RzNewsExtension extends Extension
         $collector = DoctrineCollector::getInstance();
 
         if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
-
             $collector->addAssociation($config['class']['post_has_category'], 'mapManyToOne', array(
                 'fieldName' => 'post',
                 'targetEntity' => $config['class']['post'],
                 'cascade' => array(
                     'persist',
                 ),
-                'mappedBy' => NULL,
+                'mappedBy' => null,
                 'inversedBy' => 'postHasCategory',
                 'joinColumns' => array(
                     array(
@@ -216,8 +215,8 @@ class RzNewsExtension extends Extension
                 'cascade' => array(
                     'persist',
                 ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
+                'mappedBy' => null,
+                'inversedBy' => null,
                 'joinColumns' => array(
                     array(
                         'name' => 'category_id',
@@ -242,14 +241,13 @@ class RzNewsExtension extends Extension
         }
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
-
             $collector->addAssociation($config['class']['post_has_media'], 'mapManyToOne', array(
                 'fieldName' => 'post',
                 'targetEntity' => $config['class']['post'],
                 'cascade' => array(
                     'persist',
                 ),
-                'mappedBy' => NULL,
+                'mappedBy' => null,
                 'inversedBy' => 'postHasMedia',
                 'joinColumns' => array(
                     array(
@@ -266,8 +264,8 @@ class RzNewsExtension extends Extension
                 'cascade' => array(
                     'persist',
                 ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
+                'mappedBy' => null,
+                'inversedBy' => null,
                 'joinColumns' => array(
                     array(
                         'name' => 'media_id',
@@ -301,7 +299,7 @@ class RzNewsExtension extends Extension
             'cascade' => array(
                 'persist',
             ),
-            'mappedBy' => NULL,
+            'mappedBy' => null,
             'inversedBy' => 'relatedArticles',
             'joinColumns' => array(
                 array(
@@ -318,8 +316,8 @@ class RzNewsExtension extends Extension
             'cascade' => array(
                 'persist',
             ),
-            'mappedBy' => NULL,
-            'inversedBy' => NULL,
+            'mappedBy' => null,
+            'inversedBy' => null,
             'joinColumns' => array(
                 array(
                     'name' => 'related_article_id',
@@ -352,7 +350,7 @@ class RzNewsExtension extends Extension
             'cascade' => array(
                 'persist',
             ),
-            'mappedBy' => NULL,
+            'mappedBy' => null,
             'inversedBy' => 'suggestedArticles',
             'joinColumns' => array(
                 array(
@@ -369,8 +367,8 @@ class RzNewsExtension extends Extension
             'cascade' => array(
                 'persist',
             ),
-            'mappedBy' => NULL,
-            'inversedBy' => NULL,
+            'mappedBy' => null,
+            'inversedBy' => null,
             'joinColumns' => array(
                 array(
                     'name' => 'suggested_article_id',
@@ -403,7 +401,7 @@ class RzNewsExtension extends Extension
             'cascade' => array(
                 'persist',
             ),
-            'mappedBy' => NULL,
+            'mappedBy' => null,
             'inversedBy' => 'postSetsHasPosts',
             'joinColumns' => array(
                 array(
@@ -421,8 +419,8 @@ class RzNewsExtension extends Extension
             'cascade' => array(
                 'persist',
             ),
-            'mappedBy' => NULL,
-            'inversedBy' => NULL,
+            'mappedBy' => null,
+            'inversedBy' => null,
             'joinColumns' => array(
                 array(
                     'name' => 'post_sets_id',

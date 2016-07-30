@@ -19,7 +19,6 @@ class PostHasMediaAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $formMapper
             ->tab('tab.rz_news_post_has_media_media')
                 ->with('rz_news_post_has_media_media', array('class' => 'col-md-8'))->end()
@@ -39,7 +38,7 @@ class PostHasMediaAdmin extends Admin
         ;
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
-           $formMapper
+            $formMapper
                 ->tab('tab.rz_news_post_has_media_media')
                     ->with('rz_news_post_has_media_media', array('class' => 'col-md-8'))
                        ->add('media', 'sonata_type_model_list', array('btn_delete' => false), array())

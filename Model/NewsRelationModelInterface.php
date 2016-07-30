@@ -2,7 +2,6 @@
 
 namespace Rz\NewsBundle\Model;
 
-
 interface NewsRelationModelInterface
 {
     /**

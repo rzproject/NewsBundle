@@ -31,19 +31,27 @@ abstract class BaseProvider extends Provider
     /**
      * {@inheritdoc}
      */
-    public function postPersist(PostSetsHasPostsInterface $object){}
+    public function postPersist(PostSetsHasPostsInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postUpdate(PostSetsHasPostsInterface $object){}
+    public function postUpdate(PostSetsHasPostsInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, PostSetsHasPostsInterface $object){}
+    public function validate(ErrorElement $errorElement, PostSetsHasPostsInterface $object)
+    {
+    }
 
-    public function load(PostSetsHasPostsInterface $object) {}
+    public function load(PostSetsHasPostsInterface $object)
+    {
+    }
 
     /**
      * @return mixed
@@ -77,11 +85,11 @@ abstract class BaseProvider extends Provider
         $this->categoryManager = $categoryManager;
     }
 
-    public function getPostSettings() {
+    public function getPostSettings()
+    {
         $params = $this->getSetting('post');
         $settings = [];
-        if($params) {
-
+        if ($params) {
             $default = isset($this->defaultSettings['post']) && isset($this->defaultSettings['post']['default_collection']) ? $this->defaultSettings['post']['default_collection'] : null;
             $settings['collection'] = isset($params['collection']) && $params['collection'] !== null ? $params['collection'] : $default;
 

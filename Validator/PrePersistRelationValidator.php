@@ -17,23 +17,21 @@ class PrePersistRelationValidator extends ConstraintValidator
      */
     public function validate($entity, Constraint $constraint)
     {
-
         if (null === $entity || '' === $entity) {
             return;
         }
 
-        if(!$entity instanceof PostSetsInterface && $entity->getId() ) {
+        if (!$entity instanceof PostSetsInterface && $entity->getId()) {
             return;
         }
 
-        if($entity instanceof PostSetsInterface) {
-
-            if($entity->getPostSetsHasPosts()->count() > 0) {
+        if ($entity instanceof PostSetsInterface) {
+            if ($entity->getPostSetsHasPosts()->count() > 0) {
                 $postSetsHasPosts = $entity->getPostSetsHasPosts();
                 $meds = array();
                 $maps = array();
                 foreach ($postSetsHasPosts as $postSetsHasPost) {
-                    if($postSetsHasPost instanceof PostSetsHasPostsInterface && $postSetsHasPost->getPost() != null && $id = $postSetsHasPost->getPost()->getId()) {
+                    if ($postSetsHasPost instanceof PostSetsHasPostsInterface && $postSetsHasPost->getPost() != null && $id = $postSetsHasPost->getPost()->getId()) {
                         $meds[] = $id;
                         $maps[$id] = $postSetsHasPost->getPost()->getTitle();
                     }
@@ -41,13 +39,13 @@ class PrePersistRelationValidator extends ConstraintValidator
 
                 $meds = array_count_values($meds);
                 $errors = array();
-                foreach($meds as $key=>$value) {
-                    if($value > 1) {
+                foreach ($meds as $key=>$value) {
+                    if ($value > 1) {
                         $errors[] = $maps[$key];
                     }
                 }
 
-                if(count($errors) > 0) {
+                if (count($errors) > 0) {
                     if ($this->context instanceof ExecutionContextInterface) {
                         $this->context->buildViolation($constraint->unique)
                             ->setParameter('{{ entity_name }}', 'post')

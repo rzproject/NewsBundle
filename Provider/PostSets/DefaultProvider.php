@@ -53,7 +53,11 @@ class DefaultProvider extends BaseProvider
         return $settings;
     }
 
-    public function load(PostSetsInterface $object) {}
+    public function load(PostSetsInterface $object)
+    {
+    }
 
-    public function validate(ErrorElement $errorElement, PostSetsInterface $object){}
+    public function validate(ErrorElement $errorElement, PostSetsInterface $object)
+    {
+    }
 }

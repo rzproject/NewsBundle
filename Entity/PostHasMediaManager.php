@@ -3,13 +3,13 @@
 namespace Rz\NewsBundle\Entity;
 
 use Sonata\CoreBundle\Model\BaseEntityManager;
-
 use Sonata\DatagridBundle\Pager\Doctrine\Pager;
 use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
 
 class PostHasMediaManager extends BaseEntityManager
 {
-    public function getFirstMedia($post) {
+    public function getFirstMedia($post)
+    {
         $query = $this->getRepository()
             ->createQueryBuilder('phm')
             ->where('phm.post = :post')
