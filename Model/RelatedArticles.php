@@ -5,8 +5,6 @@ namespace Rz\NewsBundle\Model;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\NewsBundle\Model\PostInterface;
 
-
-
 abstract class RelatedArticles extends NewsRelationModel implements RelatedArticlesInterface
 {
     protected $post;

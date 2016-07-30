@@ -79,7 +79,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
             ->end();
 
 
-        if($this->hasChildProvider()) {
+        if ($this->hasChildProvider()) {
             $postSetsHasPostsFieldOptions = array(
                 'edit'            => 'inline',
                 'inline'          => 'standard',
@@ -99,7 +99,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
             $postSetsHasPostsTabSettings = array('class' => 'col-md-12');
         }
 
-        if($this->hasProvider()){
+        if ($this->hasProvider()) {
             $postSetsTabSettings = array('class' => 'col-md-6');
         } else {
             $postSetsTabSettings = array('class' => 'col-md-12');
@@ -124,7 +124,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
                 ->end()
             ->end();
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $instance = $this->getSubject();
             if ($instance && $instance->getId()) {
                 $this->provider->load($instance);
@@ -142,7 +142,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
     {
         parent::prePersist($object);
         $object->setPostSetsHasPosts($object->getPostSetsHasPosts());
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->provider->prePersist($object);
         }
     }
@@ -154,7 +154,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
     {
         parent::preUpdate($object);
         $object->setPostSetsHasPosts($object->getPostSetsHasPosts());
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->provider->preUpdate($object);
         }
     }
@@ -165,7 +165,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postUpdate($object);
         }
     }
@@ -176,7 +176,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
     public function postPersist($object)
     {
         parent::postPersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postPersist($object);
         }
     }
@@ -187,33 +187,35 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
     public function validate(ErrorElement $errorElement, $object)
     {
         parent::validate($errorElement, $object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->validate($errorElement, $object);
         }
     }
 
-    public function fetchProviderKey() {
+    public function fetchProviderKey()
+    {
         $collectionSlug = $this->getPersistentParameter('collection');
         $collection = null;
-        if($collectionSlug) {
+        if ($collectionSlug) {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
         } else {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$this->getDefaultCollection()));
         }
-        if($collection) {
+        if ($collection) {
             return $collection;
         } else {
             return;
         }
     }
 
-    public function getPoolProvider(PoolInterface $pool) {
+    public function getPoolProvider(PoolInterface $pool)
+    {
         $currentCollection = $this->fetchProviderKey();
 
         if ($pool->hasCollection($currentCollection->getSlug())) {
             $providerName = $pool->getProviderNameByCollection($currentCollection->getSlug());
 
-            if(!$providerName) {
+            if (!$providerName) {
                 return null;
             }
             $provider = $pool->getProvider($providerName);
@@ -228,8 +230,9 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
         return null;
     }
 
-    public function getProviderName(PoolInterface $pool, $providerKey = null) {
-        if(!$providerKey) {
+    public function getProviderName(PoolInterface $pool, $providerKey = null)
+    {
+        if (!$providerKey) {
             $providerKey = $this->fetchProviderKey();
         }
 
@@ -251,7 +254,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
             $parameters['collection'] = $this->getRequest()->get('collection');
         }
 
-        if(is_array($parameters) && isset($parameters['collection'])) {
+        if (is_array($parameters) && isset($parameters['collection'])) {
             $parameters = array_merge($parameters, array('hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0));
         } else {
             $collectionSlug = $this->getSlugify()->slugify($this->getDefaultCollection());
@@ -277,7 +280,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
 
         $context = $this->contextManager->findOneBy(array('id'=>$this->getSlugify()->slugify($this->getDefaultContext())));
 
-        if(!$context && !$context instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
+        if (!$context && !$context instanceof \Sonata\ClassificationBundle\Model\ContextInterface) {
             $context = $this->contextManager->generateDefaultContext($this->getDefaultContext());
         }
 
@@ -288,7 +291,7 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
             $collection = $this->collectionManager->generateDefaultCollection($context, $this->getDefaultCollection());
         }
 
-        if(!$collection) {
+        if (!$collection) {
             $collection = current($collections);
         }
 
@@ -297,7 +300,8 @@ class PostSetsAdmin extends AbstractPostSetsAdmin implements AdminProviderInterf
         return $instance;
     }
 
-    public function getPostSetsHasPostsSettings() {
+    public function getPostSetsHasPostsSettings()
+    {
         $settings = [];
         $settings['collection'] = $this->getPersistentParameter('collection');
         return $settings;

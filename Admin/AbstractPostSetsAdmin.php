@@ -166,11 +166,11 @@ abstract class AbstractPostSetsAdmin extends Admin
      */
     public function hasChildProvider($interface = null)
     {
-        if(!$interface) {
+        if (!$interface) {
             return isset($this->childeProvider);
         }
 
-        if($this->childeProvider instanceof $interface) {
+        if ($this->childeProvider instanceof $interface) {
             return true;
         }
 
@@ -182,11 +182,11 @@ abstract class AbstractPostSetsAdmin extends Admin
      */
     public function hasProvider($interface = null)
     {
-        if(!$interface) {
+        if (!$interface) {
             return isset($this->provider);
         }
 
-        if($this->provider instanceof $interface) {
+        if ($this->provider instanceof $interface) {
             return true;
         }
 

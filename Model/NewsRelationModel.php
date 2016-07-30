@@ -2,7 +2,6 @@
 
 namespace Rz\NewsBundle\Model;
 
-
 abstract class NewsRelationModel implements NewsRelationModelInterface
 {
     protected $position;

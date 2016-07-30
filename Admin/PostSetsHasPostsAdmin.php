@@ -33,7 +33,7 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $formMapper
                 ->tab('tab.rz_news_post_sets_has_posts')
                     ->with('tab.group.rz_news_post_sets_has_posts', array('class' => 'col-md-12'))->end()
@@ -65,7 +65,6 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
                 ->add('enabled', null, array('required' => false))
                 ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
                 ->add('position', 'hidden');
-
         }
     }
 
@@ -99,7 +98,7 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
     public function prePersist($object)
     {
         parent::prePersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->provider->prePersist($object);
         }
     }
@@ -110,7 +109,7 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
     public function preUpdate($object)
     {
         parent::preUpdate($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->provider->preUpdate($object);
         }
     }
@@ -121,7 +120,7 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postUpdate($object);
         }
     }
@@ -132,7 +131,7 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
     public function postPersist($object)
     {
         parent::postPersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postPersist($object);
         }
     }
@@ -143,7 +142,7 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
     public function validate(ErrorElement $errorElement, $object)
     {
         parent::validate($errorElement, $object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->validate($errorElement, $object);
         }
     }
@@ -159,7 +158,7 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
             $parameters['collection'] = $this->getRequest()->get('collection');
         }
 
-        if(is_array($parameters) && isset($parameters['collection'])) {
+        if (is_array($parameters) && isset($parameters['collection'])) {
             $parameters = array_merge($parameters, array('hide_collection' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_collection', 0) : 0));
         } else {
             $collectionSlug = $this->getSlugify()->slugify($this->getDefaultCollection());
@@ -176,23 +175,25 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
         return $parameters;
     }
 
-    public function fetchProviderKey() {
+    public function fetchProviderKey()
+    {
         $collectionSlug = $this->getPersistentParameter('collection');
 
         $collection = null;
-        if($collectionSlug) {
+        if ($collectionSlug) {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$collectionSlug));
         } else {
             $collection = $this->collectionManager->findOneBy(array('slug'=>$this->getDefaultCollection()));
         }
-        if($collection) {
+        if ($collection) {
             return $collection;
         } else {
             return;
         }
     }
 
-    public function getPoolProvider(PoolInterface $pool) {
+    public function getPoolProvider(PoolInterface $pool)
+    {
         $currentCollection = $this->fetchProviderKey();
 
         if ($currentCollection && $pool->hasCollection($currentCollection->getSlug())) {
@@ -210,8 +211,9 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
         return;
     }
 
-    public function getProviderName(PoolInterface $pool, $providerKey = null) {
-        if(!$providerKey) {
+    public function getProviderName(PoolInterface $pool, $providerKey = null)
+    {
+        if (!$providerKey) {
             $providerKey = $this->fetchProviderKey();
         }
 
@@ -222,18 +224,18 @@ class PostSetsHasPostsAdmin extends AbstractPostSetsHasPostsAdmin implements Adm
         return null;
     }
 
-    public function getPostSettings() {
-
+    public function getPostSettings()
+    {
         $settings = parent::getPostSettings();
 
-        if(!$this->hasProvider()) {
+        if (!$this->hasProvider()) {
             return $settings;
         }
 
         $providerSettings = [];
         $providerSettings = $this->getProvider()->getPostSettings();
 
-        if($providerSettings) {
+        if ($providerSettings) {
             $settings = array_merge($settings, $providerSettings);
         }
 

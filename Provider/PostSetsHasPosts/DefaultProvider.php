@@ -30,7 +30,6 @@ class DefaultProvider extends BaseProvider
                     ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
                 ->end()
             ->end();
-
     }
 
     /**
@@ -54,7 +53,11 @@ class DefaultProvider extends BaseProvider
         return $settings;
     }
 
-    public function load(PostSetsHasPostsInterface $object) {}
+    public function load(PostSetsHasPostsInterface $object)
+    {
+    }
 
-    public function validate(ErrorElement $errorElement, PostSetsHasPostsInterface $object){}
+    public function validate(ErrorElement $errorElement, PostSetsHasPostsInterface $object)
+    {
+    }
 }

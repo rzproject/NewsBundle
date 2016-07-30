@@ -54,19 +54,27 @@ abstract class BaseProvider extends Provider
     /**
      * {@inheritdoc}
      */
-    public function postPersist(PostInterface $object){}
+    public function postPersist(PostInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postUpdate(PostInterface $object){}
+    public function postUpdate(PostInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, PostInterface $object){}
+    public function validate(ErrorElement $errorElement, PostInterface $object)
+    {
+    }
 
-    public function load(PostInterface $object) {}
+    public function load(PostInterface $object)
+    {
+    }
 
     /**
      * @return mixed
@@ -164,32 +172,32 @@ abstract class BaseProvider extends Provider
         $this->categoryManager = $categoryManager;
     }
 
-    protected function setEnabledRelations() {
-
+    protected function setEnabledRelations()
+    {
         $params = $this->getSetting('post_has_media');
-        if($params){
+        if ($params) {
             $default = isset($this->defaultSettings['post_has_media']) && isset($this->defaultSettings['post_has_media']['enabled']) ? $this->defaultSettings['post_has_media']['enabled'] : true;
             $this->postHasMediaEnabled = isset($params['enable']) ? $params['enable'] : $default;
         }
 
         $params = $this->getSetting('related_articles');
-        if($params){
+        if ($params) {
             $default = isset($this->defaultSettings['related_articles']) && isset($this->defaultSettings['related_articles']['enabled']) ? $this->defaultSettings['related_articles']['enabled'] : true;
             $this->relatedArticleEnabled = isset($params['enable']) ? $params['enable'] : $default;
         }
 
         $params = $this->getSetting('suggested_articles');
-        if($params){
+        if ($params) {
             $default = isset($this->defaultSettings['suggested_articles']) && isset($this->defaultSettings['suggested_articles']['enabled']) ? $this->defaultSettings['suggested_articles']['enabled'] : true;
             $this->suggestedArticleEnabled = isset($params['enable']) ? $params['enable'] : $default;
         }
     }
 
-    public function getPostHasMediaSettings() {
+    public function getPostHasMediaSettings()
+    {
         $params = $this->getSetting('post_has_media');
         $settings = [];
-        if($params) {
-
+        if ($params) {
             $default = isset($this->defaultSettings['post_has_media']) && isset($this->defaultSettings['post_has_media']['default_context']) ? $this->defaultSettings['post_has_media']['default_context'] : null;
             $settings['context'] = isset($params['context']) && $params['context'] !== null ? $params['context'] : $default;
 
@@ -200,9 +208,9 @@ abstract class BaseProvider extends Provider
             $default = isset($this->defaultSettings['post_has_media']) && isset($this->defaultSettings['post_has_media']['default_category']) ? $this->defaultSettings['post_has_media']['default_category'] : null;
             $category = isset($params['category']) && $params['category'] !== null ? $params['category'] : $default;
 
-            if($category !== null) {
+            if ($category !== null) {
                 $category = $this->categoryManager->findOneBy(array('slug'=>$this->getSlugify()->slugify($params['category']), 'context'=>$settings['context']));
-                if($category) {
+                if ($category) {
                     $settings['category'] = $category->getId();
                 }
             }
@@ -210,11 +218,11 @@ abstract class BaseProvider extends Provider
         return $settings;
     }
 
-    public function getSuggetedArticleSettings() {
+    public function getSuggetedArticleSettings()
+    {
         $params = $this->getSetting('suggested_articles');
         $settings = [];
-        if($params) {
-
+        if ($params) {
             $default = isset($this->defaultSettings['suggested_articles']) && isset($this->defaultSettings['suggested_articles']['default_collection']) ? $this->defaultSettings['suggested_articles']['default_collection'] : null;
             $settings['collection'] = isset($params['collection']) && $params['collection'] !== null ? $params['collection'] : $default;
 
@@ -224,11 +232,11 @@ abstract class BaseProvider extends Provider
         return $settings;
     }
 
-    public function getRelatedArticleSettings() {
+    public function getRelatedArticleSettings()
+    {
         $params = $this->getSetting('related_articles');
         $settings = [];
-        if($params) {
-
+        if ($params) {
             $default = isset($this->defaultSettings['related_articles']) && isset($this->defaultSettings['related_articles']['default_collection']) ? $this->defaultSettings['related_articles']['default_collection'] : null;
             $settings['collection'] = isset($params['collection']) && $params['collection'] !== null ? $params['collection'] : $default;
 
@@ -238,31 +246,33 @@ abstract class BaseProvider extends Provider
         return $settings;
     }
 
-    public function getPostHasCagegorySettings() {
+    public function getPostHasCagegorySettings()
+    {
         $params = $this->getSetting('post_has_category');
         $settings = [];
-        if($params) {
+        if ($params) {
             $default = isset($this->defaultSettings['post_has_category']) && isset($this->defaultSettings['post_has_category']['default_context']) ? $this->defaultSettings['post_has_category']['default_context'] : null;
             $settings['context'] = isset($params['context']) && $params['context'] !== null ? $params['context'] : $default;
         }
         return $settings;
     }
 
-    public function getTagsSettings() {
+    public function getTagsSettings()
+    {
         $params = $this->getSetting('tags');
         $settings = [];
-        if($params) {
+        if ($params) {
             $default = isset($this->defaultSettings['tags']) && isset($this->defaultSettings['tags']['default_context']) ? $this->defaultSettings['tags']['default_context'] : null;
             $settings['context'] = isset($params['context']) && $params['context'] !== null ? $params['context'] : $default;
         }
         return $settings;
     }
 
-    public function getMediaSettings() {
+    public function getMediaSettings()
+    {
         $params = $this->getSetting('media');
         $settings = [];
-        if($params) {
-
+        if ($params) {
             $default = isset($this->defaultSettings['post_has_media']) && isset($this->defaultSettings['post_has_media']['default_context']) ? $this->defaultSettings['post_has_media']['default_context'] : null;
             $settings['context'] = isset($params['context']) && $params['context'] !== null ? $params['context'] : $default;
 
@@ -273,9 +283,9 @@ abstract class BaseProvider extends Provider
             $default = isset($this->defaultSettings['post_has_media']) && isset($this->defaultSettings['post_has_media']['default_category']) ? $this->defaultSettings['post_has_media']['default_category'] : null;
             $category = isset($params['category']) && $params['category'] !== null ? $params['category'] : $default;
 
-            if($category !== null) {
+            if ($category !== null) {
                 $category = $this->categoryManager->findOneBy(array('slug'=>$this->getSlugify()->slugify($params['category']), 'context'=>$settings['context']));
-                if($category) {
+                if ($category) {
                     $settings['category'] = $category->getId();
                 }
             }

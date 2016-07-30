@@ -69,7 +69,7 @@ class CommentAdmin extends BaseCommentAdmin
      */
     protected function configureListFields(ListMapper $listMapper)
     {
-//        $listMapper
+        //        $listMapper
 //            ->addIdentifier('name')
 //            ->add('getStatusCode', 'text', array('label' => 'status_code', 'sortable' => 'status'))
 //        ;

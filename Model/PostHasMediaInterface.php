@@ -4,7 +4,6 @@ namespace Rz\NewsBundle\Model;
 use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\MediaBundle\Model\MediaInterface;
 
-
 interface PostHasMediaInterface extends NewsRelationModelInterface
 {
     /**

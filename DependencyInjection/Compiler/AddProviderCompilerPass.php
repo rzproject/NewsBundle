@@ -41,7 +41,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
 
         foreach ($collections as $name => $settings) {
             $pool->addMethodCall('addCollection', array($name, $settings['provider'], $settings['settings']));
-            if($container->hasDefinition($settings['provider'])) {
+            if ($container->hasDefinition($settings['provider'])) {
                 $provider =$container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setPostManager', array(new Reference('sonata.news.manager.post')));
                 $provider->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
@@ -68,19 +68,18 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $collections = $container->getParameter('rz.news.post_sets.provider.collections');
 
         foreach ($collections as $name => $settings) {
-
-            if($settings['post_sets']['provider']) {
+            if ($settings['post_sets']['provider']) {
                 $postSetsPool->addMethodCall('addCollection', array($name, $settings['post_sets']['provider'], array()));
-                if($container->hasDefinition($settings['post_sets']['provider'])) {
+                if ($container->hasDefinition($settings['post_sets']['provider'])) {
                     $provider =$container->getDefinition($settings['post_sets']['provider']);
 //                    $provider->addMethodCall('setDefaultSettings', array($container->getParameter('rz.news.settings.post_sets')));
                     $provider->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
                 }
             }
 
-            if($settings['post_sets_has_posts']['provider']) {
+            if ($settings['post_sets_has_posts']['provider']) {
                 $postSetsHasPostsPool->addMethodCall('addCollection', array($name, $settings['post_sets_has_posts']['provider'], $settings['post_sets_has_posts']['settings']));
-                if($container->hasDefinition($settings['post_sets_has_posts']['provider'])) {
+                if ($container->hasDefinition($settings['post_sets_has_posts']['provider'])) {
                     $provider =$container->getDefinition($settings['post_sets_has_posts']['provider']);
                     $provider->addMethodCall('setCategoryManager', array(new Reference('sonata.classification.manager.category')));
                     $provider->addMethodCall('setDefaultSettings', array($container->getParameter('rz.news.settings.post_sets_has_posts')));

@@ -5,8 +5,6 @@ namespace Rz\NewsBundle\Model;
 use Sonata\MediaBundle\Model\MediaInterface;
 use Sonata\NewsBundle\Model\PostInterface;
 
-
-
 abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInterface
 {
     protected $position;
@@ -147,6 +145,4 @@ abstract class PostHasMedia extends NewsRelationModel implements PostHasMediaInt
     {
         $this->rawContent = $rawContent;
     }
-
-
 }

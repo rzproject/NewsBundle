@@ -12,8 +12,8 @@ class NewsController extends Controller
     {
         # Use parse URL to make sure you have a valid URL string
         $path = parse_url($permalink);
-        if($path && is_array($path)) {
-            $paths = array_reverse(explode('/',$path['path']));
+        if ($path && is_array($path)) {
+            $paths = array_reverse(explode('/', $path['path']));
         }
 
         $url = $request->get('url');

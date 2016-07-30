@@ -8,6 +8,7 @@ use Rz\NewsBundle\Model\PostHasCategoryInterface;
 use Rz\NewsBundle\Model\PostHasMediaInterface;
 use Rz\NewsBundle\Model\RelatedArticlesInterface;
 use Rz\NewsBundle\Model\SuggestedArticlesInterface;
+
 //use Rz\NewsBundle\Model\PostHasPageInterface;
 
 
@@ -254,7 +255,8 @@ abstract class BasePost extends Post
         }
     }
 
-    public function isNew() {
+    public function isNew()
+    {
         if ($this->getId()) {
             return false;
         }
@@ -293,7 +295,8 @@ abstract class BasePost extends Post
         $this->provider = $provider;
     }
 
-    public function __clone() {
+    public function __clone()
+    {
         $this->id = null;
         $this->settings = null;
         $this->tags = new ArrayCollection();

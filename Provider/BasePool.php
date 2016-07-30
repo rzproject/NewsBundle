@@ -9,10 +9,10 @@ abstract class BasePool extends Pool
 {
     public function addCollection($name, $provider = null)
     {
-      if($this->slugify) {
-          $name = $this->slugify->slugify($name);
-      }
-      $this->addGroup($name, $provider);
+        if ($this->slugify) {
+            $name = $this->slugify->slugify($name);
+        }
+        $this->addGroup($name, $provider);
     }
 
     public function hasCollection($name)
@@ -37,6 +37,6 @@ abstract class BasePool extends Pool
 
     public function getProviderNameByCollection($name)
     {
-       return $this->getProviderNameByGroup($name);
+        return $this->getProviderNameByGroup($name);
     }
 }

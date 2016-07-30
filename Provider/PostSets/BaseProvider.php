@@ -33,29 +33,41 @@ abstract class BaseProvider extends Provider
     /**
      * {@inheritdoc}
      */
-    public function prePersist(PostSetsInterface $object){}
+    public function prePersist(PostSetsInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function preUpdate(PostSetsInterface $object){}
+    public function preUpdate(PostSetsInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postPersist(PostSetsInterface $object){}
+    public function postPersist(PostSetsInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postUpdate(PostSetsInterface $object){}
+    public function postUpdate(PostSetsInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, PostSetsInterface $object){}
+    public function validate(ErrorElement $errorElement, PostSetsInterface $object)
+    {
+    }
 
-    public function load(PostSetsInterface $object) {}
+    public function load(PostSetsInterface $object)
+    {
+    }
 
     /**
      * @return mixed

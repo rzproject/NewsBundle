@@ -3,7 +3,6 @@ namespace Rz\NewsBundle\Model;
 
 use Sonata\NewsBundle\Model\PostInterface;
 
-
 interface PostSetsHasPostsInterface extends NewsRelationModelInterface
 {
     /**

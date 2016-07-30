@@ -8,7 +8,6 @@ use Sonata\CoreBundle\Model\ManagerInterface;
 use Rz\CoreBundle\Provider\PoolInterface;
 use Rz\CoreBundle\Admin\AdminProviderInterface;
 
-
 abstract class AbstractPostAdmin extends Admin
 {
     protected $collectionManager;
@@ -154,7 +153,6 @@ abstract class AbstractPostAdmin extends Admin
     public function getDefaultContext()
     {
         return $this->defaultContext;
-
     }
 
     /**
@@ -245,7 +243,8 @@ abstract class AbstractPostAdmin extends Admin
         $this->securityTokenStorage = $securityTokenStorage;
     }
 
-    public function getCurrentUser() {
+    public function getCurrentUser()
+    {
         return $this->getSecurityTokenStorage()->getToken()->getUser();
     }
 
@@ -254,11 +253,11 @@ abstract class AbstractPostAdmin extends Admin
      */
     public function hasProvider($interface = null)
     {
-        if(!$interface) {
+        if (!$interface) {
             return isset($this->provider);
         }
 
-        if($this->provider instanceof $interface) {
+        if ($this->provider instanceof $interface) {
             return true;
         }
 
@@ -313,76 +312,83 @@ abstract class AbstractPostAdmin extends Admin
         $this->settings[$name] = $value;
     }
 
-    protected function setEnabledRelations() {
-        if($this->settings) {
+    protected function setEnabledRelations()
+    {
+        if ($this->settings) {
             $this->postHasMediaEnabled = isset($this->settings['post_has_media']) && isset($this->settings['post_has_media']['enabled']) ? $this->settings['post_has_media']['enabled'] : false;
             $this->relatedArticleEnabled = isset($this->settings['related_articles']) && isset($this->settings['related_articles']['enabled']) ? $this->settings['related_articles']['enabled'] : false;
             $this->suggestedArticleEnabled = isset($this->settings['suggested_articles']) && isset($this->settings['suggested_articles']['enabled']) ? $this->settings['suggested_articles']['enabled'] : false;
         }
     }
 
-    public function getPostHasMediaSettings() {
+    public function getPostHasMediaSettings()
+    {
         $params = $this->getSetting('post_has_media');
         $settings = [];
         $settings['context'] = isset($params['default_context']) && $params['default_context'] !== null ? $params['default_context'] : $this->getDefaultContext();
         $settings['hide_context'] = isset($params['hide_context']) && $params['hide_context'] !== null ? $params['hide_context'] : false;
 
-        if(isset($params['default_category']) && $params['default_category'] !== null) {
+        if (isset($params['default_category']) && $params['default_category'] !== null) {
             $category = $this->categoryManager->findOneBy(array('slug'=>$this->getSlugify()->slugify($params['default_category']), 'context'=>$settings['context']));
-            if($category) {
+            if ($category) {
                 $settings['category'] = $category->getId();
             }
         }
         return $settings;
     }
 
-    public function getSuggetedArticleSettings() {
+    public function getSuggetedArticleSettings()
+    {
         $params = $this->getSetting('suggested_articles');
         $settings = [];
-        if($params) {
+        if ($params) {
             $settings['collection'] = isset($params['default_collection']) && $params['default_collection'] !== null ? $params['default_collection'] : null;
             $settings['hide_collection'] = isset($params['hide_collection']) && $params['hide_collection'] !== null ? $params['hide_collection'] : false;
         }
         return $settings;
     }
 
-    public function getRelatedArticleSettings() {
+    public function getRelatedArticleSettings()
+    {
         $params = $this->getSetting('related_articles');
         $settings = [];
-        if($params) {
+        if ($params) {
             $settings['collection'] = isset($params['default_collection']) && $params['default_collection'] !== null ? $params['default_collection'] : null;
             $settings['hide_collection'] = isset($params['hide_collection']) && $params['hide_collection'] !== null ? $params['hide_collection'] : false;
         }
         return $settings;
     }
 
-    public function getPostHasCagegorySettings() {
+    public function getPostHasCagegorySettings()
+    {
         $params = $this->getSetting('post_has_category');
         $settings = [];
-        if($params) {
+        if ($params) {
             $settings['context'] = isset($params['default_context']) && $params['default_context'] !== null ? $params['default_context'] : $this->getDefaultContext();
         }
         return $settings;
     }
 
-    public function getTagsSettings() {
+    public function getTagsSettings()
+    {
         $params = $this->getSetting('tags');
         $settings = [];
-        if($params) {
+        if ($params) {
             $settings['context'] = isset($params['default_context']) && $params['default_context'] !== null ? $params['default_context'] : $this->getDefaultContext();
         }
         return $settings;
     }
 
-    public function getMediaSettings() {
+    public function getMediaSettings()
+    {
         $params = $this->getSetting('media');
         $settings = [];
         $settings['context'] = isset($params['default_context']) && $params['default_context'] !== null ? $params['default_context'] : $this->getDefaultContext();
         $settings['hide_context'] = isset($params['hide_context']) && $params['hide_context'] !== null ? $params['hide_context'] : false;
 
-        if(isset($params['default_category']) && $params['default_category'] !== null) {
+        if (isset($params['default_category']) && $params['default_category'] !== null) {
             $category = $this->categoryManager->findOneBy(array('slug'=>$this->getSlugify()->slugify($params['default_category']), 'context'=>$settings['context']));
-            if($category) {
+            if ($category) {
                 $settings['category'] = $category->getId();
             }
         }

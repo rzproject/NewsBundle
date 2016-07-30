@@ -21,13 +21,12 @@ class PostHasCategoryAdmin extends Admin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $formMapper
             ->with('group_relation',  array('class' => 'col-md-8'))->end()
             ->with('group_status',    array('class' => 'col-md-4'))->end();
 
         # check if admin is embeded
-        if($this->hasParentFieldDescription()) {
+        if ($this->hasParentFieldDescription()) {
             if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
                 $formMapper
                     ->with('group_relation',  array('class' => 'col-md-8'))
@@ -79,7 +78,7 @@ class PostHasCategoryAdmin extends Admin
         $filter
             ->add('post.title')
             ->add('post.publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
-            ->add('category', null, array('show_filter' => false,));
+            ->add('category', null, array('show_filter' => false, ));
     }
 
     /**
@@ -148,13 +147,13 @@ class PostHasCategoryAdmin extends Admin
 
     public function getPersistentParameters()
     {
-        if($this->hasParentFieldDescription()) {
+        if ($this->hasParentFieldDescription()) {
             return parent::getPersistentParameters();
         }
 
         $categories = $this->getPostHasCategoryManager()->getUniqueCategories();
         $currentCategory = null;
-        if(count($categories) > 0) {
+        if (count($categories) > 0) {
             $currentCategory = current($categories);
             $currentCategory = $currentCategory['id'];
         }
@@ -178,13 +177,13 @@ class PostHasCategoryAdmin extends Admin
     {
         $instance = parent::getNewInstance();
 
-        if($this->hasParentFieldDescription()) {
+        if ($this->hasParentFieldDescription()) {
             return $instance;
         }
 
         $category = $this->getPersistentParameter('category') ? $this->getCategoryManager()->findOneBy(array('id'=>$this->getPersistentParameter('category'))) : null;
 
-        if($category) {
+        if ($category) {
             $instance->setCategory($category);
         }
 
