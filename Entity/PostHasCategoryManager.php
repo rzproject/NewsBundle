@@ -15,7 +15,6 @@ class PostHasCategoryManager extends BaseEntityManager
             ->select('c.id, c.name, p.name as parent')
             ->leftJoin('phc.category', 'c')
             ->leftJoin('c.parent', 'p')
-            ->addGroupBy('p.name')
             ->addGroupBy('c.name')
             ->getQuery()
             ->useResultCache(true, 3600);
